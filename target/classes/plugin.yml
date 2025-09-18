@@ -1,0 +1,44 @@
+name: EconomyGUI
+version: 1.0.0
+main: ru.stepanyaa.economyGUI.EconomyGUI
+license: MIT
+folia-supported: false
+api-version: 1.16
+depend: [Vault]
+softdepend: [Essentials, PlaceholderAPI]
+commands:
+  economygui:
+    description: A powerful and intuitive Minecraft plugin for efficient economy management using Vault.
+    usage: /<command> <gui | reload | reset>
+    aliases: [egui, economy, ecogui]
+permissions:
+  economygui.admin:
+    description: Grants full access to all EconomyGUI commands and update notifications
+    default: op
+    children:
+      economygui.gui: true
+      economygui.reload: true
+      economygui.reset: true
+      economygui.mass-give: true
+      economygui.mass-take: true
+      economygui.give: true
+  economygui.gui:
+    description: Allows access to the EconomyGUI GUI
+    default: op
+    children:
+      economygui.reset: true
+  economygui.reload:
+    description: Allows reloading the EconomyGUI configuration
+    default: op
+  economygui.reset:
+    description: Allows resetting the EconomyGUI search
+    default: op
+  economygui.mass-give:
+    description: Allows mass giving money to selected players
+    default: op
+  economygui.mass-take:
+    description: Allows mass taking money from selected players
+    default: op
+  economygui.give:
+    description: Allows giving money to selected players
+    default: op

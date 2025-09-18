@@ -1,0 +1,13 @@
+# Language for messages (e.g., 'en' for English, 'ru' for Russian)
+# If you want to help translate EconomyGUI into your language Join our Discord https://discord.gg/72mzBTckKC and check the #translations channel
+
+# Plugin info
+config-version: "1.0.0"
+language: "en"
+
+# Feature toggles
+features:
+  player-selection: true
+  mass-operations: true
+  quick-actions: true
+  full-management: true
