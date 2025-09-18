@@ -1,0 +1,38 @@
+name: Feature Request
+description: Suggest a new feature or improvement for EconomyGUI
+labels: ["Type: Enhancement", "Needs Review"]
+body:
+  - type: textarea
+    attributes:
+      label: Description of the new feature
+      description: Clearly describe what you want to happen and why it would be useful.
+      placeholder: I would like to be able to...
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Alternative solutions
+      description: Describe any alternative solutions or features you've considered.
+      placeholder: Currently I'm using...
+    validations:
+      required: false
+
+  - type: textarea
+    attributes:
+      label: Additional context
+      description: Add any other context, screenshots, or mockups about the feature request here.
+    validations:
+      required: false
+
+  - type: checkboxes
+    attributes:
+      label: Checklist
+      description: Help us prioritize this request
+      options:
+        - label: This feature would be useful for multiple servers, not just my specific use case
+          required: false
+        - label: I'm willing to help test this feature if implemented
+          required: false
+        - label: I'm willing to help with the implementation of this feature
+          required: false
