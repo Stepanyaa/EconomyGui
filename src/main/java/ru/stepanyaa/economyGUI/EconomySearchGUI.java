@@ -32,6 +32,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -48,12 +49,15 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.enchantments.Enchantment;
 
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
+import java.util.Date;
 
 public class EconomySearchGUI implements Listener, InventoryHolder {
+    private final Map<String, List<Transaction>> transactionHistory = new ConcurrentHashMap<>();
     private static final long PAGE_SWITCH_COOLDOWN = 1000L;
     private final EconomyGUI plugin;
     private Inventory inventory;
@@ -71,11 +75,24 @@ public class EconomySearchGUI implements Listener, InventoryHolder {
     private final Map<UUID, Double> pendingActionAmount = new ConcurrentHashMap<>();
     private final Map<UUID, PlayerResult> pendingActionTarget = new ConcurrentHashMap<>();
     private List<PlayerResult> cachedResults = new ArrayList<>();
-    private final Map<String, List<String>> transactionHistory = new ConcurrentHashMap<>();
     private String moneyFormat;
     private boolean usePlaceholderAPI;
     private final String[] skinNames = {"Notch", "jeb_", "Dinnerbone", "Herobrine"};
+
     private final Map<UUID, Long> lastPageSwitch = new ConcurrentHashMap<>();
+    private static class Transaction {
+        long timestamp;
+        String action;
+        double amount;
+        String executor;
+
+        Transaction(long timestamp, String action, double amount, String executor) {
+            this.timestamp = timestamp;
+            this.action = action;
+            this.amount = amount;
+            this.executor = executor;
+        }
+    }
 
     @FunctionalInterface
     interface ChatAction {
@@ -351,38 +368,46 @@ public class EconomySearchGUI implements Listener, InventoryHolder {
 
     private void openContextMenu(Player player, String targetName) {
         PlayerResult result = getPlayerResultByName(targetName);
-        if (result == null) {
-            player.sendMessage(ChatColor.RED + "Игрок не найден.");
-            return;
-        }
-        Inventory contextMenu = Bukkit.createInventory(this, 9, ChatColor.DARK_PURPLE + plugin.getMessage("context-menu.title", "Quick Actions for " + targetName));
-        OfflinePlayer target = Bukkit.getOfflinePlayer(UUID.fromString(result.uuid));
-        contextMenu.setItem(4, createPlayerHead(target, 0));
+        if (result == null) return;
 
-        ItemStack give = new ItemStack(Material.EMERALD);
-        ItemMeta giveMeta = give.getItemMeta();
-        giveMeta.setDisplayName(ChatColor.GREEN + plugin.getMessage("context-menu.give-money", "Give Money"));
-        give.setItemMeta(giveMeta);
-        contextMenu.setItem(3, give);
-
-        ItemStack take = new ItemStack(Material.REDSTONE);
-        ItemMeta takeMeta = take.getItemMeta();
-        takeMeta.setDisplayName(ChatColor.RED + plugin.getMessage("context-menu.take-money", "Take Money"));
-        take.setItemMeta(takeMeta);
-        contextMenu.setItem(5, take);
-
-        ItemStack backBtn = new ItemStack(Material.ARROW);
-        ItemMeta backMeta = backBtn.getItemMeta();
-        backMeta.setDisplayName(ChatColor.RED + plugin.getMessage("gui.back", "Back"));
-        List<String> backLore = new ArrayList<>();
-        backLore.add(ChatColor.GRAY + plugin.getMessage("context-menu.back-lore", "Return to main menu"));
-        backMeta.setLore(backLore);
-        backBtn.setItemMeta(backMeta);
-        contextMenu.setItem(8, backBtn);
-
-        player.openInventory(contextMenu);
+        Inventory contextInv = Bukkit.createInventory(this, 27, ChatColor.BLUE + plugin.getMessage("context-menu.title", "Quick Actions for %player%", "player", targetName));
         lastOpenedMenu.put(player.getUniqueId(), "context");
         lastTarget.put(player.getUniqueId(), targetName);
+
+        contextInv.setItem(10, createQuickActionItem("Give $100", "give", 100, result));
+        contextInv.setItem(11, createQuickActionItem("Give $1000", "give", 1000, result));
+        contextInv.setItem(12, createQuickActionItem("Take $100", "take", 100, result));
+        contextInv.setItem(13, createQuickActionItem("Take $1000", "take", 1000, result));
+        contextInv.setItem(14, createQuickActionItem("Set $5000", "set", 5000, result));
+        contextInv.setItem(15, createQuickActionItem("Reset to $0", "set", 0, result));
+        contextInv.setItem(16, createQuickActionItem("Custom Amount", "custom", 0, result));
+
+        ItemStack back = new ItemStack(Material.BARRIER);
+        ItemMeta backMeta = back.getItemMeta();
+        backMeta.setDisplayName(ChatColor.RED + plugin.getMessage("context-menu.back", "Back to Main Menu"));
+        back.setItemMeta(backMeta);
+        contextInv.setItem(22, back);
+
+        if (plugin.isFullManagementEnabled()) {
+            ItemStack full = new ItemStack(Material.BOOK);
+            ItemMeta fullMeta = full.getItemMeta();
+            fullMeta.setDisplayName(ChatColor.GREEN + plugin.getMessage("context-menu.full-open", "Open Full Management"));
+            full.setItemMeta(fullMeta);
+            contextInv.setItem(4, full);
+        }
+
+        player.openInventory(contextInv);
+    }
+
+    private ItemStack createQuickActionItem(String name, String action, double amount, PlayerResult result) {
+        ItemStack item = new ItemStack(action.equals("give") ? Material.EMERALD : action.equals("take") ? Material.REDSTONE : Material.GOLD_INGOT);
+        ItemMeta meta = item.getItemMeta();
+        meta.setDisplayName(ChatColor.YELLOW + name);
+        List<String> lore = new ArrayList<>();
+        lore.add(ChatColor.GRAY + "Click to apply to " + result.name);
+        meta.setLore(lore);
+        item.setItemMeta(meta);
+        return item;
     }
 
     private void openDigitalMenu(Player player, String action, PlayerResult result) {
@@ -450,44 +475,71 @@ public class EconomySearchGUI implements Listener, InventoryHolder {
     }
 
     private void openHistoryMenu(Player player, PlayerResult result) {
-        Inventory historyInv = Bukkit.createInventory(this, 54, ChatColor.DARK_PURPLE + plugin.getMessage("history.title", "Operations History: %player%", "%player%", result.name));
-        List<String> history = getPlayerHistory(result.uuid);
-        int slot = 0;
-        for (String entry : history) {
-            ItemStack historyItem = new ItemStack(Material.PAPER);
-            ItemMeta meta = historyItem.getItemMeta();
-            meta.setDisplayName(ChatColor.WHITE + plugin.getMessage("history.operation", "Operation #%number%", "%number%", String.valueOf(slot + 1)));
+        String uuid = result.uuid;
+        List<Transaction> history = transactionHistory.getOrDefault(uuid, new ArrayList<>());
+        history.sort(Comparator.comparingLong(t -> -t.timestamp));
+
+        Inventory historyInv = Bukkit.createInventory(this, 54, ChatColor.GOLD + plugin.getMessage("gui.history", "Operations History") + ": " + result.name);
+        lastOpenedMenu.put(player.getUniqueId(), "history");
+        lastTarget.put(player.getUniqueId(), result.name);
+
+        int page = lastPage.getOrDefault(player.getUniqueId(), 0);
+        int start = page * 45;
+        int end = Math.min(start + 45, history.size());
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+        for (int i = start; i < end; i++) {
+            Transaction t = history.get(i);
+            ItemStack item = new ItemStack(Material.PAPER);
+            ItemMeta meta = item.getItemMeta();
+            meta.setDisplayName(ChatColor.YELLOW + t.action.toUpperCase() + " $" + String.format(moneyFormat, t.amount));
             List<String> lore = new ArrayList<>();
-            lore.add(ChatColor.GRAY + entry);
+            lore.add(ChatColor.GRAY + "By: " + t.executor);
+            lore.add(ChatColor.GRAY + "Date: " + sdf.format(new Date(t.timestamp)));
             meta.setLore(lore);
-            historyItem.setItemMeta(meta);
-            historyInv.setItem(slot, historyItem);
-            slot++;
-            if (slot >= 45) break;
+            item.setItemMeta(meta);
+            historyInv.setItem(i - start, item);
         }
+
         if (history.isEmpty()) {
             ItemStack noHistory = new ItemStack(Material.BARRIER);
-            ItemMeta meta = noHistory.getItemMeta();
-            meta.setDisplayName(ChatColor.RED + plugin.getMessage("history.empty", "History Empty"));
-            List<String> lore = new ArrayList<>();
-            lore.add(ChatColor.GRAY + plugin.getMessage("history.empty-hint", "No recorded operations for %player%", "%player%", result.name));
-            meta.setLore(lore);
-            noHistory.setItemMeta(meta);
+            ItemMeta noMeta = noHistory.getItemMeta();
+            noMeta.setDisplayName(ChatColor.RED + plugin.getMessage("gui.no-players", "No transactions found"));
+            noHistory.setItemMeta(noMeta);
             historyInv.setItem(22, noHistory);
         }
 
-        ItemStack backBtn = new ItemStack(Material.ARROW);
-        ItemMeta backMeta = backBtn.getItemMeta();
+        int totalPages = (history.size() / 45) + (history.size() % 45 > 0 ? 1 : 0);
+        ItemStack prev = page > 0 ? new ItemStack(Material.ARROW) : new ItemStack(Material.RED_STAINED_GLASS_PANE);
+        ItemMeta prevMeta = prev.getItemMeta();
+        prevMeta.setDisplayName(page > 0 ? ChatColor.YELLOW + plugin.getMessage("gui.previous-page", "Previous Page")
+                : ChatColor.RED + plugin.getMessage("gui.no-page", "No Page"));
+        List<String> prevLore = new ArrayList<>();
+        prevLore.add(ChatColor.GRAY + plugin.getMessage("gui.page-info", "Page %current_page% of %total_pages%",
+                "current_page", String.valueOf(page + 1), "total_pages", String.valueOf(totalPages)));
+        prevMeta.setLore(prevLore);
+        prev.setItemMeta(prevMeta);
+        historyInv.setItem(45, prev);
+
+        ItemStack next = page < totalPages - 1 ? new ItemStack(Material.ARROW) : new ItemStack(Material.RED_STAINED_GLASS_PANE);
+        ItemMeta nextMeta = next.getItemMeta();
+        nextMeta.setDisplayName(page < totalPages - 1 ? ChatColor.YELLOW + plugin.getMessage("gui.next-page", "Next Page")
+                : ChatColor.RED + plugin.getMessage("gui.no-page", "No Page"));
+        List<String> nextLore = new ArrayList<>();
+        nextLore.add(ChatColor.GRAY + plugin.getMessage("gui.page-info", "Page %current_page% of %total_pages%",
+                "current_page", String.valueOf(page + 1), "total_pages", String.valueOf(totalPages)));
+        nextMeta.setLore(nextLore);
+        next.setItemMeta(nextMeta);
+        historyInv.setItem(53, next);
+
+        ItemStack back = new ItemStack(Material.BARRIER);
+        ItemMeta backMeta = back.getItemMeta();
         backMeta.setDisplayName(ChatColor.RED + plugin.getMessage("gui.back", "Back"));
-        List<String> backLore = new ArrayList<>();
-        backLore.add(ChatColor.GRAY + plugin.getMessage("gui.back-hint-finance", "Return to finance menu"));
-        backMeta.setLore(backLore);
-        backBtn.setItemMeta(backMeta);
-        historyInv.setItem(49, backBtn);
+        back.setItemMeta(backMeta);
+        historyInv.setItem(49, back);
 
         player.openInventory(historyInv);
-        lastOpenedMenu.put(player.getUniqueId(), "history");
-        lastTarget.put(player.getUniqueId(), result.name);
     }
 
     private void openMassActionsMenu(Player player) {
@@ -500,6 +552,7 @@ public class EconomySearchGUI implements Listener, InventoryHolder {
         giveMeta.setLore(giveLore);
         giveMass.setItemMeta(giveMeta);
         massInv.setItem(11, giveMass);
+
 
         ItemStack takeMass = new ItemStack(Material.REDSTONE_BLOCK);
         ItemMeta takeMeta = takeMass.getItemMeta();
@@ -532,36 +585,11 @@ public class EconomySearchGUI implements Listener, InventoryHolder {
         lastOpenedMenu.put(player.getUniqueId(), "mass");
     }
 
-    private List<String> getPlayerHistory(String uuid) {
-        List<String> history = transactionHistory.getOrDefault(uuid, new ArrayList<>());
-        if (history.isEmpty() && plugin.getServer().getPluginManager().getPlugin("Essentials") != null) {
-            history.add("Placeholder: " + plugin.getMessage("action.give-transaction", "Gave $%amount% by %player% %date%", "amount", "100", "player", "System", "date", "2025-09-07"));
-            history.add("Placeholder: " + plugin.getMessage("action.take-transaction", "Took $%amount% by %player% %date%", "amount", "50", "player", "System", "date", "2025-09-06"));
-        }
-        return history;
-    }
-
-    private void logTransaction(String uuid, String action, double amount, Player player) {
-        List<String> history = transactionHistory.computeIfAbsent(uuid, k -> new ArrayList<>());
-        String actionKey;
-        switch (action) {
-            case "set":
-                actionKey = "action.set-transaction";
-                break;
-            case "give":
-                actionKey = "action.give-transaction";
-                break;
-            case "take":
-                actionKey = "action.take-transaction";
-                break;
-            default:
-                actionKey = "action.unknown-transaction";
-                break;
-        }
-        String entry = plugin.getMessage(actionKey, "%action%: $%amount% by %player% %date%",
-                "action", action, "amount", String.valueOf(amount), "player", player.getName(), "date", new Date().toString());
-        history.add(0, entry);
-        if (history.size() > 50) history.remove(history.size() - 1);
+    private void logTransaction(String uuid, String action, double amount, Player executor) {
+        transactionHistory.computeIfAbsent(uuid, k -> new ArrayList<>())
+                .add(new Transaction(System.currentTimeMillis(), action, amount, executor.getName()));
+        cleanOldTransactions();
+        plugin.saveTransactions();
     }
 
     private List<PlayerResult> getFilteredPlayers() {
@@ -613,10 +641,7 @@ public class EconomySearchGUI implements Listener, InventoryHolder {
     }
 
     public PlayerResult getPlayerResultByName(String name) {
-        return cachedResults.stream()
-                .filter(r -> r.name.equalsIgnoreCase(name))
-                .findFirst()
-                .orElse(null);
+        return cachedResults.stream().filter(r -> r.name.equalsIgnoreCase(name)).findFirst().orElse(null);
     }
 
     private void requestAmount(Player player, String action, String targetName) {
@@ -751,8 +776,6 @@ public class EconomySearchGUI implements Listener, InventoryHolder {
     public void onInventoryClick(InventoryClickEvent event) {
         if (!(event.getInventory().getHolder() instanceof EconomySearchGUI)) return;
         event.setCancelled(true);
-        if (!(event.getWhoClicked() instanceof Player)) return;
-
         Player player = (Player) event.getWhoClicked();
         UUID playerUUID = player.getUniqueId();
         ItemStack clicked = event.getCurrentItem();
@@ -761,73 +784,51 @@ public class EconomySearchGUI implements Listener, InventoryHolder {
         String menu = lastOpenedMenu.getOrDefault(playerUUID, "main");
         String displayName = clicked.getItemMeta() != null ? clicked.getItemMeta().getDisplayName() : "";
         long now = System.currentTimeMillis();
-        int slot = event.getSlot();
 
         if (menu.equals("main")) {
-            if (slot == 45 || slot == 53) {
-                // Page navigation
-                if (now - lastPageSwitch.getOrDefault(playerUUID, 0L) < PAGE_SWITCH_COOLDOWN) {
-                    return;
+            int slot = event.getSlot();
+            if ((slot == 45 || slot == 53) && now - lastPageSwitch.getOrDefault(playerUUID, 0L) < PAGE_SWITCH_COOLDOWN) {
+                return;
+            }
+            if (slot == 45 && currentPage > 0) {
+                lastPageSwitch.put(playerUUID, now);
+                if (event.getClick() == ClickType.SHIFT_RIGHT) {
+                    currentPage = Math.max(0, currentPage - 5);
+                } else {
+                    currentPage--;
                 }
-                if (slot == 45 && currentPage > 0) {
-                    lastPageSwitch.put(playerUUID, now);
-                    if (event.getClick() == ClickType.SHIFT_RIGHT) {
-                        currentPage = Math.max(0, currentPage - 5);
-                    } else {
-                        currentPage--;
-                    }
-                    lastPage.put(playerUUID, currentPage);
-                    refreshGUI();
-                } else if (slot == 53 && (currentPage + 1) * 36 < cachedResults.size()) {
-                    lastPageSwitch.put(playerUUID, now);
+                lastPage.put(playerUUID, currentPage);
+                refreshGUI();
+            } else if (slot == 53 && (currentPage + 1) * 36 < cachedResults.size()) {
+                lastPageSwitch.put(playerUUID, now);
+                if (event.getClick() == ClickType.SHIFT_RIGHT) {
                     int totalPages = (cachedResults.size() / 36) + (cachedResults.size() % 36 > 0 ? 1 : 0);
-                    if (event.getClick() == ClickType.SHIFT_RIGHT) {
-                        currentPage = Math.min(totalPages - 1, currentPage + 5);
-                    } else {
-                        currentPage++;
-                    }
-                    lastPage.put(playerUUID, currentPage);
-                    refreshGUI();
+                    currentPage = Math.min(totalPages - 1, currentPage + 5);
+                } else {
+                    currentPage++;
                 }
+                lastPage.put(playerUUID, currentPage);
+                refreshGUI();
             } else if (slot == 46) {
-                // Select All button
-                if (!plugin.isPlayerSelectionEnabled()) {
-                    player.sendMessage(ChatColor.RED + plugin.getMessage("error.player-selection-disabled", "Player selection is disabled in config!"));
-                    return;
-                }
                 for (PlayerResult result : cachedResults.subList(currentPage * 36, Math.min((currentPage + 1) * 36, cachedResults.size()))) {
                     UUID uuid = UUID.fromString(result.uuid);
                     selectedPlayers.add(uuid);
                     playerSelections.computeIfAbsent(playerUUID, k -> new HashSet<>()).add(uuid);
                 }
                 refreshGUI();
-                player.sendMessage(ChatColor.YELLOW + plugin.getMessage("action.selection-updated", "Selected all players on page."));
             } else if (slot == 47) {
-                // Cancel Selection button
-                if (!plugin.isPlayerSelectionEnabled()) {
-                    player.sendMessage(ChatColor.RED + plugin.getMessage("error.player-selection-disabled", "Player selection is disabled in config!"));
-                    return;
-                }
                 Set<UUID> selections = playerSelections.getOrDefault(playerUUID, Collections.emptySet());
                 selectedPlayers.removeAll(selections);
                 playerSelections.remove(playerUUID);
                 refreshGUI();
-                player.sendMessage(ChatColor.YELLOW + plugin.getMessage("action.selection-cleared", "Selection cleared."));
             } else if (slot == 48) {
-                // Mass Operations menu
-                if (!plugin.isMassOperationsEnabled()) {
-                    player.sendMessage(ChatColor.RED + plugin.getMessage("error.mass-operations-disabled", "Mass operations are disabled in config!"));
-                    return;
-                }
                 Set<UUID> selected = playerSelections.getOrDefault(playerUUID, Collections.emptySet());
                 if (selected.isEmpty()) {
                     player.sendMessage(ChatColor.RED + plugin.getMessage("error.no-players-selected", "No players selected."));
                     return;
                 }
                 openMassActionsMenu(player);
-                lastOpenedMenu.put(playerUUID, "mass");
             } else if (slot == 4) {
-                // Search bar
                 if (event.getClick() == ClickType.RIGHT) {
                     resetSearch(player);
                 } else if (event.getClick() == ClickType.LEFT) {
@@ -842,18 +843,17 @@ public class EconomySearchGUI implements Listener, InventoryHolder {
                             String input = ChatColor.stripColor(msg.trim());
                             if (input.equalsIgnoreCase("cancel") || input.equalsIgnoreCase("отмена")) {
                                 resetSearch(p);
-                                pendingActions.remove(p.getUniqueId());
                                 return;
                             }
                             currentSearch = input;
                             currentPage = 0;
                             lastPage.put(p.getUniqueId(), 0);
                             cachedResults.clear();
-                            cachedResults = getFilteredPlayers();
-                            setupMainMenuLayout();
                             p.openInventory(inventory);
                             playersInGUI.add(p.getUniqueId());
                             lastOpenedMenu.put(p.getUniqueId(), "main");
+                            cachedResults = getFilteredPlayers();
+                            setupMainMenuLayout();
                             p.updateInventory();
                             pendingActions.remove(p.getUniqueId());
                         });
@@ -866,7 +866,6 @@ public class EconomySearchGUI implements Listener, InventoryHolder {
             } else if (slot == 51) {
                 applyFilter(Filter.OFFLINE, player);
             } else if (slot >= 9 && slot <= 44) {
-                // Player head click
                 String name = ChatColor.stripColor(displayName);
                 PlayerResult result = cachedResults.stream()
                         .filter(r -> r.name.equalsIgnoreCase(name))
@@ -874,26 +873,11 @@ public class EconomySearchGUI implements Listener, InventoryHolder {
                         .orElse(null);
                 if (result == null) return;
                 if (event.getClick() == ClickType.LEFT) {
-                    if (!plugin.isFullManagementEnabled()) {
-                        player.sendMessage(ChatColor.RED + plugin.getMessage("error.full-management-disabled", "Full management is disabled in config!"));
-                        return;
-                    }
                     openPlayerFinanceManagement(player, result);
-                    lastOpenedMenu.put(playerUUID, "finance");
-                    lastTarget.put(playerUUID, result.name);
                 } else if (event.getClick() == ClickType.RIGHT) {
-                    if (!plugin.isQuickActionsEnabled()) {
-                        player.sendMessage(ChatColor.RED + plugin.getMessage("error.quick-actions-disabled", "Quick actions are disabled in config!"));
-                        return;
-                    }
                     openContextMenu(player, name);
-                    lastOpenedMenu.put(playerUUID, "context");
-                    lastTarget.put(playerUUID, result.name);
                 } else if (event.getClick() == ClickType.SHIFT_LEFT && now - lastPageSwitch.getOrDefault(playerUUID, 0L) >= PAGE_SWITCH_COOLDOWN) {
-                    if (!plugin.isPlayerSelectionEnabled()) {
-                        player.sendMessage(ChatColor.RED + plugin.getMessage("error.player-selection-disabled", "Player selection is disabled in config!"));
-                        return;
-                    }
+                    lastPageSwitch.put(playerUUID, now);
                     UUID uuid = UUID.fromString(result.uuid);
                     Set<UUID> selections = playerSelections.computeIfAbsent(playerUUID, k -> new HashSet<>());
                     if (selectedPlayers.contains(uuid)) {
@@ -904,85 +888,60 @@ public class EconomySearchGUI implements Listener, InventoryHolder {
                         selections.add(uuid);
                     }
                     refreshGUI();
-                    player.sendMessage(ChatColor.YELLOW + plugin.getMessage("action.selection-updated", "Selection updated."));
                 }
             }
         } else if (menu.equals("finance")) {
-            if (!plugin.isFullManagementEnabled()) {
-                player.sendMessage(ChatColor.RED + plugin.getMessage("error.full-management-disabled", "Full management is disabled in config!"));
-                player.closeInventory();
-                openMainGUI(player);
-                return;
-            }
+            int slot = event.getSlot();
             String targetName = lastTarget.get(playerUUID);
             PlayerResult result = getPlayerResultByName(targetName);
-            if (result == null) {
-                player.closeInventory();
-                openMainGUI(player);
-                return;
-            }
+            if (result == null) return;
             if (slot == 13) {
-                // Give (chat input)
-                if (!player.hasPermission("economygui.give")) {
-                    player.sendMessage(ChatColor.RED + plugin.getMessage("error.no-permission", "You don't have permission to give."));
-                    openPlayerFinanceManagement(player, result);
-                    return;
-                }
                 player.closeInventory();
-                TextComponent message = new TextComponent(ChatColor.YELLOW + plugin.getMessage("gui.enter-amount", "Enter amount in chat (or 'cancel' to abort):"));
-                TextComponent cancel = new TextComponent(ChatColor.RED + plugin.getMessage("gui.cancel", "[Cancel]"));
-                cancel.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/economygui reset"));
-                message.addExtra(cancel);
-                player.spigot().sendMessage(message);
-                pendingActions.put(playerUUID, (msg, p) -> {
-                    Bukkit.getScheduler().runTask(plugin, () -> {
-                        if (msg.equalsIgnoreCase("cancel") || msg.equalsIgnoreCase("отмена")) {
-                            p.sendMessage(ChatColor.YELLOW + plugin.getMessage("messages.input-cancelled", "Input cancelled."));
-                            openPlayerFinanceManagement(p, result);
-                            pendingActions.remove(p.getUniqueId());
-                            return;
-                        }
-                        try {
-                            double amount = Double.parseDouble(msg.trim());
-                            if (amount <= 0) {
-                                p.sendMessage(ChatColor.RED + plugin.getMessage("error.invalid-amount", "Amount must be positive."));
+                if (player.hasPermission("economygui.give")) {
+                    TextComponent message = new TextComponent(ChatColor.YELLOW + plugin.getMessage("gui.enter-amount", "Enter amount in chat (or 'cancel' to abort):"));
+                    TextComponent cancel = new TextComponent(ChatColor.RED + plugin.getMessage("gui.cancel", "[Cancel]"));
+                    cancel.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/economygui reset"));
+                    message.addExtra(cancel);
+                    player.spigot().sendMessage(message);
+                    pendingActions.put(playerUUID, (msg, p) -> {
+                        Bukkit.getScheduler().runTask(plugin, () -> {
+                            if (msg.equalsIgnoreCase("cancel") || msg.equalsIgnoreCase("отмена")) {
+                                p.sendMessage(ChatColor.YELLOW + plugin.getMessage("messages.input-cancelled", "Input cancelled."));
                                 openPlayerFinanceManagement(p, result);
+                                pendingActions.remove(p.getUniqueId());
                                 return;
                             }
-                            OfflinePlayer target = Bukkit.getOfflinePlayer(UUID.fromString(result.uuid));
-                            if (plugin.getEconomy().depositPlayer(target, amount).transactionSuccess()) {
-                                p.sendMessage(ChatColor.GREEN + plugin.getMessage("action.executed",
-                                        "Executed %action% of $%amount% for %player%", "action", "give", "amount", String.format(moneyFormat, amount), "player", result.name));
-                                logTransaction(result.uuid, "give", amount, p);
-                            } else {
-                                p.sendMessage(ChatColor.RED + plugin.getMessage("error.action-failed", "Action failed."));
+                            try {
+                                double amount = Double.parseDouble(msg.trim());
+                                if (amount <= 0) {
+                                    p.sendMessage(ChatColor.RED + plugin.getMessage("error.invalid-amount", "Amount must be positive."));
+                                    openPlayerFinanceManagement(p, result);
+                                    return;
+                                }
+                                OfflinePlayer target = Bukkit.getOfflinePlayer(UUID.fromString(result.uuid));
+                                if (plugin.getEconomy().depositPlayer(target, amount).transactionSuccess()) {
+                                    p.sendMessage(ChatColor.GREEN + plugin.getMessage("messages.gave-amount",
+                                            "Gave $%amount% to %player%", "%amount%", String.format(moneyFormat, amount), "%player%", result.name));
+                                    logTransaction(result.uuid, "give", amount, p);
+                                } else {
+                                    p.sendMessage(ChatColor.RED + plugin.getMessage("error.action-failed", "Action failed."));
+                                }
+                            } catch (NumberFormatException e) {
+                                p.sendMessage(ChatColor.RED + plugin.getMessage("error.invalid-amount-format", "Invalid amount format."));
                             }
-                        } catch (NumberFormatException e) {
-                            p.sendMessage(ChatColor.RED + plugin.getMessage("error.invalid-amount-format", "Invalid amount format."));
-                        }
-                        openPlayerFinanceManagement(p, result);
-                        pendingActions.remove(p.getUniqueId());
+                            openPlayerFinanceManagement(p, result);
+                            pendingActions.remove(p.getUniqueId());
+                        });
                     });
-                });
-            } else if (slot == 20) {
-                // Give (digital menu)
-                openDigitalMenu(player, plugin.getMessage("action.give", "Give"), result);
-                lastOpenedMenu.put(playerUUID, "digital");
-                pendingActionType.put(playerUUID, plugin.getMessage("action.give", "Give"));
-                pendingActionTarget.put(playerUUID, result);
-            } else if (slot == 22) {
-                // Take (digital menu)
-                openDigitalMenu(player, plugin.getMessage("action.take", "Take"), result);
-                lastOpenedMenu.put(playerUUID, "digital");
-                pendingActionType.put(playerUUID, plugin.getMessage("action.take", "Take"));
-                pendingActionTarget.put(playerUUID, result);
-            } else if (slot == 24) {
-                // Set (chat input)
-                if (!player.hasPermission("economygui.set")) {
-                    player.sendMessage(ChatColor.RED + plugin.getMessage("error.no-permission", "You don't have permission to set."));
+                } else {
+                    player.sendMessage(ChatColor.RED + plugin.getMessage("messages.no-permission-give", "You don't have permission to give."));
                     openPlayerFinanceManagement(player, result);
-                    return;
                 }
+            } else if (slot == 20) {
+                openDigitalMenu(player, plugin.getMessage("action.give", "Give"), result);
+            } else if (slot == 22) {
+                openDigitalMenu(player, plugin.getMessage("action.take", "Take"), result);
+            } else if (slot == 24) {
                 player.closeInventory();
                 TextComponent message = new TextComponent(ChatColor.YELLOW + plugin.getMessage("gui.enter-amount", "Enter amount in chat (or 'cancel' to abort):"));
                 TextComponent cancel = new TextComponent(ChatColor.RED + plugin.getMessage("gui.cancel", "[Cancel]"));
@@ -1008,8 +967,8 @@ public class EconomySearchGUI implements Listener, InventoryHolder {
                             double current = plugin.getEconomy().getBalance(target);
                             if (plugin.getEconomy().withdrawPlayer(target, current).transactionSuccess() &&
                                     plugin.getEconomy().depositPlayer(target, amount).transactionSuccess()) {
-                                p.sendMessage(ChatColor.GREEN + plugin.getMessage("action.executed",
-                                        "Executed %action% of $%amount% for %player%", "action", "set", "amount", String.format(moneyFormat, amount), "player", result.name));
+                                p.sendMessage(ChatColor.GREEN + plugin.getMessage("messages.set-amount",
+                                        "Set balance to $%amount% for %player%", "%amount%", String.format(moneyFormat, amount), "%player%", result.name));
                                 logTransaction(result.uuid, "set", amount, p);
                             } else {
                                 p.sendMessage(ChatColor.RED + plugin.getMessage("error.action-failed", "Action failed."));
@@ -1022,55 +981,39 @@ public class EconomySearchGUI implements Listener, InventoryHolder {
                     });
                 });
             } else if (slot == 31) {
-                // History menu
                 openHistoryMenu(player, result);
-                lastOpenedMenu.put(playerUUID, "history");
-                lastTarget.put(playerUUID, result.name);
             } else if (slot == 49) {
-                // Back to main menu
                 openMainGUI(player);
-                lastOpenedMenu.put(playerUUID, "main");
             }
         } else if (menu.equals("context")) {
-            if (!plugin.isQuickActionsEnabled()) {
-                player.sendMessage(ChatColor.RED + plugin.getMessage("error.quick-actions-disabled", "Quick actions are disabled in config!"));
-                player.closeInventory();
-                openMainGUI(player);
-                return;
-            }
-            String targetName = lastTarget.get(playerUUID);
+            String targetName = lastTarget.getOrDefault(player.getUniqueId(), "");
             PlayerResult result = getPlayerResultByName(targetName);
             if (result == null) {
-                player.closeInventory();
                 openMainGUI(player);
+                lastOpenedMenu.put(player.getUniqueId(), "main");
                 return;
             }
-            if (slot == 3) {
-                // Quick give
-                requestAmount(player, "give", targetName);
-            } else if (slot == 5) {
-                // Quick take
-                requestAmount(player, "take", targetName);
-            } else if (slot == 8) {
-                // Back to main menu
+            if (event.getSlot() == 4 && plugin.isFullManagementEnabled()) {
+                openPlayerFinanceManagement(player, result);
+                lastOpenedMenu.put(player.getUniqueId(), "finance");
+            } else if (event.getSlot() >= 10 && event.getSlot() <= 15 && plugin.isQuickActionsEnabled()) {
+                if (event.getSlot() == 10) executeQuickAction(player, "give", 100);
+                else if (event.getSlot() == 11) executeQuickAction(player, "give", 1000);
+                else if (event.getSlot() == 12) executeQuickAction(player, "take", 100);
+                else if (event.getSlot() == 13) executeQuickAction(player, "take", 1000);
+                else if (event.getSlot() == 14) executeQuickAction(player, "set", 5000);
+                else if (event.getSlot() == 15) executeQuickAction(player, "set", 0);
+            } else if (event.getSlot() == 16 && plugin.isQuickActionsEnabled()) {
+                requestAmount(player, "custom", result.toString());
+            } else if (event.getSlot() == 22) {
                 openMainGUI(player);
-                lastOpenedMenu.put(playerUUID, "main");
+                lastOpenedMenu.put(player.getUniqueId(), "main");
             }
         } else if (menu.equals("digital")) {
-            if (!plugin.isFullManagementEnabled()) {
-                player.sendMessage(ChatColor.RED + plugin.getMessage("error.full-management-disabled", "Full management is disabled in config!"));
-                player.closeInventory();
-                openMainGUI(player);
-                return;
-            }
+            int slotClicked = event.getSlot();
             PlayerResult result = pendingActionTarget.get(playerUUID);
-            if (result == null) {
-                player.closeInventory();
-                openMainGUI(player);
-                return;
-            }
-            if (slot == 16) {
-                // Confirm action
+            if (result == null) return;
+            if (slotClicked == 16) {
                 double amount = pendingActionAmount.getOrDefault(playerUUID, 0.0);
                 String action = pendingActionType.getOrDefault(playerUUID, plugin.getMessage("action.give", "Give"));
                 if (amount <= 0) {
@@ -1080,17 +1023,9 @@ public class EconomySearchGUI implements Listener, InventoryHolder {
                 OfflinePlayer target = Bukkit.getOfflinePlayer(UUID.fromString(result.uuid));
                 boolean success = false;
                 if (action.equals(plugin.getMessage("action.give", "Give"))) {
-                    if (!player.hasPermission("economygui.give")) {
-                        player.sendMessage(ChatColor.RED + plugin.getMessage("error.no-permission", "You don't have permission to give."));
-                        return;
-                    }
                     success = plugin.getEconomy().depositPlayer(target, amount).transactionSuccess();
                     if (success) logTransaction(result.uuid, "give", amount, player);
                 } else if (action.equals(plugin.getMessage("action.take", "Take"))) {
-                    if (!player.hasPermission("economygui.take")) {
-                        player.sendMessage(ChatColor.RED + plugin.getMessage("error.no-permission", "You don't have permission to take."));
-                        return;
-                    }
                     if (plugin.getEconomy().getBalance(target) >= amount) {
                         success = plugin.getEconomy().withdrawPlayer(target, amount).transactionSuccess();
                         if (success) logTransaction(result.uuid, "take", amount, player);
@@ -1106,31 +1041,26 @@ public class EconomySearchGUI implements Listener, InventoryHolder {
                     player.sendMessage(ChatColor.RED + plugin.getMessage("error.action-failed", "Action failed."));
                 }
                 pendingActionAmount.put(playerUUID, 0.0);
+                refreshGUI();
                 openPlayerFinanceManagement(player, result);
-                lastOpenedMenu.put(playerUUID, "finance");
-            } else if (slot == 18) {
-                // Reset amount
+            } else if (slotClicked == 18) {
                 pendingActionAmount.put(playerUUID, 0.0);
                 player.sendMessage(ChatColor.YELLOW + plugin.getMessage("gui.amount-selected",
                         "Selected amount: %amount%", "amount", "0"));
                 openDigitalMenu(player, pendingActionType.get(playerUUID), result);
-            } else if (slot == 26) {
-                // Back to finance menu
+            } else if (slotClicked == 26) {
                 openPlayerFinanceManagement(player, result);
-                lastOpenedMenu.put(playerUUID, "finance");
-            } else if (slot >= 9 && slot <= 14) {
-                // Predefined amounts
+            } else if (slotClicked >= 9 && slotClicked <= 14) {
                 int[] amounts = {1, 5, 10, 100, 1000, 5000};
-                int index = slot - 9;
+                int index = slotClicked - 9;
                 if (index >= 0 && index < amounts.length) {
                     double currentAmount = pendingActionAmount.getOrDefault(playerUUID, 0.0);
                     pendingActionAmount.put(playerUUID, currentAmount + amounts[index]);
                     player.sendMessage(ChatColor.GREEN + plugin.getMessage("gui.amount-selected",
-                            "Selected amount: %amount%", "amount", String.valueOf(currentAmount + amounts[index])));
+                            "Selected amount: %amount%", "amount", String.valueOf(amounts[index])));
                     openDigitalMenu(player, pendingActionType.get(playerUUID), result);
                 }
-            } else if (slot == 22) {
-                // Custom amount
+            } else if (slotClicked == 22) {
                 player.closeInventory();
                 TextComponent message = new TextComponent(ChatColor.YELLOW + plugin.getMessage("gui.enter-custom", "Enter custom amount: "));
                 TextComponent cancel = new TextComponent(ChatColor.RED + plugin.getMessage("gui.cancel", "[Cancel]"));
@@ -1156,7 +1086,7 @@ public class EconomySearchGUI implements Listener, InventoryHolder {
                             double currentAmount = pendingActionAmount.getOrDefault(p.getUniqueId(), 0.0);
                             pendingActionAmount.put(p.getUniqueId(), currentAmount + amount);
                             p.sendMessage(ChatColor.GREEN + plugin.getMessage("gui.amount-selected",
-                                    "Selected amount: %amount%", "amount", String.valueOf(currentAmount + amount)));
+                                    "Selected amount: %amount%", "amount", String.valueOf(amount)));
                             openDigitalMenu(p, pendingActionType.get(p.getUniqueId()), pendingActionTarget.get(p.getUniqueId()));
                         } catch (NumberFormatException e) {
                             p.sendMessage(ChatColor.RED + plugin.getMessage("error.invalid-amount-format", "Invalid amount format."));
@@ -1167,40 +1097,46 @@ public class EconomySearchGUI implements Listener, InventoryHolder {
                 });
             }
         } else if (menu.equals("history")) {
-            if (slot == 49) {
-                // Back to finance menu
-                PlayerResult result = getPlayerResultByName(lastTarget.get(playerUUID));
+            if (event.getSlot() == 49) {
+                PlayerResult result = getPlayerResultByName(lastTarget.get(player.getUniqueId()));
                 if (result != null) {
                     if (!plugin.isFullManagementEnabled()) {
                         player.sendMessage(ChatColor.RED + plugin.getMessage("error.full-management-disabled", "Full management is disabled in config!"));
                         openMainGUI(player);
-                        lastOpenedMenu.put(playerUUID, "main");
-                        return;
+                        lastOpenedMenu.put(player.getUniqueId(), "main");
+                    } else {
+                        openPlayerFinanceManagement(player, result);
+                        lastOpenedMenu.put(player.getUniqueId(), "finance");
                     }
-                    openPlayerFinanceManagement(player, result);
-                    lastOpenedMenu.put(playerUUID, "finance");
+                }
+            } else if (event.getSlot() == 45) {
+                int page = lastPage.getOrDefault(player.getUniqueId(), 0);
+                if (page > 0) {
+                    lastPage.put(player.getUniqueId(), page - 1);
+                    openHistoryMenu(player, getPlayerResultByName(lastTarget.get(player.getUniqueId())));
+                }
+            } else if (event.getSlot() == 53) {
+                int page = lastPage.getOrDefault(player.getUniqueId(), 0);
+                PlayerResult result = getPlayerResultByName(lastTarget.get(player.getUniqueId()));
+                if (result != null) {
+                    List<Transaction> history = transactionHistory.getOrDefault(result.uuid, new ArrayList<>());
+                    int totalPages = (history.size() / 45) + (history.size() % 45 > 0 ? 1 : 0);
+                    if (page < totalPages - 1) {
+                        lastPage.put(player.getUniqueId(), page + 1);
+                        openHistoryMenu(player, result);
+                    }
                 }
             }
         } else if (menu.equals("mass")) {
-            if (!plugin.isMassOperationsEnabled()) {
-                player.sendMessage(ChatColor.RED + plugin.getMessage("error.mass-operations-disabled", "Mass operations are disabled in config!"));
-                player.closeInventory();
-                openMainGUI(player);
-                return;
-            }
+            int slot = event.getSlot();
             if (slot == 11) {
-                // Mass give
                 requestMassAmount(player, "mass-give");
             } else if (slot == 13) {
-                // Mass take
                 requestMassAmount(player, "mass-take");
             } else if (slot == 15) {
-                // Mass set
                 requestMassAmount(player, "mass-set");
             } else if (slot == 22) {
-                // Back to main menu
                 openMainGUI(player);
-                lastOpenedMenu.put(playerUUID, "main");
             }
         }
     }
@@ -1277,27 +1213,140 @@ public class EconomySearchGUI implements Listener, InventoryHolder {
         }
     }
 
+    private void executeQuickAction(Player player, String action, double amount) {
+        PlayerResult result = getPlayerResultByName(lastTarget.get(player.getUniqueId()));
+        if (result == null) return;
+        OfflinePlayer target = Bukkit.getOfflinePlayer(UUID.fromString(result.uuid));
+        Economy econ = plugin.getEconomy();
+
+        boolean success = false;
+        if (action.equals("give")) {
+            success = econ.depositPlayer(target, amount).transactionSuccess();
+        } else if (action.equals("take")) {
+            if (econ.getBalance(target) >= amount) {
+                success = econ.withdrawPlayer(target, amount).transactionSuccess();
+            } else {
+                player.sendMessage(ChatColor.RED + plugin.getMessage("error.insufficient-funds", "Insufficient funds for %player%", "player", result.name));
+                return;
+            }
+        } else if (action.equals("set")) {
+            success = econ.withdrawPlayer(target, econ.getBalance(target)).transactionSuccess() &&
+                    econ.depositPlayer(target, amount).transactionSuccess();
+        }
+
+        if (success) {
+            logTransaction(result.uuid, action, amount, player);
+            player.sendMessage(ChatColor.GREEN + plugin.getMessage("action.executed", "Executed %action% of $%amount% for %player%", "action", action, "amount", String.format(moneyFormat, amount), "player", result.name));
+        } else {
+            player.sendMessage(ChatColor.RED + plugin.getMessage("error.action-failed", "Action failed."));
+        }
+        openContextMenu(player, result.name);
+    }
+
+    public void loadTransactionHistory(FileConfiguration config) {
+        transactionHistory.clear();
+        for (String uuid : config.getKeys(false)) {
+            List<Transaction> list = new ArrayList<>();
+            List<String> rawList = config.getStringList(uuid);
+            for (String raw : rawList) {
+                String[] parts = raw.split(";");
+                if (parts.length == 4) {
+                    try {
+                        long ts = Long.parseLong(parts[0]);
+                        String action = parts[1];
+                        double amt = Double.parseDouble(parts[2]);
+                        String exec = parts[3];
+                        list.add(new Transaction(ts, action, amt, exec));
+                    } catch (NumberFormatException e) {
+                        plugin.getLogger().warning("Invalid transaction format for UUID " + uuid + ": " + raw);
+                    }
+                }
+            }
+            transactionHistory.put(uuid, list);
+        }
+        cleanOldTransactions();
+    }
+
+    public void saveTransactionHistory(FileConfiguration config) {
+        for (Map.Entry<String, List<Transaction>> entry : transactionHistory.entrySet()) {
+            List<String> rawList = entry.getValue().stream()
+                    .map(t -> t.timestamp + ";" + t.action + ";" + t.amount + ";" + t.executor)
+                    .collect(Collectors.toList());
+            config.set(entry.getKey(), rawList);
+        }
+    }
+
+    private void cleanOldTransactions() {
+        if (plugin.transactionRetentionDays <= 0) return;
+        long cutoff = System.currentTimeMillis() - (plugin.transactionRetentionDays * 86400000L);
+        for (List<Transaction> list : transactionHistory.values()) {
+            list.removeIf(t -> t.timestamp < cutoff);
+        }
+        transactionHistory.entrySet().removeIf(entry -> entry.getValue().isEmpty());
+    }
+
+    private void populatePlayerHeads(Inventory inv, int page, String search, Filter filter, Player viewer) {
+        int start = page * 36;
+        int end = Math.min(start + 36, cachedResults.size());
+        for (int i = start; i < end; i++) {
+            PlayerResult result = cachedResults.get(i);
+            ItemStack head = new ItemStack(Material.PLAYER_HEAD);
+            SkullMeta meta = (SkullMeta) head.getItemMeta();
+            meta.setOwningPlayer(Bukkit.getOfflinePlayer(UUID.fromString(result.uuid)));
+            meta.setDisplayName(ChatColor.YELLOW + result.name);
+            List<String> lore = new ArrayList<>();
+            lore.add(ChatColor.GRAY + plugin.getMessage("status." + (result.online ? "online" : "offline"), result.online ? "Online" : "Offline"));
+            lore.add(ChatColor.GRAY + plugin.getMessage("gui.balance", "Balance: $%balance%", "balance", String.format(moneyFormat, result.balance)));
+            lore.add(ChatColor.GRAY + plugin.getMessage("gui.actions", "LMB: Manage | RMB: Quick Actions | Shift+LMB: Select"));
+            meta.setLore(lore);
+            head.setItemMeta(meta);
+
+            UUID uuid = UUID.fromString(result.uuid);
+            if (selectedPlayers.contains(uuid)) {
+                head.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
+                meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+                head.setItemMeta(meta);
+            }
+
+            inv.setItem(i - start + 9, head);
+        }
+
+        if (cachedResults.isEmpty()) {
+            ItemStack noPlayers = new ItemStack(Material.BARRIER);
+            ItemMeta noMeta = noPlayers.getItemMeta();
+            noMeta.setDisplayName(ChatColor.RED + plugin.getMessage("gui.no-players", "No players found"));
+            List<String> noLore = new ArrayList<>();
+            noLore.add(ChatColor.GRAY + plugin.getMessage("gui.no-players-hint", "Try changing search or filter"));
+            noMeta.setLore(noLore);
+            noPlayers.setItemMeta(noMeta);
+            inv.setItem(22, noPlayers);
+        }
+    }
     public void openLastGUIMenu(Player player) {
         String lastMenu = lastOpenedMenu.getOrDefault(player.getUniqueId(), "main");
         currentPage = lastPage.getOrDefault(player.getUniqueId(), 0);
-        currentSearch = lastTarget.getOrDefault(player.getUniqueId(), "");
         playersInGUI.add(player.getUniqueId());
         if (lastMenu.equals("main")) {
             openMainGUI(player);
         } else if (lastMenu.equals("finance")) {
-            String targetName = lastTarget.get(player.getUniqueId());
+            String targetName = lastTarget.getOrDefault(player.getUniqueId(), "");
             PlayerResult result = getPlayerResultByName(targetName);
             if (result != null) openPlayerFinanceManagement(player, result);
+            else openMainGUI(player);
         } else if (lastMenu.equals("context")) {
-            openContextMenu(player, lastTarget.get(player.getUniqueId()));
+            String targetName = lastTarget.getOrDefault(player.getUniqueId(), "");
+            if (!targetName.isEmpty()) openContextMenu(player, targetName);
+            else openMainGUI(player);
         } else if (lastMenu.equals("digital")) {
             PlayerResult result = pendingActionTarget.get(player.getUniqueId());
             String action = pendingActionType.get(player.getUniqueId());
             if (result != null && action != null) openDigitalMenu(player, action, result);
+            else openMainGUI(player);
         } else if (lastMenu.equals("history")) {
-            String targetName = lastTarget.get(player.getUniqueId());
+            String targetName = lastTarget.getOrDefault(player.getUniqueId(), "");
             PlayerResult result = getPlayerResultByName(targetName);
             if (result != null) openHistoryMenu(player, result);
+            else openMainGUI(player);
         } else if (lastMenu.equals("mass")) {
             openMassActionsMenu(player);
         }

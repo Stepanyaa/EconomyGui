@@ -3,17 +3,17 @@
  *
  * EconomyGui
  * Copyright (c) 2025 Stepanyaa
-
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
-
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
-
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -23,7 +23,6 @@
  * SOFTWARE.
  */
 package ru.stepanyaa.economyGUI;
-
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -36,23 +35,24 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import net.milkbowl.vault.economy.Economy;
-
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
-
 public class EconomyGUI extends JavaPlugin implements CommandExecutor, TabCompleter {
     private Economy econ = null;
     private FileConfiguration messagesConfig;
+    private FileConfiguration transactionsConfig;
+    private File transactionsFile;
     private String language;
-    private static final String CURRENT_VERSION = "1.0.0";
+    private static final String CURRENT_VERSION = "1.0.1";
     private EconomySearchGUI economySearchGUI;
     private final Set<String> adminUUIDs = ConcurrentHashMap.newKeySet();
-
+    public int transactionRetentionDays;
     @Override
     public void onEnable() {
         if (!setupEconomy()) {
@@ -60,32 +60,26 @@ public class EconomyGUI extends JavaPlugin implements CommandExecutor, TabComple
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
-
         saveDefaultConfig();
         reloadConfig();
         language = getConfig().getString("language", "en");
-
-        // Load feature toggles
+        transactionRetentionDays = getConfig().getInt("features.transaction-retention-days", 30);
         playerSelectionEnabled = getConfig().getBoolean("features.player-selection", true);
         massOperationsEnabled = getConfig().getBoolean("features.mass-operations", true);
         quickActionsEnabled = getConfig().getBoolean("features.quick-actions", true);
         fullManagementEnabled = getConfig().getBoolean("features.full-management", true);
-
+        economySearchGUI = new EconomySearchGUI(this);
+        getServer().getPluginManager().registerEvents(economySearchGUI, this);
         loadMessages();
         if (messagesConfig == null) {
             getLogger().severe("Failed to load messages configuration. Disabling plugin.");
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
-
-        // Warn if all features are disabled, but don't disable the plugin
+        loadTransactions();
         if (!playerSelectionEnabled && !massOperationsEnabled && !quickActionsEnabled && !fullManagementEnabled) {
             getLogger().warning(getMessage("error.all-features-disabled", "All features are disabled in config! Commands will be limited."));
         }
-
-        economySearchGUI = new EconomySearchGUI(this);
-        getServer().getPluginManager().registerEvents(economySearchGUI, this);
-
         PluginCommand command = getCommand("economygui");
         if (command != null) {
             command.setExecutor(this);
@@ -94,12 +88,16 @@ public class EconomyGUI extends JavaPlugin implements CommandExecutor, TabComple
         } else {
             getLogger().warning("Failed to register command 'economygui'!");
         }
-
         adminUUIDs.addAll(getConfig().getStringList("admin-uuids"));
-
         getLogger().info(getMessage("warning.plugin-enabled", "EconomyGUI enabled with language: %lang%", "lang", language));
     }
-
+    @Override
+    public void onDisable() {
+        if (economySearchGUI != null) {
+            saveTransactions();
+        }
+        getLogger().info("EconomyGUI disabled.");
+    }
     private boolean setupEconomy() {
         if (getServer().getPluginManager().getPlugin("Vault") == null) {
             return false;
@@ -111,18 +109,14 @@ public class EconomyGUI extends JavaPlugin implements CommandExecutor, TabComple
         econ = rsp.getProvider();
         return econ != null;
     }
-
     public Economy getEconomy() {
         return econ;
     }
-
     private void loadMessages() {
-        // Validate language, default to 'en' if invalid
         String lang = language != null && (language.equals("en") || language.equals("ru")) ? language : "en";
         File messagesFile = new File(getDataFolder(), "messages_" + lang + ".yml");
         try {
             if (!messagesFile.exists()) {
-                // Ensure resource exists in JAR
                 if (getResource("messages_" + lang + ".yml") == null) {
                     getLogger().severe("Resource messages_" + lang + ".yml not found in JAR!");
                     messagesConfig = new YamlConfiguration();
@@ -142,7 +136,27 @@ public class EconomyGUI extends JavaPlugin implements CommandExecutor, TabComple
             messagesConfig = new YamlConfiguration();
         }
     }
-
+    private void loadTransactions() {
+        transactionsFile = new File(getDataFolder(), "transactions/transactions.yml");
+        if (!transactionsFile.exists()) {
+            try {
+                transactionsFile.createNewFile();
+                getLogger().info("Created transactions file: transactions.yml");
+            } catch (IOException e) {
+                getLogger().severe("Failed to create transactions.yml: " + e.getMessage());
+            }
+        }
+        transactionsConfig = YamlConfiguration.loadConfiguration(transactionsFile);
+        economySearchGUI.loadTransactionHistory(transactionsConfig);
+    }
+    public void saveTransactions() {
+        economySearchGUI.saveTransactionHistory(transactionsConfig);
+        try {
+            transactionsConfig.save(transactionsFile);
+        } catch (IOException e) {
+            getLogger().severe("Failed to save transactions.yml: " + e.getMessage());
+        }
+    }
     public String getMessage(String key) {
         if (messagesConfig == null) {
             return ChatColor.translateAlternateColorCodes('&', key);
@@ -150,7 +164,6 @@ public class EconomyGUI extends JavaPlugin implements CommandExecutor, TabComple
         String msg = messagesConfig.getString(key, key);
         return ChatColor.translateAlternateColorCodes('&', msg);
     }
-
     public String getMessage(String key, String def) {
         if (messagesConfig == null) {
             return ChatColor.translateAlternateColorCodes('&', def);
@@ -158,7 +171,6 @@ public class EconomyGUI extends JavaPlugin implements CommandExecutor, TabComple
         String msg = messagesConfig.getString(key, def);
         return ChatColor.translateAlternateColorCodes('&', msg);
     }
-
     public String getMessage(String key, String def, Object... placeholders) {
         String msg = getMessage(key, def);
         if (placeholders != null && placeholders.length >= 2 && placeholders.length % 2 == 0) {
@@ -170,7 +182,6 @@ public class EconomyGUI extends JavaPlugin implements CommandExecutor, TabComple
         }
         return ChatColor.translateAlternateColorCodes('&', msg);
     }
-
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
@@ -182,7 +193,6 @@ public class EconomyGUI extends JavaPlugin implements CommandExecutor, TabComple
             player.sendMessage(ChatColor.RED + getMessage("error.no-permission", "You don't have permission!"));
             return true;
         }
-
         if (args.length == 0 || args[0].equalsIgnoreCase("gui")) {
             if (args.length > 1) {
                 player.sendMessage(ChatColor.RED + getMessage("command.usage-gui", "Usage: /economygui gui"));
@@ -216,7 +226,6 @@ public class EconomyGUI extends JavaPlugin implements CommandExecutor, TabComple
         player.sendMessage(ChatColor.RED + getMessage("command.usage", "Usage: /economygui <gui | reload | reset>"));
         return true;
     }
-
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) {
@@ -226,11 +235,11 @@ public class EconomyGUI extends JavaPlugin implements CommandExecutor, TabComple
         }
         return Collections.emptyList();
     }
-
     public void reloadPlugin(Player player) {
         reloadConfig();
         language = getConfig().getString("language", "en");
         loadMessages();
+        loadTransactions();
         playerSelectionEnabled = getConfig().getBoolean("features.player-selection", true);
         massOperationsEnabled = getConfig().getBoolean("features.mass-operations", true);
         quickActionsEnabled = getConfig().getBoolean("features.quick-actions", true);
@@ -238,24 +247,19 @@ public class EconomyGUI extends JavaPlugin implements CommandExecutor, TabComple
         economySearchGUI.refreshOpenGUIs();
         player.sendMessage(ChatColor.GREEN + getMessage("action.config-reloaded", "Configuration reloaded."));
     }
-
     private boolean playerSelectionEnabled;
     private boolean massOperationsEnabled;
     private boolean quickActionsEnabled;
     private boolean fullManagementEnabled;
-
     public boolean isPlayerSelectionEnabled() {
         return playerSelectionEnabled;
     }
-
     public boolean isMassOperationsEnabled() {
         return massOperationsEnabled;
     }
-
     public boolean isQuickActionsEnabled() {
         return quickActionsEnabled;
     }
-
     public boolean isFullManagementEnabled() {
         return fullManagementEnabled;
     }
