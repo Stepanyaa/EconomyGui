@@ -6,16 +6,16 @@ Tired of cumbersome economy commands? EconomyGUI provides server admins with a m
 
 ---
 
- **🚨 REQUIRED: YOU MUST INSTALL [Vault](https://www.spigotmc.org/resources/vault.34315/) AND [EssentialsX](https://essentialsx.net/downloads.html) FOR THIS PLUGIN TO WORK! 🚨**
+## **🚨 REQUIRED: YOU MUST INSTALL [Vault](https://www.spigotmc.org/resources/vault.34315/) AND [EssentialsX](https://essentialsx.net/downloads.html) FOR THIS PLUGIN TO WORK! 🚨**
 
 ---
 
  **✅ Supported Platforms & Versions**
 *   **Tested and working on:**
 
-    ![Paper](https://img.shields.io/badge/Paper-1.16.1%E2%80%931.21.8-success&logo=minecraft)     
-    ![Spigot](https://img.shields.io/badge/Spigot-1.16.1%E2%80%931.21.8-success&logo=minecraft)   
-    ![Purpur](https://img.shields.io/badge/Purpur-1.16.1%E2%80%931.21.8-success&logo=minecraft)
+    ![Paper](https://img.shields.io/badge/Paper-1.16.1%E2%80%931.21.10-success&logo=minecraft)     
+    ![Spigot](https://img.shields.io/badge/Spigot-1.16.1%E2%80%931.21.10-success&logo=minecraft)   
+    ![Purpur](https://img.shields.io/badge/Purpur-1.16.1%E2%80%931.21.10-success&logo=minecraft)
 *   **Folia Not Supported!** ❌
 
 ## 📌 Links
@@ -83,9 +83,9 @@ Found a bug 🐛 or have a great idea? Please let us know on our Discord server!
  **✅ Поддерживаемые платформы и версии**
 *   **Протестировано и работает на:**
 
-    ![Paper](https://img.shields.io/badge/Paper-1.16.1%E2%80%931.21.8-success&logo=minecraft)     
-    ![Spigot](https://img.shields.io/badge/Spigot-1.16.1%E2%80%931.21.8-success&logo=minecraft)   
-    ![Purpur](https://img.shields.io/badge/Purpur-1.16.1%E2%80%931.21.8-success&logo=minecraft)
+    ![Paper](https://img.shields.io/badge/Paper-1.16.1%E2%80%931.21.10-success&logo=minecraft)     
+    ![Spigot](https://img.shields.io/badge/Spigot-1.16.1%E2%80%931.21.10-success&logo=minecraft)   
+    ![Purpur](https://img.shields.io/badge/Purpur-1.16.1%E2%80%931.21.10-success&logo=minecraft)
 *   **Не поддерживает Folia!** ❌
 
 ## 📌 Links
