@@ -1,0 +1,72 @@
+name: Bug Report
+description: EconomyGUI plugin does not work as expected.
+labels: ["Type: Bug", "Needs Review"]
+body:
+  - type: input
+    id: server-version
+    attributes:
+      label: Server version
+      description: Version and type of used server software where EconomyGUI is installed.
+      placeholder: Paper 1.20.1
+    validations:
+      required: true
+
+  - type: input
+    id: pm-version
+    attributes:
+      label: EconomyGUI version
+      description: Full version in numbers, "latest" is not a version.
+      placeholder: 1.0.0
+    validations:
+      required: true
+
+  - type: textarea
+    id: plugin-list
+    attributes:
+      label: Plugin list
+      description: Full list of plugins (output of /plugins)
+      render: shell
+      placeholder: |
+        LuckPerms, Vault, EssentialsX, ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: bug-description
+    attributes:
+      label: Describe the bug
+      description: How the plugin behaves incorrectly.
+      render: md
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected behavior
+      description: How the plugin is supposed to behave instead with your configuration.
+      render: md
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional-info
+    attributes:
+      label: Additional info
+      description: Anything else you want to provide that will help in resolving the issue faster, such as screenshots, videos, or error logs (use Pastebin/Gist for logs).
+      render: md
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      description: Please confirm the following to help us resolve your issue faster.
+      options:
+        - label: I am running the latest version of EconomyGUI
+          required: true
+        - label: I have searched existing issues to make sure this is not a duplicate
+          required: true
+        - label: I am willing to cooperate to resolve this issue, including providing additional information or testing fixes
+          required: true
