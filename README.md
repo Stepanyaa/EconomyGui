@@ -19,7 +19,7 @@ Tired of cumbersome economy commands? EconomyGUI provides server admins with a m
 *   **Folia Not Supported!** ❌
 
 ## 📌 Links
-[![Discord](https://img.shields.io/badge/Discord-Join-blue?logo=discord&logoColor=white)](https://discord.gg/72mzBTckKC)
+[![Discord](https://img.shields.io/badge/Discord-Join-blue?logo=discord&logoColor=white)](https://discord.gg/aE6HydKgqg)
 [![YouTube](https://img.shields.io/badge/YouTube-Subscribe-red?logo=youtube&logoColor=white)](https://www.youtube.com/@Stepanyaa)
 [![GitHub](https://img.shields.io/badge/GitHub-Repo-yellow?logo=github&logoColor=white)](https://github.com/Stepanyaa/EconomyGui)
 [![Modrinth](https://img.shields.io/badge/Modrinth-Download-1bd96a?logo=modrinth&logoColor=white)](https://modrinth.com/project/economygui)
@@ -61,7 +61,7 @@ Found a bug 🐛 or have a great idea? Please let us know on our Discord server!
 
 **Want to help with translation?** Join the `#translation` channel on our Discord!
 
-**Discord:** https://discord.gg/72mzBTckKC
+**Discord:** https://discord.gg/aE6HydKgqg
 **License:** MIT
 
 ---
@@ -89,7 +89,7 @@ Found a bug 🐛 or have a great idea? Please let us know on our Discord server!
 *   **Не поддерживает Folia!** ❌
 
 ## 📌 Links
-[![Discord](https://img.shields.io/badge/Discord-Join-blue?logo=discord&logoColor=white)](https://discord.gg/72mzBTckKC)
+[![Discord](https://img.shields.io/badge/Discord-Join-blue?logo=discord&logoColor=white)](https://discord.gg/aE6HydKgqg)
 [![YouTube](https://img.shields.io/badge/YouTube-Subscribe-red?logo=youtube&logoColor=white)](https://www.youtube.com/@Stepanyaa)
 [![GitHub](https://img.shields.io/badge/GitHub-Repo-yellow?logo=github&logoColor=white)](https://github.com/Stepanyaa/EconomyGui)
 [![Modrinth](https://img.shields.io/badge/Modrinth-Download-1bd96a?logo=modrinth&logoColor=white)](https://modrinth.com/project/economygui)
@@ -131,5 +131,5 @@ Found a bug 🐛 or have a great idea? Please let us know on our Discord server!
 
 **Хотите помочь с переводом?** Присоединяйтесь к каналу `#translation` в нашем Discord!
 
-**Discord:** https://discord.gg/72mzBTckKC
+**Discord:** https://discord.gg/aE6HydKgqg
 **Лицензия:** MIT
