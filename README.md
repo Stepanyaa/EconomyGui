@@ -133,3 +133,7 @@ Found a bug 🐛 or have a great idea? Please let us know on our Discord server!
 
 **Discord:** https://discord.gg/aE6HydKgqg
 **Лицензия:** MIT
+
+## **bStats**
+
+[![bStats](https://bstats.org/signatures/bukkit/EconomyGUI.svg)](https://bstats.org/plugin/bukkit/EconomyGUI/27776)
