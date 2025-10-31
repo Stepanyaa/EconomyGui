@@ -47,6 +47,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.enchantments.Enchantment;
+import org.bstats.bukkit.Metrics;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -77,7 +78,6 @@ public class EconomySearchGUI implements Listener, InventoryHolder {
     private List<PlayerResult> cachedResults = new ArrayList<>();
     private String moneyFormat;
     private boolean usePlaceholderAPI;
-    private final String[] skinNames = {"Notch", "jeb_", "Dinnerbone", "Herobrine"};
 
     private final Map<UUID, Long> lastPageSwitch = new ConcurrentHashMap<>();
     private static class Transaction {
@@ -299,7 +299,7 @@ public class EconomySearchGUI implements Listener, InventoryHolder {
         currentPage = 0;
         lastPage.put(player.getUniqueId(), 0);
         refreshGUI();
-        player.sendMessage(ChatColor.GREEN + "Применён фильтр: " + newFilter.name());
+        player.sendMessage(ChatColor.GREEN + plugin.getMessage("filter.applied","Filter applied: " + newFilter.name()));
     }
 
     private void openPlayerFinanceManagement(Player player, PlayerResult result) {
@@ -596,7 +596,9 @@ public class EconomySearchGUI implements Listener, InventoryHolder {
         List<PlayerResult> results = new ArrayList<>();
         for (OfflinePlayer player : Bukkit.getOfflinePlayers()) {
             if (player.getName() == null) continue;
-            boolean matchesSearch = currentSearch.isEmpty() || player.getName().toLowerCase().contains(currentSearch.toLowerCase());
+            boolean matchesSearch = currentSearch.isEmpty() ||
+                    player.getName().toLowerCase().contains(currentSearch.toLowerCase()) ||
+                    player.getUniqueId().toString().toLowerCase().contains(currentSearch.toLowerCase());
             boolean matchesFilter = currentFilter == Filter.ALL ||
                     (currentFilter == Filter.ONLINE && player.isOnline()) ||
                     (currentFilter == Filter.OFFLINE && !player.isOnline()) ||
@@ -833,7 +835,7 @@ public class EconomySearchGUI implements Listener, InventoryHolder {
                     resetSearch(player);
                 } else if (event.getClick() == ClickType.LEFT) {
                     player.closeInventory();
-                    TextComponent message = new TextComponent(ChatColor.YELLOW + plugin.getMessage("gui.enter-search", "Enter name to search: "));
+                    TextComponent message = new TextComponent(ChatColor.YELLOW + plugin.getMessage("gui.enter-search", "Enter name or UUID to search: "));
                     TextComponent cancel = new TextComponent(ChatColor.RED + plugin.getMessage("gui.cancel", "[Cancel]"));
                     cancel.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/economygui reset"));
                     message.addExtra(cancel);
@@ -1268,6 +1270,13 @@ public class EconomySearchGUI implements Listener, InventoryHolder {
     }
 
     public void saveTransactionHistory(FileConfiguration config) {
+        cleanOldTransactions();
+        Set<String> currentKeys = new HashSet<>(config.getKeys(false));
+        for (String key : currentKeys) {
+            if (!transactionHistory.containsKey(key)) {
+                config.set(key, null);
+            }
+        }
         for (Map.Entry<String, List<Transaction>> entry : transactionHistory.entrySet()) {
             List<String> rawList = entry.getValue().stream()
                     .map(t -> t.timestamp + ";" + t.action + ";" + t.amount + ";" + t.executor)
@@ -1276,7 +1285,7 @@ public class EconomySearchGUI implements Listener, InventoryHolder {
         }
     }
 
-    private void cleanOldTransactions() {
+    public void cleanOldTransactions() {
         if (plugin.transactionRetentionDays <= 0) return;
         long cutoff = System.currentTimeMillis() - (plugin.transactionRetentionDays * 86400000L);
         for (List<Transaction> list : transactionHistory.values()) {
@@ -1285,43 +1294,6 @@ public class EconomySearchGUI implements Listener, InventoryHolder {
         transactionHistory.entrySet().removeIf(entry -> entry.getValue().isEmpty());
     }
 
-    private void populatePlayerHeads(Inventory inv, int page, String search, Filter filter, Player viewer) {
-        int start = page * 36;
-        int end = Math.min(start + 36, cachedResults.size());
-        for (int i = start; i < end; i++) {
-            PlayerResult result = cachedResults.get(i);
-            ItemStack head = new ItemStack(Material.PLAYER_HEAD);
-            SkullMeta meta = (SkullMeta) head.getItemMeta();
-            meta.setOwningPlayer(Bukkit.getOfflinePlayer(UUID.fromString(result.uuid)));
-            meta.setDisplayName(ChatColor.YELLOW + result.name);
-            List<String> lore = new ArrayList<>();
-            lore.add(ChatColor.GRAY + plugin.getMessage("status." + (result.online ? "online" : "offline"), result.online ? "Online" : "Offline"));
-            lore.add(ChatColor.GRAY + plugin.getMessage("gui.balance", "Balance: $%balance%", "balance", String.format(moneyFormat, result.balance)));
-            lore.add(ChatColor.GRAY + plugin.getMessage("gui.actions", "LMB: Manage | RMB: Quick Actions | Shift+LMB: Select"));
-            meta.setLore(lore);
-            head.setItemMeta(meta);
-
-            UUID uuid = UUID.fromString(result.uuid);
-            if (selectedPlayers.contains(uuid)) {
-                head.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
-                meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-                head.setItemMeta(meta);
-            }
-
-            inv.setItem(i - start + 9, head);
-        }
-
-        if (cachedResults.isEmpty()) {
-            ItemStack noPlayers = new ItemStack(Material.BARRIER);
-            ItemMeta noMeta = noPlayers.getItemMeta();
-            noMeta.setDisplayName(ChatColor.RED + plugin.getMessage("gui.no-players", "No players found"));
-            List<String> noLore = new ArrayList<>();
-            noLore.add(ChatColor.GRAY + plugin.getMessage("gui.no-players-hint", "Try changing search or filter"));
-            noMeta.setLore(noLore);
-            noPlayers.setItemMeta(noMeta);
-            inv.setItem(22, noPlayers);
-        }
-    }
     public void openLastGUIMenu(Player player) {
         String lastMenu = lastOpenedMenu.getOrDefault(player.getUniqueId(), "main");
         currentPage = lastPage.getOrDefault(player.getUniqueId(), 0);

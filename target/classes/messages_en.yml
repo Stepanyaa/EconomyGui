@@ -1,8 +1,9 @@
+# messages_en.yml
 gui:
   title: "Economy Management"
   search: "Search: %search_query%"
   search-all: "all"
-  search-hint: "LMB: Enter query | RMB: Reset search"
+  search-hint: "LMB: Enter query | RMB: Reset search | Shift+Left: Select/Deselect"
   close: "Close"
   previous-page: "Previous Page"
   next-page: "Next Page"
@@ -15,12 +16,13 @@ gui:
   quick-actions: "Quick Actions"
   full-management: "Full Management"
   balance: "Balance: $%balance%"
-  actions: "LMB: Manage | RMB: Quick Actions | Shift+LMB: Select"
-  actions-lmb: "LMB: Open Management Menu"
+  actions: "LMB: Manage | RMB: Quick Actions | Shift+Left: Select"
+  actions-lmb: "Left click: Open Management Menu"
   selection-mode: "Selection Mode: %count% selected"
   mass-menu-title: "Mass Operations"
   mass-give: "Give Amount to All Selected"
   mass-take: "Take Amount from All Selected"
+  mass-set: "Set Balance for All Selected"
   cancel-selection: "Cancel Selection"
   confirm-selection: "Confirm & Proceed"
   enter-amount: "Enter amount in chat:"
@@ -38,7 +40,7 @@ gui:
   history: "Operations History"
   click-to-view: "Click to view history"
   back: "Back"
-  click-to-return: "Return to %menu_name%"
+  click-to-return: "Return to Main Menu"
   digital-menu: "%action% Menu: %player%"
   custom-value: "Custom Value"
   click-to-confirm: "Click to confirm %amount%"
@@ -54,6 +56,15 @@ gui:
   set-hint: "Click to enter amount in chat"
   back-hint: "Return to main menu"
   mass-give-hint: "Click to enter amount for all"
+  mass-take-hint: "Click to enter amount for all"
+  mass-set-hint: "Click to enter amount for all"
+  enter-amount-hint: "Left click to enter amount in chat"
+  current-amount: "Current amount: $%amount%"
+  add-amount-hint: "Click to add %amount% to total"
+  confirm-hint: "Execute: %action% $%amount%"
+  back-hint-finance: "Return to finance menu"
+  enter-search: "Enter name or UUID to search: "
+
 error:
   invalid-amount: "Amount must be positive."
   invalid-amount-format: "Invalid amount format."
@@ -65,10 +76,13 @@ error:
   insufficient-funds: "Insufficient funds for %player%."
   action-failed: "Action failed."
   player-only: "This command is for players only!"
+  player-not-found: "Player not found."
+  negative-amount: "Amount cannot be negative."
 command:
   usage: "Usage: /economygui <gui | reload | reset>"
   usage-gui: "Usage: /economygui gui"
   usage-reload: "Usage: /economygui reload"
+
 action:
   config-reloaded: "Configuration reloaded."
   search-reset: "Search and filters reset."
@@ -85,6 +99,7 @@ action:
   give: "Give Amount"
   take: "Take Amount"
   set: "Set Amount"
+
 messages:
   enter-search: "Enter search query (or 'cancel' to abort):"
   input-cancelled: "Input cancelled."
@@ -93,8 +108,15 @@ messages:
   all-selected: "All players on this page selected."
   mass-action-applied: "Applied %action% on $%amount% to %count% players"
   enter-amount: "Enter amount for %action% (or 'cancel' to abort):"
+  action-cancelled: "Action cancelled."
+  gave-amount: "Gave $%amount% to %player%"
+  set-amount: "Set balance to $%amount% for %player%"
+  no-permission-give: "You don't have permission to give."
+  search-reset: "Search and filters reset."
+
 update:
-  available: "A new version of EconomyGUI (%version%) is available at https://modrinth.com/plugin/economygui/versions"
+  available: "*** UPDATE AVAILABLE *** A new version of EconomyGUI (%version%) is available at https://modrinth.com/plugin/economygui/versions"
+
 warning:
   max-inactivity-too-high: "Warning: max-inactivity-days (%days%) is set too high! Recommended maximum is 365 days."
   messages-file-up-to-date: "Messages file %file% is up-to-date (version %version%)."
@@ -107,25 +129,31 @@ warning:
   config-file-create: "Created config file: config.yml"
   plugin-enabled: "EconomyGUI enabled with language: %lang%"
   no-economy: "Economy provider not found! Disabling plugin."
+
 status:
   online: "Online"
   offline: "Offline"
   balance: "$%amount%"
+
 time:
   seconds-ago: "seconds ago"
   minutes-ago: "minutes ago"
   hours-ago: "hours ago"
   days-ago: "days ago"
+
 filter:
-  all: "All"
-  online: "Online"
-  offline: "Offline"
+  all: "All Players"
+  online: "Online Players"
+  offline: "Offline Players"
   selected: "Selected"
   filter-hint: "Click to apply filter"
   filter-active: "✓ Active filter"
+  applied: "Filter applied: "
+
 history:
   operations: "Operations History"
   hint: "Click to view logs"
+
 context-menu:
   title: "Quick Actions for %player%"
   back: "Back to Main Menu"

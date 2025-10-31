@@ -1,3 +1,4 @@
+# messages_ru.yml
 gui:
   title: "Управление Экономикой"
   search: "Поиск: %search_query%"
@@ -21,6 +22,7 @@ gui:
   mass-menu-title: "Массовые Операции"
   mass-give: "Выдать Сумму Всем Выбранным"
   mass-take: "Забрать Сумму у Всех Выбранных"
+  mass-set: "Установить Сумму у Всех Выбранных"
   cancel-selection: "Отменить Выбор"
   confirm-selection: "Подтвердить и Продолжить"
   enter-amount: "Введите сумму в чат:"
@@ -38,7 +40,7 @@ gui:
   history: "История Операций"
   click-to-view: "Нажмите, чтобы просмотреть историю"
   back: "Назад"
-  click-to-return: "Вернуться в %menu_name%"
+  click-to-return: "Вернуться в Главное меню"
   digital-menu: "%action% Меню: %player%"
   custom-value: "Пользовательское Значение"
   click-to-confirm: "Нажмите, чтобы подтвердить %amount%"
@@ -54,6 +56,15 @@ gui:
   set-hint: "Нажмите, чтобы ввести сумму в чат"
   back-hint: "Вернуться в главное меню"
   mass-give-hint: "Нажмите, чтобы ввести сумму для всех"
+  mass-take-hint: "Нажмите, чтобы ввести сумму для всех"
+  mass-set-hint: "Нажмите, чтобы ввести сумму для всех"
+  enter-amount-hint: "ЛКМ для ввода суммы в чат"
+  current-amount: "Текущая сумма: $%amount%"
+  add-amount-hint: "Нажмите, чтобы добавить %amount% к общей сумме"
+  confirm-hint: "Выполнить: %action% $%amount%"
+  back-hint-finance: "Вернуться в меню управления финансами"
+  enter-search: "Введите имя или UUID для поиска: "
+
 error:
   invalid-amount: "Сумма должна быть положительной."
   invalid-amount-format: "Неверный формат суммы."
@@ -65,10 +76,14 @@ error:
   insufficient-funds: "Недостаточно средств для %player%."
   action-failed: "Действие не удалось."
   player-only: "Эта команда только для игроков!"
+  player-not-found: "Игрок не найден."
+  negative-amount: "Сумма не может быть отрицательной."
+
 command:
   usage: "Использование: /economygui <gui | reload | reset>"
   usage-gui: "Использование: /economygui gui"
   usage-reload: "Использование: /economygui reload"
+
 action:
   config-reloaded: "Конфигурация перезагружена."
   search-reset: "Поиск и фильтры сброшены."
@@ -85,6 +100,7 @@ action:
   give: "Выдать сумму"
   take: "Взять сумму"
   set: "Установить сумму"
+
 messages:
   enter-search: "Введите запрос для поиска (или 'отмена' для отмены):"
   input-cancelled: "Ввод отменён."
@@ -93,8 +109,15 @@ messages:
   all-selected: "Все игроки на этой странице выбраны."
   mass-action-applied: "Применено %action% на $%amount% для %count% игроков"
   enter-amount: "Введите сумму для %action% (или 'отмена' для отмены):"
+  action-cancelled: "Действие отменено."
+  gave-amount: "Выдано $%amount% игроку %player%"
+  set-amount: "Установлен баланс $%amount% для игрока %player%"
+  no-permission-give: "У вас нет разрешения на выдачу."
+  search-reset: "Поиск и фильтры сброшены."
+
 update:
-  available: "Доступна новая версия EconomyGUI (%version%) на https://modrinth.com/plugin/economygui/versions"
+  available: "*** ОБНОВЛЕНИЕ ДОСТУПНО *** Доступна новая версия EconomyGUI (%version%) на https://modrinth.com/plugin/economygui/versions"
+
 warning:
   max-inactivity-too-high: "Предупреждение: max-inactivity-days (%days%) установлен слишком высоко! Рекомендуемый максимум - 365 дней."
   messages-file-up-to-date: "Файл сообщений %file% актуален (версия %version%)."
@@ -107,25 +130,31 @@ warning:
   config-file-create: "Создан файл конфигурации: config.yml"
   plugin-enabled: "EconomyGUI включён с языком: %lang%"
   no-economy: "Провайдер экономики не найден! Отключение плагина."
+
 status:
   online: "Онлайн"
   offline: "Оффлайн"
   balance: "$%amount%"
+
 time:
   seconds-ago: "секунд назад"
   minutes-ago: "минут назад"
   hours-ago: "часов назад"
   days-ago: "дней назад"
+
 filter:
-  all: "Все"
-  online: "Онлайн"
-  offline: "Оффлайн"
+  all: "Все Игроки"
+  online: "Онлайн Игроки"
+  offline: "Оффлайн Игроки"
   selected: "Выбранные"
   filter-hint: "Нажмите, чтобы применить фильтр"
   filter-active: "✓ Активный фильтр"
+  applied: "Применён фильтр: "
+
 history:
   operations: "История Операций"
   hint: "Нажмите, чтобы просмотреть логи"
+
 context-menu:
   title: "Быстрые Действия для %player%"
   back: "Назад в Главное Меню"
