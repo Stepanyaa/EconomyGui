@@ -47,15 +47,13 @@ import java.util.stream.Collectors;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
-import org.bstats.bukkit.Metrics;
-
 public class EconomyGUI extends JavaPlugin implements CommandExecutor, TabCompleter {
     private Economy econ = null;
     private FileConfiguration messagesConfig;
     private FileConfiguration transactionsConfig;
     private File transactionsFile;
     private String language;
-    private static final String CURRENT_VERSION = "1.0.2";
+    private static final String CURRENT_VERSION = "1.0.3";
     private EconomySearchGUI economySearchGUI;
     private final Set<String> adminUUIDs = ConcurrentHashMap.newKeySet();
     private String latestVersion = null;
@@ -107,9 +105,6 @@ public class EconomyGUI extends JavaPlugin implements CommandExecutor, TabComple
         getLogger().info(getMessage("warning.plugin-enabled", "EconomyGUI enabled with language: %lang%", "lang", language));
         checkForUpdates();
         this.isFirstEnable = false;
-        int pluginId = 27776; // <-- Replace with the id of your plugin!
-        Metrics metrics = new Metrics(this, pluginId);
-
     }
     @Override
     public void onDisable() {
@@ -282,7 +277,6 @@ public class EconomyGUI extends JavaPlugin implements CommandExecutor, TabComple
         quickActionsEnabled = getConfig().getBoolean("features.quick-actions", true);
         fullManagementEnabled = getConfig().getBoolean("features.full-management", true);
         economySearchGUI.refreshOpenGUIs();
-        economySearchGUI.cleanOldTransactions();
         player.sendMessage(ChatColor.GREEN + getMessage("action.config-reloaded", "Configuration reloaded."));
     }
     private void checkForUpdates() {

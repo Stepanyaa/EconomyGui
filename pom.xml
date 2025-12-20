@@ -6,7 +6,7 @@
 
     <groupId>ru.stepanyaa</groupId>
     <artifactId>EconomyGUI</artifactId>
-    <version>v1.0.2</version>
+    <version>v1.0.3</version>
     <packaging>jar</packaging>
 
     <name>EconomyGUI</name>
@@ -49,6 +49,14 @@
         <repository>
             <id>sonatype-oss</id>
             <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+        </repository>
+        <repository>
+            <id>elmakers</id>
+            <url>https://maven.elmakers.com/repository/</url>
+        </repository>
+        <repository>
+            <id>phoenix616</id>
+            <url>https://repo.phoenix616.dev/</url>
         </repository>
     </repositories>
 

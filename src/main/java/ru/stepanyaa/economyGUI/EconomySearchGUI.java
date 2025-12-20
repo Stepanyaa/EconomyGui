@@ -47,7 +47,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.enchantments.Enchantment;
-import org.bstats.bukkit.Metrics;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -131,9 +130,9 @@ public class EconomySearchGUI implements Listener, InventoryHolder {
         searchItem.setItemMeta(searchMeta);
         inventory.setItem(4, searchItem);
 
-        inventory.setItem(49, createFilterItem(Filter.ALL));
-        inventory.setItem(50, createFilterItem(Filter.ONLINE));
-        inventory.setItem(51, createFilterItem(Filter.OFFLINE));
+        inventory.setItem(49, createCurrentFilterItem());
+        inventory.setItem(50, createGlobalStatsButton());
+
 
         if (plugin.isMassOperationsEnabled()) {
             ItemStack massItem = new ItemStack(Material.DIAMOND_BLOCK);
@@ -219,52 +218,96 @@ public class EconomySearchGUI implements Listener, InventoryHolder {
             inventory.setItem(22, noPlayers);
         }
     }
+    private ItemStack createGlobalStatsButton() {
+        ItemStack item = new ItemStack(Material.BOOK);
+        ItemMeta meta = item.getItemMeta();
+        meta.setDisplayName(ChatColor.LIGHT_PURPLE + plugin.getMessage("gui.global-stats", "Global Economy Stats"));
 
-    private ItemStack createFilterItem(Filter filter) {
+        List<String> lore = new ArrayList<>();
+        lore.add(ChatColor.GRAY + plugin.getMessage("gui.click-to-view", "Click to view server economy overview"));
+        lore.add("");
+        lore.add(ChatColor.GRAY + plugin.getMessage("gui.global-stats-lore","(Total balance, average, top players...)"));
+        meta.setLore(lore);
+
+        item.setItemMeta(meta);
+        return item;
+    }
+    private ItemStack createCurrentFilterItem() {
         Material mat;
-        switch (filter) {
+        String nameKey;
+        ChatColor displayColor;
+
+        switch (currentFilter) {
             case ALL:
                 mat = Material.COMPASS;
+                nameKey = "filter.all";
+                displayColor = ChatColor.WHITE;
                 break;
             case ONLINE:
                 mat = Material.LIME_DYE;
+                nameKey = "filter.online";
+                displayColor = ChatColor.GREEN;
                 break;
             case OFFLINE:
                 mat = Material.GRAY_DYE;
+                nameKey = "filter.offline";
+                displayColor = ChatColor.GRAY;
                 break;
             default:
                 mat = Material.PAPER;
+                nameKey = "filter.all";
+                displayColor = ChatColor.GRAY;
         }
+
+        String displayName = displayColor + plugin.getMessage(nameKey, nameKey);
+
         ItemStack item = new ItemStack(mat);
         ItemMeta meta = item.getItemMeta();
-        String displayName;
-        switch (filter) {
-            case ALL:
-                displayName = ChatColor.WHITE + plugin.getMessage("filter.all", "All Players");
-                break;
-            case ONLINE:
-                displayName = ChatColor.GREEN + plugin.getMessage("filter.online", "Online Players");
-                break;
-            case OFFLINE:
-                displayName = ChatColor.GRAY + plugin.getMessage("filter.offline", "Offline Players");
-                break;
-            default:
-                displayName = ChatColor.GRAY + "Unknown";
-                break;
-        }
         meta.setDisplayName(displayName);
+
         List<String> lore = new ArrayList<>();
-        lore.add(ChatColor.GRAY + plugin.getMessage("filter.filter-hint", "Click to apply filter"));
-        if (currentFilter == filter) {
-            lore.add(ChatColor.GREEN + plugin.getMessage("filter.filter-active", "✓ Active filter"));
-            meta.addEnchant(getGlowEnchantment(), 1, true);
-            meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-        }
+
+        lore.add(ChatColor.GRAY + plugin.getMessage("filter.filter-current","Current filter:"));
+        lore.add("");
+        lore.add(createFilterLine(Filter.ALL, currentFilter));
+        lore.add(createFilterLine(Filter.ONLINE, currentFilter));
+        lore.add(createFilterLine(Filter.OFFLINE, currentFilter));
+
+        lore.add("");
+        lore.add(ChatColor.GRAY + plugin.getMessage("gui.click-cycle", "LMB → Next"));
+        lore.add(ChatColor.GRAY + plugin.getMessage("gui.right-click-cycle", "Right-click → Previous"));
+
         meta.setLore(lore);
         item.setItemMeta(meta);
         return item;
     }
+    private String createFilterLine(Filter filter, Filter current) {
+        String name;
+        ChatColor color = ChatColor.GRAY;
 
+        switch (filter) {
+            case ALL:
+                name = plugin.getMessage("filter.all", "Все игроки");
+                color = ChatColor.WHITE;
+                break;
+            case ONLINE:
+                name = plugin.getMessage("filter.online", "Онлайн");
+                color = ChatColor.GREEN;
+                break;
+            case OFFLINE:
+                name = plugin.getMessage("filter.offline", "Офлайн");
+                color = ChatColor.GRAY;
+                break;
+            default:
+                name = "???";
+        }
+
+        if (filter == current) {
+            return color + "» " + ChatColor.BOLD + name + " «";
+        } else {
+            return "  " + color + name;
+        }
+    }
     private ItemStack createPlayerHead(OfflinePlayer player, int index) {
         ItemStack head = new ItemStack(Material.PLAYER_HEAD);
         SkullMeta meta = (SkullMeta) head.getItemMeta();
@@ -776,8 +819,10 @@ public class EconomySearchGUI implements Listener, InventoryHolder {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        if (!(event.getInventory().getHolder() instanceof EconomySearchGUI)) return;
+        InventoryHolder holder = event.getInventory().getHolder();
+        if (!(holder instanceof EconomySearchGUI || holder instanceof StatsMenuHolder)) return;
         event.setCancelled(true);
+
         Player player = (Player) event.getWhoClicked();
         UUID playerUUID = player.getUniqueId();
         ItemStack clicked = event.getCurrentItem();
@@ -786,6 +831,16 @@ public class EconomySearchGUI implements Listener, InventoryHolder {
         String menu = lastOpenedMenu.getOrDefault(playerUUID, "main");
         String displayName = clicked.getItemMeta() != null ? clicked.getItemMeta().getDisplayName() : "";
         long now = System.currentTimeMillis();
+
+        if (event.getView().getTitle().equals(ChatColor.DARK_PURPLE + plugin.getMessage("gui.stats-title", "Economy Statistics"))) {
+            if (event.getSlot() == 49) {
+                player.closeInventory();
+                openLastGUIMenu(player);
+                player.playSound(player.getLocation(), org.bukkit.Sound.UI_BUTTON_CLICK, 0.8f, 1.0f);
+                return;
+            }
+            return;
+        }
 
         if (menu.equals("main")) {
             int slot = event.getSlot();
@@ -861,12 +916,41 @@ public class EconomySearchGUI implements Listener, InventoryHolder {
                         });
                     });
                 }
-            } else if (slot == 49) {
-                applyFilter(Filter.ALL, player);
-            } else if (slot == 50) {
-                applyFilter(Filter.ONLINE, player);
-            } else if (slot == 51) {
-                applyFilter(Filter.OFFLINE, player);
+            } else if (event.getSlot() == 49) {
+                if (event.getClick() == ClickType.LEFT || event.getClick() == ClickType.SHIFT_LEFT) {
+                    switch (currentFilter) {
+                        case ALL:
+                            currentFilter = Filter.ONLINE;
+                            break;
+                        case ONLINE:
+                            currentFilter = Filter.OFFLINE;
+                            break;
+                        case OFFLINE:
+                            currentFilter = Filter.ALL;
+                            break;
+                    }
+                    refreshGUI();
+                    player.playSound(player.getLocation(), org.bukkit.Sound.UI_BUTTON_CLICK, 0.6f, 1.0f);
+                } else if (event.getClick() == ClickType.RIGHT || event.getClick() == ClickType.SHIFT_RIGHT) {
+                    switch (currentFilter) {
+                        case ALL:
+                            currentFilter = Filter.OFFLINE;
+                            break;
+                        case OFFLINE:
+                            currentFilter = Filter.ONLINE;
+                            break;
+                        case ONLINE:
+                            currentFilter = Filter.ALL;
+                            break;
+                    }
+                    refreshGUI();
+                    player.playSound(player.getLocation(), org.bukkit.Sound.UI_BUTTON_CLICK, 0.6f, 1.0f);
+                }
+            } else if (event.getSlot() == 50) {
+                player.closeInventory();
+                openGlobalStatsMenu(player);
+                player.playSound(player.getLocation(), org.bukkit.Sound.UI_BUTTON_CLICK, 0.8f, 1.0f);
+                return;
             } else if (slot >= 9 && slot <= 44) {
                 String name = ChatColor.stripColor(displayName);
                 PlayerResult result = cachedResults.stream()
@@ -1323,7 +1407,156 @@ public class EconomySearchGUI implements Listener, InventoryHolder {
             openMassActionsMenu(player);
         }
     }
+    private List<PlayerResult> getAllPlayersWithBalances() {
+        List<PlayerResult> results = new ArrayList<>();
+        Economy econ = plugin.getEconomy();
 
+        for (OfflinePlayer offline : Bukkit.getOfflinePlayers()) {
+            if (offline.getName() == null) continue;
+
+            double balance = econ.getBalance(offline);
+            boolean online = offline.isOnline();
+            results.add(new PlayerResult(offline.getUniqueId().toString(), offline.getName(), online, balance));
+        }
+
+        return results;
+    }
+    private class StatsMenuHolder implements InventoryHolder {
+        private final Inventory inventory;
+
+        public StatsMenuHolder(Inventory inventory) {
+            this.inventory = inventory;
+        }
+
+        @Override
+        public Inventory getInventory() {
+            return inventory;
+        }
+    }
+    private void openGlobalStatsMenu(Player player) {
+        player.sendMessage(ChatColor.YELLOW + plugin.getMessage("gui.stats-loading", "Loading economy statistics"));
+
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            List<PlayerResult> allPlayers = getAllPlayersWithBalances();
+
+            if (allPlayers.isEmpty()) {
+                Bukkit.getScheduler().runTask(plugin, () -> {
+                    player.sendMessage(ChatColor.RED + plugin.getMessage("error.no-players", "No players found."));
+                });
+                return;
+            }
+
+            double totalBalance = 0;
+            int playerCount = allPlayers.size();
+            int onlineCount = 0;
+            double onlineBalance = 0;
+            double maxBalance = 0;
+            double minBalance = Double.MAX_VALUE;
+
+            PlayerResult richest = null;
+            PlayerResult poorest = null;
+
+            for (PlayerResult pr : allPlayers) {
+                totalBalance += pr.balance;
+                if (pr.online) {
+                    onlineCount++;
+                    onlineBalance += pr.balance;
+                }
+                if (pr.balance > maxBalance) {
+                    maxBalance = pr.balance;
+                    richest = pr;
+                }
+                if (pr.balance < minBalance) {
+                    minBalance = pr.balance;
+                    poorest = pr;
+                }
+            }
+
+            double average = playerCount > 0 ? totalBalance / playerCount : 0;
+            double averageOnline = onlineCount > 0 ? onlineBalance / onlineCount : 0;
+
+            List<PlayerResult> topRich = allPlayers.stream()
+                    .sorted(Comparator.comparingDouble((PlayerResult p) -> p.balance).reversed())
+                    .limit(5)
+                    .collect(Collectors.toList());
+
+            List<PlayerResult> topPoor = allPlayers.stream()
+                    .sorted(Comparator.comparingDouble((PlayerResult p) -> p.balance))
+                    .limit(5)
+                    .collect(Collectors.toList());
+
+            final int finalPlayerCount = playerCount;
+            final int finalOnlineCount = onlineCount;
+            final double finalTotalBalance = totalBalance;
+            final double finalOnlineBalance = onlineBalance;
+            final double finalAverage = average;
+            final double finalAverageOnline = averageOnline;
+            final PlayerResult finalRichest = richest;
+            final PlayerResult finalPoorest = poorest;
+            final List<PlayerResult> finalTopRich = topRich;
+            final List<PlayerResult> finalTopPoor = topPoor;
+
+            Bukkit.getScheduler().runTask(plugin, () -> {
+                Inventory statsInv = Bukkit.createInventory(new StatsMenuHolder(null), 54, ChatColor.DARK_PURPLE + plugin.getMessage("gui.stats-title", "Economy Statistics"));
+
+                ItemStack info = new ItemStack(Material.BOOK);
+                ItemMeta meta = info.getItemMeta();
+                meta.setDisplayName(ChatColor.YELLOW + plugin.getMessage("gui.stats-overview", "Server Economy Overview"));
+                List<String> lore = new ArrayList<>();
+                lore.add(ChatColor.GRAY + plugin.getMessage("gui.stats-total-players", "Total players: ") + ChatColor.WHITE + finalPlayerCount);
+                lore.add(ChatColor.GRAY + plugin.getMessage("gui.stats-online-players", "Online players: ") + ChatColor.GREEN + finalOnlineCount);
+                lore.add(ChatColor.GRAY + plugin.getMessage("gui.stats-total-balance", "Total balance: ") + ChatColor.GREEN + String.format(moneyFormat, finalTotalBalance));
+                lore.add(ChatColor.GRAY + plugin.getMessage("gui.stats-online-balance", "Online balance: ") + ChatColor.GREEN + String.format(moneyFormat, finalOnlineBalance));
+                lore.add(ChatColor.GRAY + plugin.getMessage("gui.stats-average-balance", "Average balance: ") + ChatColor.GREEN + String.format(moneyFormat, finalAverage));
+                lore.add(ChatColor.GRAY + plugin.getMessage("gui.stats-average-online", "Avg online balance: ") + ChatColor.GREEN + String.format(moneyFormat, finalAverageOnline));
+                lore.add("");
+                lore.add(ChatColor.GRAY + plugin.getMessage("gui.stats-richest", "Richest: ") + ChatColor.GOLD + (finalRichest != null ? finalRichest.name : "—") +
+                        " (" + String.format(moneyFormat, finalRichest != null ? finalRichest.balance : 0) + ")");
+                lore.add(ChatColor.GRAY + plugin.getMessage("gui.stats-poorest", "Poorest: ") + ChatColor.RED + (finalPoorest != null ? finalPoorest.name : "—") +
+                        " (" + String.format(moneyFormat, finalPoorest != null ? finalPoorest.balance : 0) + ")");
+                meta.setLore(lore);
+                info.setItemMeta(meta);
+                statsInv.setItem(11, info);
+
+                ItemStack topRichItem = new ItemStack(Material.DIAMOND);
+                ItemMeta topRichMeta = topRichItem.getItemMeta();
+                topRichMeta.setDisplayName(ChatColor.GOLD + plugin.getMessage("gui.stats-top-rich", "Top 5 Richest"));
+                List<String> richLore = new ArrayList<>();
+                int pos = 1;
+                for (PlayerResult pr : finalTopRich) {
+                    richLore.add(ChatColor.GRAY + String.valueOf(pos) + ". " + ChatColor.WHITE + pr.name + ChatColor.GRAY + " — " + ChatColor.GREEN + String.format(moneyFormat, pr.balance));
+                    pos++;
+                }
+                topRichMeta.setLore(richLore);
+                topRichItem.setItemMeta(topRichMeta);
+                statsInv.setItem(13, topRichItem);
+
+                ItemStack topPoorItem = new ItemStack(Material.IRON_INGOT);
+                ItemMeta topPoorMeta = topPoorItem.getItemMeta();
+                topPoorMeta.setDisplayName(ChatColor.RED + plugin.getMessage("gui.stats-top-poor", "Top 5 Poorest"));
+                List<String> poorLore = new ArrayList<>();
+                pos = 1;
+                for (PlayerResult pr : finalTopPoor) {
+                    poorLore.add(ChatColor.GRAY + String.valueOf(pos) + ". " + ChatColor.WHITE + pr.name + ChatColor.GRAY + " — " + ChatColor.RED + String.format(moneyFormat, pr.balance));
+                    pos++;
+                }
+                topPoorMeta.setLore(poorLore);
+                topPoorItem.setItemMeta(topPoorMeta);
+                statsInv.setItem(15, topPoorItem);
+
+                ItemStack back = new ItemStack(Material.ARROW);
+                ItemMeta backMeta = back.getItemMeta();
+                backMeta.setDisplayName(ChatColor.YELLOW + plugin.getMessage("gui.back", "Back"));
+                List<String> backLore = new ArrayList<>();
+                backLore.add(ChatColor.GRAY + plugin.getMessage("gui.click-to-return", "Return to main menu"));
+                backMeta.setLore(backLore);
+                back.setItemMeta(backMeta);
+                statsInv.setItem(49, back);
+
+                player.openInventory(statsInv);
+            });
+        });
+    }
     public void refreshOpenGUIs() {
         for (UUID uuid : playersInGUI) {
             Player player = Bukkit.getPlayer(uuid);

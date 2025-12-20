@@ -2,6 +2,11 @@
 <project version="4">
   <component name="RemoteRepositoriesConfiguration">
     <remote-repository>
+      <option name="id" value="elmakers" />
+      <option name="name" value="elmakers" />
+      <option name="url" value="https://maven.elmakers.com/repository/" />
+    </remote-repository>
+    <remote-repository>
       <option name="id" value="central" />
       <option name="name" value="Central Repository" />
       <option name="url" value="https://repo.maven.apache.org/maven2" />
@@ -50,6 +55,11 @@
       <option name="id" value="papermc" />
       <option name="name" value="papermc" />
       <option name="url" value="https://repo.papermc.io/repository/maven-public/" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="phoenix616" />
+      <option name="name" value="phoenix616" />
+      <option name="url" value="https://repo.phoenix616.dev/" />
     </remote-repository>
     <remote-repository>
       <option name="id" value="codemc" />

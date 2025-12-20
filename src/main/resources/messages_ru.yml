@@ -10,7 +10,6 @@ gui:
   no-page: "Нет Страницы"
   page-info: "Страница %current_page% из %total_pages%"
   shift-rmb-page: "Shift+ПКМ: Пропустить 5 страниц"
-  filter-active: "✓ Активный Фильтр"
   player-menu-prefix: "Меню Игрока: %player%"
   info: "Информация о Балансе"
   quick-actions: "Быстрые Действия"
@@ -33,7 +32,6 @@ gui:
   mass-hint: "Нажмите для массовой выдачи/забирания/установки (сначала выберите игроков)"
   no-players: "Игроки не найдены"
   no-players-hint: "Попробуйте изменить поиск или фильтр"
-  filter-hint: "Нажмите, чтобы применить фильтр"
   selected: "Выбрано"
   amount-input: "Введите Сумму"
   input-hint: "ЛКМ для ввода суммы в чат"
@@ -64,6 +62,23 @@ gui:
   confirm-hint: "Выполнить: %action% $%amount%"
   back-hint-finance: "Вернуться в меню управления финансами"
   enter-search: "Введите имя или UUID для поиска: "
+  stats-loading: "Загрузка статистики экономики..."
+  stats-title: "Статистика экономики"
+  stats-overview: "Обзор экономики сервера"
+  stats-total-players: "Всего игроков: "
+  stats-online-players: "Игроков онлайн: "
+  stats-total-balance: "Общий баланс: "
+  stats-online-balance: "Баланс онлайн: "
+  stats-average-balance: "Средний баланс: "
+  stats-average-online: "Средний баланс онлайн: "
+  stats-richest: "Самые богатые: "
+  stats-poorest: "Самые бедные: "
+  stats-top-rich: "Топ-5 самых богатых"
+  stats-top-poor: "Топ-5 самых бедных"
+  global-stats: "Статистика мировой экономики"
+  global-stats-lore: "(Общий баланс, средний показатель, лучшие игроки...)"
+  click-cycle: "ЛКМ → Следующий"
+  right-click-cycle: "ПКМ → Предыдущий"
 
 error:
   invalid-amount: "Сумма должна быть положительной."
@@ -117,6 +132,9 @@ messages:
 
 update:
   available: "*** ОБНОВЛЕНИЕ ДОСТУПНО *** Доступна новая версия EconomyGUI (%version%) на https://modrinth.com/plugin/economygui/versions"
+  welcome-admin: "EconomyGUI обновился до %version%!"
+  welcome-features: "Новое: глобальная статистика, переключение фильтров ПКМ"
+  welcome-details: "[Подробнее]"
 
 warning:
   max-inactivity-too-high: "Предупреждение: max-inactivity-days (%days%) установлен слишком высоко! Рекомендуемый максимум - 365 дней."
@@ -147,8 +165,7 @@ filter:
   online: "Онлайн Игроки"
   offline: "Оффлайн Игроки"
   selected: "Выбранные"
-  filter-hint: "Нажмите, чтобы применить фильтр"
-  filter-active: "✓ Активный фильтр"
+  filter-current: "Текущий фильтр:"
   applied: "Применён фильтр: "
 
 history:

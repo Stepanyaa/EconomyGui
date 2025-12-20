@@ -10,7 +10,6 @@ gui:
   no-page: "No Page"
   page-info: "Page %current_page% of %total_pages%"
   shift-rmb-page: "Shift+RMB: Skip 5 pages"
-  filter-active: "✓ Active Filter"
   player-menu-prefix: "Player Menu: %player%"
   info: "Balance Info"
   quick-actions: "Quick Actions"
@@ -33,7 +32,6 @@ gui:
   mass-hint: "Click for mass give/take/set (select players first)"
   no-players: "No players found"
   no-players-hint: "Try changing the search or filter"
-  filter-hint: "Click to apply filter"
   selected: "Selected"
   amount-input: "Enter Amount"
   input-hint: "Left click to enter amount in chat"
@@ -63,7 +61,24 @@ gui:
   add-amount-hint: "Click to add %amount% to total"
   confirm-hint: "Execute: %action% $%amount%"
   back-hint-finance: "Return to finance menu"
-  enter-search: "Enter name or UUID to search: "
+  enter-search: "Enter name to search: "
+  stats-loading: "Loading economy statistics..."
+  stats-title: "Economy Statistics"
+  stats-overview: "Server Economy Overview"
+  stats-total-players: "Total players: "
+  stats-online-players: "Online players: "
+  stats-total-balance: "Total balance: "
+  stats-online-balance: "Online balance: "
+  stats-average-balance: "Average balance: "
+  stats-average-online: "Avg online balance: "
+  stats-richest: "Richest: "
+  stats-poorest: "Poorest: "
+  stats-top-rich: "Top 5 Richest"
+  stats-top-poor: "Top 5 Poorest"
+  global-stats: "Global Economy Stats"
+  global-stats-lore: "(Total balance, average, top players...)"
+  click-cycle: "LMB → Next"
+  right-click-cycle: "Right-click → Previous"
 
 error:
   invalid-amount: "Amount must be positive."
@@ -116,6 +131,9 @@ messages:
 
 update:
   available: "*** UPDATE AVAILABLE *** A new version of EconomyGUI (%version%) is available at https://modrinth.com/plugin/economygui/versions"
+  welcome-admin: "EconomyGUI updated to %version%!"
+  welcome-features: "New: global stats, RMB filter switching"
+  welcome-details: "[Details]"
 
 warning:
   max-inactivity-too-high: "Warning: max-inactivity-days (%days%) is set too high! Recommended maximum is 365 days."
@@ -146,8 +164,7 @@ filter:
   online: "Online Players"
   offline: "Offline Players"
   selected: "Selected"
-  filter-hint: "Click to apply filter"
-  filter-active: "✓ Active filter"
+  filter-current: "Current filter:"
   applied: "Filter applied: "
 
 history:
