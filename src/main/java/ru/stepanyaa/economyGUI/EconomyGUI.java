@@ -2,7 +2,7 @@
  * MIT License
  *
  * EconomyGui
- * Copyright (c) 2025 Stepanyaa
+ * Copyright (c) 2026 Stepanyaa
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,6 +23,7 @@
  * SOFTWARE.
  */
 package ru.stepanyaa.economyGUI;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -33,6 +34,10 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import net.milkbowl.vault.economy.Economy;
@@ -41,6 +46,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -53,7 +59,7 @@ public class EconomyGUI extends JavaPlugin implements CommandExecutor, TabComple
     private FileConfiguration transactionsConfig;
     private File transactionsFile;
     private String language;
-    private static final String CURRENT_VERSION = "1.0.3";
+    private static final String CURRENT_VERSION = "1.0.5";
     private EconomySearchGUI economySearchGUI;
     private final Set<String> adminUUIDs = ConcurrentHashMap.newKeySet();
     private String latestVersion = null;
@@ -105,6 +111,9 @@ public class EconomyGUI extends JavaPlugin implements CommandExecutor, TabComple
         getLogger().info(getMessage("warning.plugin-enabled", "EconomyGUI enabled with language: %lang%", "lang", language));
         checkForUpdates();
         this.isFirstEnable = false;
+        int pluginId = 27776;
+        new Metrics(this, pluginId);
+        economySearchGUI.startBalancePolling();
     }
     @Override
     public void onDisable() {
@@ -144,10 +153,6 @@ public class EconomyGUI extends JavaPlugin implements CommandExecutor, TabComple
             String currentFileVersion = messagesConfig.getString("version", "0.0.0");
             if (!currentFileVersion.equals(CURRENT_VERSION)) {
                 if (getResource(messagesFileName) != null) {
-                    File backupFile = new File(getDataFolder(), messagesFileName + ".backup");
-                    if (messagesFile.renameTo(backupFile)) {
-                        getLogger().info("Backed up old messages file to: " + messagesFileName + ".backup");
-                    }
                     saveResource(messagesFileName, true);
                     messagesConfig = YamlConfiguration.loadConfiguration(messagesFile);
                     messagesConfig.set("version", CURRENT_VERSION);
@@ -164,7 +169,6 @@ public class EconomyGUI extends JavaPlugin implements CommandExecutor, TabComple
             messagesConfig = new YamlConfiguration();
         }
     }
-
     private void loadTransactions() {
         transactionsFile = new File(getDataFolder(), "transactions.yml");
         if (!transactionsFile.exists()) {
@@ -256,6 +260,35 @@ public class EconomyGUI extends JavaPlugin implements CommandExecutor, TabComple
         player.sendMessage(ChatColor.RED + getMessage("command.usage", "Usage: /economygui <gui | reload | reset>"));
         return true;
     }
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onPayCommand(PlayerCommandPreprocessEvent event) {
+        String[] args = event.getMessage().split(" ");
+        if (args.length < 3) return;
+
+        String cmd = args[0].toLowerCase();
+        if (cmd.equals("/pay") || cmd.equals("/epay") || cmd.equals("/money") && args[1].equalsIgnoreCase("pay")) {
+
+            Player sender = event.getPlayer();
+            Player target = Bukkit.getPlayer(args[1]);
+
+            if (target == null) return;
+
+            try {
+                double amount = Double.parseDouble(args[args.length - 1]);
+                if (amount <= 0) return;
+                String toSender = getMessage("history.sent","&cSent &e$") + amount + (ChatColor.RED + getMessage("history.to-player"," &7to the player &f") + target.getName());
+                addTransaction(sender.getUniqueId(), toSender);
+                String toReceiver = getMessage("history.received","&aReceived &e$" + amount + getMessage("history.from-payer"," &7from the player &f") + sender.getName());
+                addTransaction(target.getUniqueId(), toReceiver);
+
+            } catch (NumberFormatException ignored) {}
+        }
+    }
+    public void addTransaction(UUID uuid, String message) {
+        String time = new java.text.SimpleDateFormat("dd.MM HH:mm").format(new java.util.Date());
+        String fullEntry = "§8[" + time + "] " + message;
+
+    }
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) {
@@ -339,6 +372,7 @@ public class EconomyGUI extends JavaPlugin implements CommandExecutor, TabComple
         if (!configFile.exists()) {
             saveResource("config.yml", false);
             getLogger().info(getMessage("warning.config-file-create", "Created config file: config.yml"));
+            return;
         }
         YamlConfiguration existingConfig = YamlConfiguration.loadConfiguration(configFile);
         String currentFileVersion = existingConfig.getString("config-version", "0.0.0");
@@ -349,22 +383,35 @@ public class EconomyGUI extends JavaPlugin implements CommandExecutor, TabComple
             }
             return;
         }
-        if (getResource("config.yml") != null) {
-            try {
-                saveResource("config.yml", true);
-                getLogger().info(getMessage("warning.config-file-updated", "Updated config.yml to version %version%.")
-                        .replace("%version%", CURRENT_VERSION));
-                YamlConfiguration newConfig = YamlConfiguration.loadConfiguration(configFile);
-                newConfig.set("config-version", CURRENT_VERSION);
-                newConfig.save(configFile);
-            } catch (Exception e) {
-                getLogger().warning("Failed to update config.yml: " + e.getMessage());
-            }
-        } else {
+        if (getResource("config.yml") == null) {
             getLogger().warning(getMessage("warning.config-file-not-found", "Resource config.yml not found in plugin!"));
+            return;
+        }
+        YamlConfiguration defaultConfig = YamlConfiguration.loadConfiguration(
+                new InputStreamReader(getResource("config.yml"), StandardCharsets.UTF_8)
+        );
+
+        boolean updated = false;
+        for (String key : defaultConfig.getKeys(true)) {
+            if (!existingConfig.contains(key)) {
+                existingConfig.set(key, defaultConfig.get(key));
+                updated = true;
+            }
+        }
+        existingConfig.set("config-version", CURRENT_VERSION);
+        try {
+            existingConfig.save(configFile);
+            if (updated) {
+                getLogger().info(getMessage("warning.config-file-updated", "Updated config.yml to version %version%. Added missing keys.")
+                        .replace("%version%", CURRENT_VERSION));
+            } else {
+                getLogger().info(getMessage("warning.config-file-version-updated", "Config.yml version updated to %version% (no new keys added).")
+                        .replace("%version%", CURRENT_VERSION));
+            }
+        } catch (IOException e) {
+            getLogger().warning("Failed to save updated config.yml: " + e.getMessage());
         }
     }
-
     public boolean isPlayerSelectionEnabled() {
         return playerSelectionEnabled;
     }

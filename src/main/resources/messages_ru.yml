@@ -171,6 +171,10 @@ filter:
 history:
   operations: "История Операций"
   hint: "Нажмите, чтобы просмотреть логи"
+  sent: "Отправлено"
+  received: "Получено"
+  to-player: "игроку"
+  from-player: "от игрока"
 
 context-menu:
   title: "Быстрые Действия для %player%"

@@ -170,6 +170,10 @@ filter:
 history:
   operations: "Operations History"
   hint: "Click to view logs"
+  sent: "Sent"
+  received: "Received"
+  to-player: "to the player"
+  from-player: "from the player"
 
 context-menu:
   title: "Quick Actions for %player%"

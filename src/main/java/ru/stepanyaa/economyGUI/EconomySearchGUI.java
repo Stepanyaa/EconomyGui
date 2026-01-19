@@ -2,7 +2,7 @@
  * MIT License
  *
  * EconomyGui
- * Copyright (c) 2025 Stepanyaa
+ * Copyright (c) 2026 Stepanyaa
 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -35,6 +35,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -47,7 +48,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -55,10 +60,12 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.Date;
+import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.properties.Property;
 
 public class EconomySearchGUI implements Listener, InventoryHolder {
     private final Map<String, List<Transaction>> transactionHistory = new ConcurrentHashMap<>();
-    private static final long PAGE_SWITCH_COOLDOWN = 1000L;
+    private static final long PAGE_SWITCH_COOLDOWN = 250L;
     private final EconomyGUI plugin;
     private Inventory inventory;
     private int currentPage = 0;
@@ -77,22 +84,54 @@ public class EconomySearchGUI implements Listener, InventoryHolder {
     private List<PlayerResult> cachedResults = new ArrayList<>();
     private String moneyFormat;
     private boolean usePlaceholderAPI;
+    private static final Random RANDOM = new Random();
+    final Map<UUID, Double> lastKnownBalances = new ConcurrentHashMap<>();
+    private static final String[] DEFAULT_SKIN_VALUES = {
+            // Steve (Classic)
+            "ewogICJ0ZXh0dXJlcyI6IHsKICAgICJTS0lOIjogewogICAgICAidXJsIjogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzEzMTVjYzVjNDQ1NDNlZjZmNTI5MjQzNzUwODM5NjU2ODI4Yjg4ZjMzNTQzYjU5M2VmOTA4ODY2NTc5IgogICAgfQogIH0KfQ==",
+            // Alex (Slim)
+            "ewogICJ0ZXh0dXJlcyI6IHsKICAgICJTS0lOIjogewogICAgICAidXJsIjogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjMzMTAwNWI4Mjg3ODE0OGU2Yzc1N2M2Njc0ODY4ZjZkNjM5Yjk3MmUyNzYwYTAxNDkwOThkNjY2ZDczNjM0IgogICAgfQogIH0KfQ==",
+            // Noor
+            "ewogICJ0ZXh0dXJlcyI6IHsKICAgICJTS0lOIjogewogICAgICAidXJsIjogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzg5MjU5NzdhNDU2M2E2MmQzZTExMmQ3Yzg2NTE4N2UxZjQ0MGQ5OWVkNTBhMDQ5ZDVjODI5Nzc1MDgyNCIKICAgIH0KICB9Cn0=",
+            // Sunny
+            "ewogICJ0ZXh0dXJlcyI6IHsKICAgICJTS0lOIjogewogICAgICAidXJsIjogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjc4ODViNzM2YjZmMDAxNDc5OGU0ZDM1ZTE2M2I4NjhlNjQ3NTY1OGU2NTMwNmQ3MWIzMDY0NDkxNzY0IgogICAgfQogIH0KfQ==",
+            // Ari
+            "ewogICJ0ZXh0dXJlcyI6IHsKICAgICJTS0lOIjogewogICAgICAidXJsIjogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTZlNWYxZjk5YzE1ODVmNTQ4ZDhjOTFhMGY4NjU4OGE5MTM0NTljMzYzOTk0MzViNTQ2MzZkMTIwZjI2MiIKICAgIH0KICB9Cn0=",
+            // Zuri
+            "ewogICJ0ZXh0dXJlcyI6IHsKICAgICJTS0lOIjogewogICAgICAidXJsIjogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGEzMDU5NDM3OTc2ZTMzODFlNGI5ODY4YzY3YzVlNTMzYzY5MGYzMzk0NjI1ZjZlODY0ODE3YTEyODhjIgogICAgfQogIH0KfQ==",
+            // Makena
+            "ewogICJ0ZXh0dXJlcyI6IHsKICAgICJTS0lOIjogewogICAgICAidXJsIjogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGY4Mjg1OTk0MjZmOGQzOGYyOTJjMjM1NmMzODRhNTY5MGIyYjUyOGY5ZTYxNGQ5YjI1YTMfMmQyNTA2IgogICAgfQogIH0KfQ==",
+            // Kai
+            "ewogICJ0ZXh0dXJlcyI6IHsKICAgICJTS0lOIjogewogICAgICAidXJsIjogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmE5YTNmYjY4MDdmN2M0NjI3MTk2MDI1MDZlN2EyYjkwNGQ5ZTAzNWU0ZDJhMTM4Mzc5MjYxNzY1YzkyIgogICAgfQogIH0KfQ==",
+            // Efe
+            "ewogICJ0ZXh0dXJlcyI6IHsKICAgICJTS0lOIjogewogICAgICAidXJsIjogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzkzOGJlOTg1OWY1MTVlMDY4YjU1NTdiN2YxNjc2NjQ2NzM4OTQ3MDkyZjY5NDM4MDMwMjNkYTU2YzUyNWYiCiAgICB9CiAgfQp0"
+    };
+    private static class PlayerChange {
+        Player player;
+        double diff;
 
+        PlayerChange(Player player, double diff) {
+            this.player = player;
+            this.diff = diff;
+        }
+    }
     private final Map<UUID, Long> lastPageSwitch = new ConcurrentHashMap<>();
     private static class Transaction {
         long timestamp;
-        String action;
+        String description;
         double amount;
         String executor;
 
-        Transaction(long timestamp, String action, double amount, String executor) {
+        Transaction(long timestamp, String description, double amount, String executor) {
             this.timestamp = timestamp;
-            this.action = action;
+            this.description = description;
             this.amount = amount;
             this.executor = executor;
         }
     }
-
+    public Map<UUID, Double> getLastKnownBalances() {
+        return lastKnownBalances;
+    }
     @FunctionalInterface
     interface ChatAction {
         void execute(String message, Player player);
@@ -308,10 +347,90 @@ public class EconomySearchGUI implements Listener, InventoryHolder {
             return "  " + color + name;
         }
     }
+    public void startBalancePolling() {
+        Bukkit.getScheduler().runTaskTimer(plugin, () -> {
+            List<PlayerChange> changes = new ArrayList<>();
+
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                UUID uuid = player.getUniqueId();
+                double currentBalance = plugin.getEconomy().getBalance(player);
+                Double lastBalance = lastKnownBalances.get(uuid);
+
+                if (lastBalance != null) {
+                    double diff = currentBalance - lastBalance;
+                    if (Math.abs(diff) > 0.001) {
+                        changes.add(new PlayerChange(player, diff));
+                    }
+                }
+
+                lastKnownBalances.put(uuid, currentBalance);
+            }
+
+            if (changes.isEmpty()) return;
+
+            Set<Player> processed = new HashSet<>();
+
+            for (PlayerChange change : changes) {
+                Player player = change.player;
+                if (processed.contains(player)) continue;
+
+                double diff = change.diff;
+                double amount = Math.abs(diff);
+                boolean isReceive = diff > 0;
+
+                boolean paired = false;
+
+                for (PlayerChange other : changes) {
+                    if (other.player == player || processed.contains(other.player)) continue;
+
+                    if (Math.abs(other.diff + diff) < 0.001) {
+                        Player sender = isReceive ? other.player : player;
+                        Player receiver = isReceive ? player : other.player;
+
+                        logTransaction(sender.getUniqueId().toString(), "pay", amount, sender);
+
+                        logTransaction(receiver.getUniqueId().toString(), "receive", amount, sender);
+
+                        processed.add(sender);
+                        processed.add(receiver);
+                        paired = true;
+                        break;
+                    }
+                }
+
+                if (!paired) {
+                    String action = isReceive ? "receive (external)" : "pay (external)";
+                    logTransaction(player.getUniqueId().toString(), action, amount, null);
+                    processed.add(player);
+                }
+            }
+        }, 100L, 100L);
+    }
+
     private ItemStack createPlayerHead(OfflinePlayer player, int index) {
         ItemStack head = new ItemStack(Material.PLAYER_HEAD);
         SkullMeta meta = (SkullMeta) head.getItemMeta();
-        meta.setOwningPlayer(player);
+
+        if (player.isOnline()) {
+            meta.setOwningPlayer(player);
+        } else {
+            String skinValue = DEFAULT_SKIN_VALUES[RANDOM.nextInt(DEFAULT_SKIN_VALUES.length)];
+            GameProfile profile = new GameProfile(player.getUniqueId(), player.getName());
+
+            try {
+                Method getPropertiesMethod = GameProfile.class.getDeclaredMethod("getProperties");
+                getPropertiesMethod.setAccessible(true);
+                Object properties = getPropertiesMethod.invoke(profile);
+                Property newProperty = new Property("textures", skinValue);
+                Method putMethod = properties.getClass().getMethod("put", Object.class, Object.class);
+                putMethod.invoke(properties, "textures", newProperty);
+                Field profileField = meta.getClass().getDeclaredField("profile");
+                profileField.setAccessible(true);
+                profileField.set(meta, profile);
+            } catch (Exception e) {
+            }
+        }
+
         meta.setDisplayName(ChatColor.YELLOW + player.getName());
         List<String> lore = new ArrayList<>();
         double balance = plugin.getEconomy().getBalance(player);
@@ -335,14 +454,6 @@ public class EconomySearchGUI implements Listener, InventoryHolder {
 
     private boolean isSelected(String uuid) {
         return selectedPlayers.contains(UUID.fromString(uuid));
-    }
-
-    private void applyFilter(Filter newFilter, Player player) {
-        currentFilter = newFilter;
-        currentPage = 0;
-        lastPage.put(player.getUniqueId(), 0);
-        refreshGUI();
-        player.sendMessage(ChatColor.GREEN + plugin.getMessage("filter.applied","Filter applied: " + newFilter.name()));
     }
 
     private void openPlayerFinanceManagement(Player player, PlayerResult result) {
@@ -516,7 +627,21 @@ public class EconomySearchGUI implements Listener, InventoryHolder {
         pendingActionTarget.put(player.getUniqueId(), result);
         lastOpenedMenu.put(player.getUniqueId(), "digital");
     }
+    @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        Player player = event.getPlayer();
+        UUID uuid = player.getUniqueId();
 
+        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            double balance = plugin.getEconomy().getBalance(player);
+            lastKnownBalances.put(uuid, balance);
+        }, 20L);
+    }
+
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        lastKnownBalances.remove(event.getPlayer().getUniqueId());
+    }
     private void openHistoryMenu(Player player, PlayerResult result) {
         String uuid = result.uuid;
         List<Transaction> history = transactionHistory.getOrDefault(uuid, new ArrayList<>());
@@ -536,7 +661,7 @@ public class EconomySearchGUI implements Listener, InventoryHolder {
             Transaction t = history.get(i);
             ItemStack item = new ItemStack(Material.PAPER);
             ItemMeta meta = item.getItemMeta();
-            meta.setDisplayName(ChatColor.YELLOW + t.action.toUpperCase() + " $" + String.format(moneyFormat, t.amount));
+            meta.setDisplayName(ChatColor.YELLOW + ChatColor.stripColor(t.description).toUpperCase() + " $" + String.format(moneyFormat, t.amount));
             List<String> lore = new ArrayList<>();
             lore.add(ChatColor.GRAY + "By: " + t.executor);
             lore.add(ChatColor.GRAY + "Date: " + sdf.format(new Date(t.timestamp)));
@@ -628,9 +753,25 @@ public class EconomySearchGUI implements Listener, InventoryHolder {
         lastOpenedMenu.put(player.getUniqueId(), "mass");
     }
 
-    private void logTransaction(String uuid, String action, double amount, Player executor) {
+    public void logTransaction(String uuid, String action, double amount, Player executor) {
+        String executorName = executor != null ? executor.getName() : "External";
+
+        String description;
+        if ("pay".equalsIgnoreCase(action)) {
+            description = "paid";
+        } else if ("receive".equalsIgnoreCase(action)) {
+            description = "received from " + executorName;
+        } else if ("give".equalsIgnoreCase(action)) {
+            description = "given by " + executorName;
+        } else if ("take".equalsIgnoreCase(action)) {
+            description = "taken by " + executorName;
+        } else {
+            description = action + " (" + executorName + ")";
+        }
+
         transactionHistory.computeIfAbsent(uuid, k -> new ArrayList<>())
-                .add(new Transaction(System.currentTimeMillis(), action, amount, executor.getName()));
+                .add(new Transaction(System.currentTimeMillis(), description, amount, executorName));
+
         cleanOldTransactions();
         plugin.saveTransactions();
     }
@@ -1227,7 +1368,7 @@ public class EconomySearchGUI implements Listener, InventoryHolder {
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPlayerChat(AsyncPlayerChatEvent event) {
         Player player = event.getPlayer();
         if (pendingActions.containsKey(player.getUniqueId())) {
@@ -1363,7 +1504,7 @@ public class EconomySearchGUI implements Listener, InventoryHolder {
         }
         for (Map.Entry<String, List<Transaction>> entry : transactionHistory.entrySet()) {
             List<String> rawList = entry.getValue().stream()
-                    .map(t -> t.timestamp + ";" + t.action + ";" + t.amount + ";" + t.executor)
+                    .map(t -> t.timestamp + ";" + t.description + ";" + t.amount + ";" + t.executor)
                     .collect(Collectors.toList());
             config.set(entry.getKey(), rawList);
         }
