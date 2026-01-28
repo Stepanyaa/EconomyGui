@@ -1,139 +1,178 @@
-#  EconomyGUI 
+## **EconomyGUI** – Modern GUI for Vault Economy Management! ✨
 
-**EconomyGUI a powerful and intuitive Minecraft plugin for efficient economy management using a beautiful GUI!** ✨
+Say goodbye to endless commands!  
+**EconomyGUI** provides server administrators with a **beautiful, intuitive and powerful graphical interface** to manage your server's economy effortlessly.
 
-Tired of cumbersome economy commands? EconomyGUI provides server admins with a modern, feature-rich graphical interface to manage your server's finances with ease. Fully integrated via Vault.
+Fully compatible with **Vault** and works with any economy plugin (EssentialsX).
+
+
+## 🚨 **Required Dependencies**
+| Plugin          | Status       | Link                                                                 |
+|-----------------|--------------|----------------------------------------------------------------------|
+| **Vault**       | **Required** | [Spigot](https://www.spigotmc.org/resources/vault.34315/)
+|
+| **(Economy)**   | **Required** |  Any plugin for economics
+|
+| **EssentialsX** | **Recommended** | [Official](https://essentialsx.net/downloads.html)                |
+
+[![Spigot](https://cdn.modrinth.com/data/cached_images/8e35039b35a42d274846973aaea56c5961f06988.png)](https://www.spigotmc.org/resources/economygui.128912/)[![Paper](https://cdn.modrinth.com/data/cached_images/75e924b033ff9a67e9f434438e90d3024d6d6c0c.png)](https://papermc.io/)[![Purpur](https://cdn.modrinth.com/data/cached_images/b11cc13b19798329e55449c1f84d3de432c9c485.png)](https://purpurmc.org/)
+
+[![Modrinth](https://cdn.modrinth.com/data/cached_images/50f2eaa6263492cc65f49ef84a31e7d9fb51179c.png)](https://modrinth.com/plugin/economygui)
+
+###  **Quick Links**
+[![Discord](https://img.shields.io/badge/Discord-Join_us-7289DA?&logoColor=white)](https://discord.gg/aE6HydKgqg)
+[![YouTube](https://img.shields.io/badge/YouTube-Subscribe-red?&logoColor=white)](https://www.youtube.com/@Stepanyaa)
+[![GitHub](https://img.shields.io/badge/GitHub-Repository-yellow?&logoColor=white)](https://github.com/Stepanyaa/EconomyGui)
+[![Modrinth](https://img.shields.io/badge/Modrinth-Download-1bd96a?&logoColor=white)](https://modrinth.com/project/economygui)
+
+
+##  **Key Features**
+
+- **Beautiful modern GUI** — manage economy without typing commands
+- **Player balance management** — view, give, take, set exact amounts
+- **Mass operations** — give/take/set money to/from multiple players at once
+- **Fast player search** — built-in search bar + filters (online/offline/selected)
+- **Global economy statistics** — total balance, average, richest/poorest players
+- **Transaction history** — view detailed logs of all operations
+- **Quick actions** — fast give/take/set for individual players
+- **Multi-language support** — English & Russian included, easy to add more
+- **PlaceholderAPI ready** — perfect for custom scoreboards & holograms
+- **Fully Vault-compatible** — works with any Vault economy plugin
+
+---
+
+##  **Commands & Permissions**
+
+| Command                     | Description                              | Permission                   |
+|-----------------------------|------------------------------------------|------------------------------|
+| `/economygui gui`           | Open the main Economy GUI                | `economygui.gui`             |
+| `/economygui reload`        | Reload config and messages               | `economygui.reload`          |
+| `/economygui reset`         | Reset search and filters                 | `economygui.reset`           |
+
+**Permissions:**
+
+- **`economygui.admin`**  
+  Grants **full access** to all commands, features and update notifications  
+  *(Default: OP)*
+
+- **`economygui.gui`**  
+  Allows opening the EconomyGUI interface
+
+- **`economygui.reload`**  
+  Allows reloading the configuration and messages
+
+- **`economygui.reset`**  
+  Allows resetting search and filters in the GUI
+
+- **`economygui.mass-give`**  
+  Allows mass giving money to selected players
+
+- **`economygui.mass-take`**  
+  Allows mass taking money from selected players
+
+- **`economygui.give`**  
+  Allows giving money to individual players
 
 ---
 
-## **🚨 REQUIRED: YOU MUST INSTALL [Vault](https://www.spigotmc.org/resources/vault.34315/) AND [EssentialsX](https://essentialsx.net/downloads.html) FOR THIS PLUGIN TO WORK! 🚨**
+##  **Dependencies**
+
+| Plugin              | Type       | Required? | Link                                                      |
+|---------------------|------------|-----------|-----------------------------------------------------------|
+| Vault               | **Depend** | **Yes**   | [Spigot](https://www.spigotmc.org/resources/vault.34315/) |
+| EssentialsX         | SoftDepend | Recommended | [Official](https://essentialsx.net/downloads.html)      |
+| PlaceholderAPI      | SoftDepend | Optional  | [Spigot](https://www.spigotmc.org/resources/placeholderapi.6245/) |
 
 ---
 
- **✅ Supported Platforms & Versions**
-*   **Tested and working on:**
+##  **Development & Support**
 
-    ![Paper](https://img.shields.io/badge/Paper-1.16.1%E2%80%931.21.10-success&logo=minecraft)     
-    ![Spigot](https://img.shields.io/badge/Spigot-1.16.1%E2%80%931.21.10-success&logo=minecraft)   
-    ![Purpur](https://img.shields.io/badge/Purpur-1.16.1%E2%80%931.21.10-success&logo=minecraft)
-*   **Folia Not Supported!** ❌
+**Plugin is actively developed!**
 
-## 📌 Links
-[![Discord](https://img.shields.io/badge/Discord-Join-blue?logo=discord&logoColor=white)](https://discord.gg/aE6HydKgqg)
-[![YouTube](https://img.shields.io/badge/YouTube-Subscribe-red?logo=youtube&logoColor=white)](https://www.youtube.com/@Stepanyaa)
-[![GitHub](https://img.shields.io/badge/GitHub-Repo-yellow?logo=github&logoColor=white)](https://github.com/Stepanyaa/EconomyGui)
-[![Modrinth](https://img.shields.io/badge/Modrinth-Download-1bd96a?logo=modrinth&logoColor=white)](https://modrinth.com/project/economygui)
+- Found a bug? Have a feature request? → Join our [Discord](https://discord.gg/aE6HydKgqg)
+- Want to help translate into your language? → `#translation` channel on Discord
 
-### **🌟 Key Features**
-*   **📊 Intuitive GUI Menu:** Manage all economic operations through a simple and user-friendly menu.
-*   **👤 Player Balance Management:** Easily view, add, subtract, or set balances for any player.
-*   **⚡ Mass Operations:** Add or remove money from groups of players (e.g., all online players) with just a few clicks!
-*   **🔍 Quick Search:** Find players quickly right inside the GUI using a search bar.
-*   **🌐 PlaceholderAPI Support:** Ready for future integration with custom placeholders.
-*   **🗣️ Multi-Language System:** The plugin supports translations. Want to help? Join our Discord!
-*   **🔌 Full Vault Compatibility:** Works seamlessly with any economy plugin that supports Vault (EssentialsX, CMI, Towny, etc.).
-
-### **⌨️ Commands & Permissions**
-
-**Commands:**
-*   **`/economygui`** (`/egui`, `/economy`, `/ecogui`)
-    *   **`/economygui gui`** - Opens the main economy management GUI.
-    *   **`/economygui reload`** - Reloads the plugin configuration file.
-    *   **`/economygui reset`** - Resets the GUI search filter.
-
-**Main Permissions:**
-*   **`economygui.admin`** - Grants full access to all commands and features (OP by default).
-    *   `economygui.gui` - Allows opening the GUI.
-    *   `economygui.reload` - Allows reloading the config.
-    *   `economygui.reset` - Allows resetting the search.
-    *   `economygui.mass-give` - Allows mass money giving.
-    *   `economygui.mass-take` - Allows mass money taking.
-    *   `economygui.give` - Allows giving money to a player.
-
-### **📦 Dependencies**
-*   **Depend:** [`Vault`](https://www.spigotmc.org/resources/vault.34315/) (**REQUIRED**)
-*   **SoftDepend:** [`EssentialsX`](https://essentialsx.net/downloads.html), [`PlaceholderAPI`](https://www.spigotmc.org/resources/placeholderapi.6245/)
-
----
-### **💻 Development & Support**
-**This plugin is in active development!**
-Found a bug 🐛 or have a great idea? Please let us know on our Discord server!
-
-**Want to help with translation?** Join the `#translation` channel on our Discord!
-
-**Discord:** https://discord.gg/aE6HydKgqg
 **License:** MIT
 
----
+<details>
+<summary><strong>Русская версия (Russian version) ▼</strong></summary>
 
-### **Русская Версия (Russian Version)**
+## **EconomyGUI** — Красивый и мощный GUI для управления экономикой сервера! ✨
 
-#  EconomyGUI 
+Забудьте про бесконечные команды!  
+**EconomyGUI** позволяет администраторам сервера управлять экономикой через **удобный, современный и интуитивно понятный графический интерфейс** — всё в несколько кликов.
 
-**Мощный и интуитивно понятный плагин для удобного управления экономикой вашего сервера через красивый графический интерфейс!** ✨
+Полная совместимость с **Vault** — работает с любым плагином экономики (EssentialsX).
 
-Устали от неудобных экономических команд? EconomyGUI предоставляет администраторам современный и многофункциональный графический интерфейс для легкого управления финансами вашего сервера. Полная интеграция через Vault.
+##  **Обязательные зависимости**
+- **[Vault](https://www.spigotmc.org/resources/vault.34315/)** — **обязателен**
+- **Любой плагин на экономику** - **обязателен**
+- **[EssentialsX](https://essentialsx.net/downloads.html)** — **настоятельно рекомендуется** (используется для экономики)
 
----
+##  **Основные возможности**
+- Красивое и современное GUI-меню
+- Полное управление балансом игроков (просмотр, выдача, снятие, установка)
+- Массовые операции — выдача/снятие/установка денег сразу нескольким игрокам
+- Быстрый поиск игроков + фильтры (онлайн/оффлайн/выбранные)
+- Глобальная статистика экономики сервера (общий баланс, средний, самые богатые/бедные)
+- История всех операций с подробными логами
+- Быстрые действия для отдельных игроков
+- Поддержка нескольких языков (уже есть английский и русский)
+- Полная совместимость с **PlaceholderAPI** — для использования в таб-листе, голограммах и т.д.
+- Работает с любым плагином экономики через Vault
 
- **🚨 ВАЖНО: ДЛЯ РАБОТЫ ПЛАГИНА ОБЯЗАТЕЛЬНО УСТАНОВИТЕ [Vault](https://www.spigotmc.org/resources/vault.34315/) И [EssentialsX](https://essentialsx.net/downloads.html)! 🚨**
+##  **Команды и разрешения**
 
----
+| Команда                     | Описание                                 | Право                        |
+|-----------------------------|------------------------------------------|------------------------------|
+| `/economygui gui`           | Открыть главное меню экономики           | `economygui.gui`             |
+| `/economygui reload`        | Перезагрузить конфиг и сообщения         | `economygui.reload`          |
+| `/economygui reset`         | Сбросить поиск и фильтры в GUI           | `economygui.reset`           |
 
- **✅ Поддерживаемые платформы и версии**
-*   **Протестировано и работает на:**
+**Разрешения (Permissions):**
 
-    ![Paper](https://img.shields.io/badge/Paper-1.16.1%E2%80%931.21.10-success&logo=minecraft)     
-    ![Spigot](https://img.shields.io/badge/Spigot-1.16.1%E2%80%931.21.10-success&logo=minecraft)   
-    ![Purpur](https://img.shields.io/badge/Purpur-1.16.1%E2%80%931.21.10-success&logo=minecraft)
-*   **Не поддерживает Folia!** ❌
+- **`economygui.admin`**  
+  Дает **полный доступ** ко всем функциям, командам и уведомлениям об обновлениях  
+  *(По умолчанию: OP)*
 
-## 📌 Links
-[![Discord](https://img.shields.io/badge/Discord-Join-blue?logo=discord&logoColor=white)](https://discord.gg/aE6HydKgqg)
-[![YouTube](https://img.shields.io/badge/YouTube-Subscribe-red?logo=youtube&logoColor=white)](https://www.youtube.com/@Stepanyaa)
-[![GitHub](https://img.shields.io/badge/GitHub-Repo-yellow?logo=github&logoColor=white)](https://github.com/Stepanyaa/EconomyGui)
-[![Modrinth](https://img.shields.io/badge/Modrinth-Download-1bd96a?logo=modrinth&logoColor=white)](https://modrinth.com/project/economygui)
+- **`economygui.gui`**  
+  Позволяет открывать графический интерфейс EconomyGUI
 
-### **🌟 Основные функции**
-*   **📊 Интуитивное GUI меню:** Управляйте всей экономикой через простой и удобный интерфейс.
-*   **👤 Управление балансом:** Просматривайте, добавляйте, снимайте или устанавливайте баланс любого игрока.
-*   **⚡ Массовые операции:** Выдавайте или забирайте деньги у групп игроков (например, у всех онлайн) всего в несколько кликов!
-*   **🔍 Быстрый поиск:** Находите игроков прямо в GUI с помощью строки поиска.
-*   **🌐 Поддержка PlaceholderAPI:** Готовность к будущей интеграции с пользовательскими плейсхолдерами.
-*   **🗣️ Мультиязычная система:** Плагин поддерживает переводы. Хотите помочь? Присоединяйтесь к нашему Discord!
-*   **🔌 Полная совместимость с Vault:** Работает с любым плагином экономики, который поддерживает Vault (EssentialsX, CMI, Towny и др.).
+- **`economygui.reload`**  
+  Позволяет перезагружать конфигурацию и файлы сообщений
 
-### **⌨️ Команды и Разрешения**
+- **`economygui.reset`**  
+  Позволяет сбрасывать поиск и фильтры в интерфейсе
 
-**Команды:**
-*   **`/economygui`** (`/egui`, `/economy`, `/ecogui`)
-    *   **`/economygui gui`** - Открывает главный интерфейс управления экономикой.
-    *   **`/economygui reload`** - Перезагружает конфигурационный файл плагина.
-    *   **`/economygui reset`** - Сбрасывает поисковый фильтр в GUI.
+- **`economygui.mass-give`**  
+  Позволяет массово выдавать деньги выбранным игрокам
 
-**Основные разрешения:**
-*   **`economygui.admin`** - Дает полный доступ ко всем командам и функциям (по умолчанию OP).
-    *   `economygui.gui` - Позволяет открывать GUI.
-    *   `economygui.reload` - Позволяет перезагружать конфиг.
-    *   `economygui.reset` - Позволяет сбрасывать поиск.
-    *   `economygui.mass-give` - Позволяет массово выдавать деньги.
-    *   `economygui.mass-take` - Позволяет массово забирать деньги.
-    *   `economygui.give` - Позволяет выдавать деньги игроку.
+- **`economygui.mass-take`**  
+  Позволяет массово забирать деньги у выбранных игроков
 
-### **📦 Зависимости**
-*   **Depend:** [`Vault`](https://www.spigotmc.org/resources/vault.34315/) (**ОБЯЗАТЕЛЕН**)
-*   **SoftDepend:** [`EssentialsX`](https://essentialsx.net/downloads.html), [`PlaceholderAPI`](https://www.spigotmc.org/resources/placeholderapi.6245/)
+- **`economygui.give`**  
+  Позволяет выдавать деньги отдельным игрокам
 
----
-### **💻 Разработка и Поддержка**
-**Плагин находится в активной разработке!**
-Нашли баг 🐛 или есть крутая идея? Сообщите нам на нашем Discord-сервере!
+##  **Зависимости**
 
-**Хотите помочь с переводом?** Присоединяйтесь к каналу `#translation` в нашем Discord!
+| Плагин              | Тип          | Обязателен? | Ссылка                                                    |
+|---------------------|--------------|-------------|-----------------------------------------------------------|
+| Vault               | **Depend**   | **Да**      | [Spigot](https://www.spigotmc.org/resources/vault.34315/) |
+| EssentialsX         | SoftDepend   | Рекомендуется | [Официальный сайт](https://essentialsx.net/downloads.html) |
+| PlaceholderAPI      | SoftDepend   | Опционально | [Spigot](https://www.spigotmc.org/resources/placeholderapi.6245/) |
 
-**Discord:** https://discord.gg/aE6HydKgqg
+##  **Разработка и поддержка**
+
+**Плагин активно развивается!**
+
+- Нашли баг? Есть идея для новой функции? → Присоединяйтесь к нашему [Discord](https://discord.gg/aE6HydKgqg)
+- Хотите помочь с переводом на ваш язык? → Канал `#translation` в Discord
+
 **Лицензия:** MIT
 
-## **bStats**
+</details>
 
+---
+
+**bStats**  
 [![bStats](https://bstats.org/signatures/bukkit/EconomyGUI.svg)](https://bstats.org/plugin/bukkit/EconomyGUI/27776)
