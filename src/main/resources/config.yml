@@ -1,8 +1,23 @@
-# Language for messages (e.g., 'en' for English, 'ru' for Russian)
-# If you want to help translate EconomyGUI into your language Join our Discord https://discord.gg/72mzBTckKC and check the #translations channel
+# Language for messages (e.g., 'en' for English, 'ru' for Russian, 'de' for German, 'fr' for French, 'tr' for Turkish, 'pl' for Polish, 'pt' for Portuguese)
+# Available languages
+# - en: English (original)
+# - ru: Russian (Russia)
+# - de: Deutsch (German)
+# - fr: Français (French)
+# - tr: Türkçe (Turkish)
+# - pl: Polski (Polish)
+# - pt: Português (Brazilian Portuguese)
+
+# If you want to help translate EconomyGUI into your language or improve existing translations,
+# join our Discord: https://discord.gg/72mzBTckKC and check the #translations channel.
+
+# All translations (except the original English) were generated using AI.
+# If something sounds unnatural, is inaccurate, or could be improved,
+# please join our Discord (link above) and write in the #translations channel.
+# Any help is greatly appreciated!
 
 # Plugin info
-config-version: "1.0.5"
+config-version: "1.0.6"
 language: "en"
 
 # Feature toggles

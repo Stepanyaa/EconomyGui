@@ -71,6 +71,7 @@ public class EconomySearchGUI implements Listener, InventoryHolder {
     private int currentPage = 0;
     private String currentSearch = "";
     private Filter currentFilter = Filter.ALL;
+    private final Map<UUID, Long> lastFilterSwitch = new ConcurrentHashMap<>();
     private final Set<UUID> selectedPlayers = ConcurrentHashMap.newKeySet();
     private final Map<UUID, Set<UUID>> playerSelections = new ConcurrentHashMap<>();
     private final Map<UUID, String> lastOpenedMenu = new ConcurrentHashMap<>();
@@ -1058,6 +1059,13 @@ public class EconomySearchGUI implements Listener, InventoryHolder {
                     });
                 }
             } else if (event.getSlot() == 49) {
+                UUID uuid = player.getUniqueId();
+                long lastSwitch = lastFilterSwitch.getOrDefault(uuid, 0L);
+                if (now - lastSwitch < 500) {
+                    return;
+                }
+                lastFilterSwitch.put(uuid, now);
+
                 if (event.getClick() == ClickType.LEFT || event.getClick() == ClickType.SHIFT_LEFT) {
                     switch (currentFilter) {
                         case ALL:

@@ -59,7 +59,7 @@ public class EconomyGUI extends JavaPlugin implements CommandExecutor, TabComple
     private FileConfiguration transactionsConfig;
     private File transactionsFile;
     private String language;
-    private static final String CURRENT_VERSION = "1.0.5";
+    private static final String CURRENT_VERSION = "1.0.6";
     private EconomySearchGUI economySearchGUI;
     private final Set<String> adminUUIDs = ConcurrentHashMap.newKeySet();
     private String latestVersion = null;
