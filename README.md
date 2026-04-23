@@ -5,6 +5,14 @@ Say goodbye to endless commands!
 
 Fully compatible with **Vault** and works with any economy plugin (EssentialsX).
 
+ Available languages
+ - en: English (original)
+ - ru: Russian (Russia)
+ - de: Deutsch (German)
+ - fr: Français (French)
+ - tr: Türkçe (Turkish)
+ - pl: Polski (Polish)
+ - pt: Português (Brazilian Portuguese)
 
 ## 🚨 **Required Dependencies**
 | Plugin          | Status       | Link                                                                 |
