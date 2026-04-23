@@ -17,7 +17,7 @@
 # Any help is greatly appreciated!
 
 # Plugin info
-config-version: "1.0.6"
+config-version: "2.0.0"
 language: "en"
 
 # Feature toggles
@@ -27,3 +27,5 @@ features:
   quick-actions: true
   full-management: true
   transaction-retention-days: 30
+  # Maximum allowed amount per single operation. Set to 0 to disable the limit.
+  max-amount: 0

@@ -6,7 +6,7 @@
 
     <groupId>ru.stepanyaa</groupId>
     <artifactId>EconomyGUI</artifactId>
-    <version>v1.0.6</version>
+    <version>v2.0.0</version>
     <packaging>jar</packaging>
 
     <name>EconomyGUI</name>
@@ -86,7 +86,7 @@
         <dependency>
             <groupId>me.clip</groupId>
             <artifactId>placeholderapi</artifactId>
-            <version>2.11.6</version>
+            <version>2.12.2</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
