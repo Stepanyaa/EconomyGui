@@ -5,15 +5,6 @@ Say goodbye to endless commands!
 
 Fully compatible with **Vault** and works with any economy plugin (EssentialsX).
 
- Available languages
- - en: English (original)
- - ru: Russian (Russia)
- - de: Deutsch (German)
- - fr: Français (French)
- - tr: Türkçe (Turkish)
- - pl: Polski (Polish)
- - pt: Português (Brazilian Portuguese)
-
 ## 🚨 **Required Dependencies**
 | Plugin          | Status       | Link                                                                 |
 |-----------------|--------------|----------------------------------------------------------------------|
@@ -23,6 +14,15 @@ Fully compatible with **Vault** and works with any economy plugin (EssentialsX).
 |
 | **EssentialsX** | **Recommended** | [Official](https://essentialsx.net/downloads.html)                |
 
+ Available languages
+ - en: English (original)
+ - ru: Russian (Russia)
+ - de: Deutsch (German)
+ - fr: Français (French)
+ - tr: Türkçe (Turkish)
+ - pl: Polski (Polish)
+ - pt: Português (Brazilian Portuguese)
+  
 [![Spigot](https://cdn.modrinth.com/data/cached_images/8e35039b35a42d274846973aaea56c5961f06988.png)](https://www.spigotmc.org/resources/economygui.128912/)[![Paper](https://cdn.modrinth.com/data/cached_images/75e924b033ff9a67e9f434438e90d3024d6d6c0c.png)](https://papermc.io/)[![Purpur](https://cdn.modrinth.com/data/cached_images/b11cc13b19798329e55449c1f84d3de432c9c485.png)](https://purpurmc.org/)
 
 [![Modrinth](https://cdn.modrinth.com/data/cached_images/50f2eaa6263492cc65f49ef84a31e7d9fb51179c.png)](https://modrinth.com/plugin/economygui)
@@ -91,16 +91,18 @@ Fully compatible with **Vault** and works with any economy plugin (EssentialsX).
 | EssentialsX         | SoftDepend | Recommended | [Official](https://essentialsx.net/downloads.html)      |
 | PlaceholderAPI      | SoftDepend | Optional  | [Spigot](https://www.spigotmc.org/resources/placeholderapi.6245/) |
 
----
-
 ##  **Development & Support**
 
 **Plugin is actively developed!**
 
 - Found a bug? Have a feature request? → Join our [Discord](https://discord.gg/aE6HydKgqg)
 - Want to help translate into your language? → `#translation` channel on Discord
-
+  
 **License:** MIT
+
+---
+### I'd like to express my deepest gratitude to a wonderful person named 𝕻𝖆𝖚𝖑𝖚𝖑𝖚, known on Discord as loftplofti. He contacted me on the Discord server and suggested creating such a plugin, and I want to express my gratitude for this wonderful idea. I hope if you're reading this, you'll thank him too.
+---
 
 <details>
 <summary><strong>Русская версия (Russian version) ▼</strong></summary>
@@ -178,9 +180,11 @@ Fully compatible with **Vault** and works with any economy plugin (EssentialsX).
 
 **Лицензия:** MIT
 
+---
+### Я хотел бы выразить свою глубокую благодарность такому замечательному человеку, как 𝕻𝖆𝖚𝖑𝖚𝖑𝖚, известному в Discord под ником loftplofti. Он написал мне на сервере Discord и предложил создать такой плагин, и я хочу выразить свою благодарность за эту замечательную идею. Надеюсь, если вы это читаете, вы тоже его поблагодарите.
+---
+
 </details>
 
 ---
-
-**bStats**  
-[![bStats](https://bstats.org/signatures/bukkit/EconomyGUI.svg)](https://bstats.org/plugin/bukkit/EconomyGUI/27776)
+[![Linterna Cloud](https://cdn.modrinth.com/data/cached_images/2e65b26f1b83f2186519af89bf42fbd47eca23f4_0.webp)](https://linterna.cloud/)
