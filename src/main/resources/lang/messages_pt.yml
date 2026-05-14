@@ -1,4 +1,7 @@
 # messages_pt.yml
+# Do not edit: This field is used for automatic language file updates
+config-version: "2.0.1"
+
 gui:
   title: "Gerenciamento de Economia"
   search: "Pesquisa: %search_query%"
@@ -34,7 +37,8 @@ gui:
   no-players-hint: "Tente alterar a pesquisa ou filtro"
   selected: "Selecionado"
   amount-input: "Digite Quantia"
-  input-hint: "Clique esquerdo para digitar quantia no chat"
+  custom-amount: "Valor Personalizado"
+  custom-amount-hint: "Clique esquerdo para digitar quantia no chat"
   history: "Histórico de Operações"
   click-to-view: "Clique para ver histórico"
   back: "Voltar"
@@ -82,6 +86,7 @@ gui:
 
 error:
   invalid-amount: "A quantia deve ser positiva."
+  exceeds-max-amount: "A quantia excede o limite do servidor de $%max_amount%."
   invalid-amount-format: "Formato de quantia inválido."
   no-permission: "Você não tem permissão!"
   no-players-selected: "Nenhum jogador selecionado para operação em massa!"
@@ -112,9 +117,10 @@ action:
   filter-applied: "Filtro aplicado: %filter_name%"
   cancelled: "Ação cancelada."
   executed: "Executado %action% de $%amount% para %player%"
-  give: "Dar Quantia"
-  take: "Tirar Quantia"
-  set: "Definir Quantia"
+  give: "Dar"
+  take: "Tirar"
+  set: "Definir"
+  click-to-apply-to: "Clique para aplicar em"
 
 messages:
   enter-search: "Digite consulta de pesquisa (ou 'cancel' para abortar):"
@@ -129,6 +135,9 @@ messages:
   set-amount: "Definido saldo para $%amount% para %player%"
   no-permission-give: "Você não tem permissão para dar."
   search-reset: "Pesquisa e filtros redefinidos."
+  confirm-mass-action: "Confirmar %action% de $%amount% em %count% jogadores?"
+  confirm: "Confirmar"
+  cancel: "Cancelar"
 
 update:
   available: "*** ATUALIZAÇÃO DISPONÍVEL *** Uma nova versão do EconomyGUI (%version%) está disponível em https://modrinth.com/plugin/economygui/versions"
@@ -148,6 +157,9 @@ warning:
   config-file-create: "Arquivo config criado: config.yml"
   plugin-enabled: "EconomyGUI ativado com idioma: %lang%"
   no-economy: "Provedor de economia não encontrado! Desativando plugin."
+  upload-lang: "Línguas carregadas: "
+  changed-lang: "Idioma alterado para: "
+  bad-transaction: "Transacção incorrecta para UUID % uuid%: % raw%"
 
 status:
   online: "Online"
@@ -171,12 +183,22 @@ filter:
 history:
   operations: "Histórico de Operações"
   hint: "Clique para ver logs"
-  sent: "Enviado"
-  received: "Recebido"
-  to-player: "para o jogador"
-  from-player: "do jogador"
+  by: "Por:"
+  date: "Data"
+  paid-by: "pagou %amount% para %player%"
+  received-from: "recebeu %amount% de %player%"
+  given-by: "dado %amount% por %player%"
+  taken-by: "tirado %amount% por %player%"
+  set-by: "saldo definido para %amount% por %player%"
 
 context-menu:
   title: "Ações Rápidas para %player%"
   back: "Voltar ao Menu Principal"
   full-open: "Abrir Gerenciamento Completo"
+  apply-info: "Clique para aplicar a %player%"
+  give-100: "Dar $100"
+  give-1000: "Dar $1000"
+  take-100: "Tirar $100"
+  take-1000: "Tirar $1000"
+  set-5000: "Definir $5000"
+  reset-0: "Redefinir para $0"

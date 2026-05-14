@@ -1,4 +1,7 @@
 # messages_pl.yml
+# Do not edit: This field is used for automatic language file updates
+config-version: "2.0.1"
+
 gui:
   title: "Zarządzanie Gospodarką"
   search: "Szukaj: %search_query%"
@@ -34,7 +37,8 @@ gui:
   no-players-hint: "Spróbuj zmienić wyszukiwanie lub filtr"
   selected: "Zaznaczone"
   amount-input: "Wpisz kwotę"
-  input-hint: "Lewy klik, aby wpisać kwotę na czacie"
+  custom-amount: "Niestandardowa kwota"
+  custom-amount-hint: "Lewy klik, aby wpisać kwotę na czacie"
   history: "Historia operacji"
   click-to-view: "Kliknij, aby zobaczyć historię"
   back: "Wstecz"
@@ -82,6 +86,7 @@ gui:
 
 error:
   invalid-amount: "Kwota musi być dodatnia."
+  exceeds-max-amount: "Kwota przekracza limit serwera $%max_amount%."
   invalid-amount-format: "Nieprawidłowy format kwoty."
   no-permission: "Nie masz uprawnień!"
   no-players-selected: "Nie zaznaczono graczy do operacji masowej!"
@@ -129,6 +134,9 @@ messages:
   set-amount: "Ustawiono saldo na $%amount% dla %player%"
   no-permission-give: "Nie masz uprawnień do dawania."
   search-reset: "Wyszukiwanie i filtry zresetowane."
+  confirm-mass-action: "Potwierdzić %action% $%amount% dla %count% graczy?"
+  confirm: "Potwierdź"
+  cancel: "Anuluj"
 
 update:
   available: "*** DOSTĘPNA AKTUALIZACJA *** Nowa wersja EconomyGUI (%version%) jest dostępna na https://modrinth.com/plugin/economygui/versions"
@@ -148,6 +156,9 @@ warning:
   config-file-create: "Utworzono plik config: config.yml"
   plugin-enabled: "EconomyGUI włączony z językiem: %lang%"
   no-economy: "Nie znaleziono dostawcy gospodarki! Wyłączanie pluginu."
+  upload-lang: "Załadowane języki: "
+  changed-lang: "Język zmieniony na: "
+  bad-transaction: "Zła transakcja dla UUID %uuid%: % raw%"
 
 status:
   online: "Online"
@@ -171,12 +182,22 @@ filter:
 history:
   operations: "Historia operacji"
   hint: "Kliknij, aby zobaczyć logi"
-  sent: "Wysłano"
-  received: "Otrzymano"
-  to-player: "do gracza"
-  from-player: "od gracza"
+  by: "Przez:"
+  date: "Data"
+  paid-by: "zapłacił %amount% graczowi %player%"
+  received-from: "otrzymał %amount% od gracza %player%"
+  given-by: "dano %amount% przez %player%"
+  taken-by: "pobrano %amount% przez %player%"
+  set-by: "saldo ustawiono na %amount% przez %player%"
 
 context-menu:
   title: "Szybkie akcje dla %player%"
   back: "Powrót do menu głównego"
   full-open: "Otwórz pełne zarządzanie"
+  apply-info: "Kliknij, aby zastosować do %player%"
+  give-100: "Daj $100"
+  give-1000: "Daj $1000"
+  take-100: "Zabierz $100"
+  take-1000: "Zabierz $1000"
+  set-5000: "Ustaw $5000"
+  reset-0: "Zresetuj do $0"

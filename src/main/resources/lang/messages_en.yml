@@ -1,4 +1,7 @@
 # messages_en.yml
+# Do not edit: This field is used for automatic language file updates
+config-version: "2.0.1"
+
 gui:
   title: "Economy Management"
   search: "Search: %search_query%"
@@ -34,7 +37,8 @@ gui:
   no-players-hint: "Try changing the search or filter"
   selected: "Selected"
   amount-input: "Enter Amount"
-  input-hint: "Left click to enter amount in chat"
+  custom-amount: "Custom Amount"
+  custom-amount-hint: "Left click to enter amount in chat"
   history: "Operations History"
   click-to-view: "Click to view history"
   back: "Back"
@@ -82,6 +86,7 @@ gui:
 
 error:
   invalid-amount: "Amount must be positive."
+  exceeds-max-amount: "Amount exceeds the server limit of $%max_amount%."
   invalid-amount-format: "Invalid amount format."
   no-permission: "You don't have permission!"
   no-players-selected: "No players selected for mass operation!"
@@ -93,6 +98,7 @@ error:
   player-only: "This command is for players only!"
   player-not-found: "Player not found."
   negative-amount: "Amount cannot be negative."
+
 command:
   usage: "Usage: /economygui <gui | reload | reset>"
   usage-gui: "Usage: /economygui gui"
@@ -111,9 +117,10 @@ action:
   filter-applied: "Filter applied: %filter_name%"
   cancelled: "Action cancelled."
   executed: "Executed %action% of $%amount% for %player%"
-  give: "Give Amount"
-  take: "Take Amount"
-  set: "Set Amount"
+  give: "Give"
+  take: "Take"
+  set: "Set"
+  click-to-apply-to: "Click to apply to"
 
 messages:
   enter-search: "Enter search query (or 'cancel' to abort):"
@@ -128,6 +135,9 @@ messages:
   set-amount: "Set balance to $%amount% for %player%"
   no-permission-give: "You don't have permission to give."
   search-reset: "Search and filters reset."
+  confirm-mass-action: "Confirm %action% of $%amount% on %count% players?"
+  confirm: "Confirm"
+  cancel: "Cancel"
 
 update:
   available: "*** UPDATE AVAILABLE *** A new version of EconomyGUI (%version%) is available at https://modrinth.com/plugin/economygui/versions"
@@ -147,6 +157,9 @@ warning:
   config-file-create: "Created config file: config.yml"
   plugin-enabled: "EconomyGUI enabled with language: %lang%"
   no-economy: "Economy provider not found! Disabling plugin."
+  upload-lang: "Languages loaded: "
+  changed-lang: "The language has been changed to: "
+  bad-transaction: "Bad transaction for UUID %uuid%: %raw%"
 
 status:
   online: "Online"
@@ -170,12 +183,24 @@ filter:
 history:
   operations: "Operations History"
   hint: "Click to view logs"
-  sent: "Sent"
-  received: "Received"
-  to-player: "to the player"
-  from-player: "from the player"
+  by: "By:"
+  date: "Date"
+  paid-by: "paid %amount% to %player%"
+  received-from: "received %amount% from %player%"
+  given-by: "given %amount% by %player%"
+  taken-by: "taken %amount% by %player%"
+  set-by: "set balance to %amount% by %player%"
 
 context-menu:
   title: "Quick Actions for %player%"
   back: "Back to Main Menu"
   full-open: "Open Full Management"
+  apply-info: "Click to apply to %player%"
+  give-100: "Give $100"
+  give-1000: "Give $1000"
+  take-100: "Take $100"
+  take-1000: "Take $1000"
+  set-5000: "Set $5000"
+  reset-0: "Reset to $0"
+
+

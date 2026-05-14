@@ -1,4 +1,7 @@
 # messages_tr.yml
+# Do not edit: This field is used for automatic language file updates
+config-version: "2.0.1"
+
 gui:
   title: "Ekonomi Yönetimi"
   search: "Arama: %search_query%"
@@ -34,7 +37,8 @@ gui:
   no-players-hint: "Arama veya filtreyi değiştirmeyi dene"
   selected: "Seçili"
   amount-input: "Miktar Gir"
-  input-hint: "Sohbete miktar girmek için sol tık"
+  custom-amount: "Özel Miktar"
+  custom-amount-hint: "Sohbete miktar girmek için sol tık"
   history: "İşlem Geçmişi"
   click-to-view: "Geçmişi görmek için tıkla"
   back: "Geri"
@@ -82,6 +86,7 @@ gui:
 
 error:
   invalid-amount: "Miktar pozitif olmalı."
+  exceeds-max-amount: "Miktar $%max_amount% sunucu limitini aşıyor."
   invalid-amount-format: "Geçersiz miktar formatı."
   no-permission: "İznin yok!"
   no-players-selected: "Toplu işlem için oyuncu seçilmedi!"
@@ -112,9 +117,10 @@ action:
   filter-applied: "Filtre uygulandı: %filter_name%"
   cancelled: "İşlem iptal edildi."
   executed: "%player% için $%amount% miktarında %action% yürütüldü"
-  give: "Miktar Ver"
-  take: "Miktar Al"
-  set: "Miktar Ayarla"
+  give: "Ver"
+  take: "Al"
+  set: "Ayarla"
+  click-to-apply-to: "Uygulamak için tıkla"
 
 messages:
   enter-search: "Arama sorgusu gir (veya 'cancel' ile iptal et):"
@@ -129,6 +135,9 @@ messages:
   set-amount: "%player% için bakiye $%amount% olarak ayarlandı"
   no-permission-give: "Verme iznin yok."
   search-reset: "Arama ve filtreler sıfırlandı."
+  confirm-mass-action: "%action% $%amount% %count% oyuncu için onayla?"
+  confirm: "Onayla"
+  cancel: "İptal"
 
 update:
   available: "*** GÜNCELLEME MEVCUT *** EconomyGUI'nin yeni sürümü (%version%) şu adreste mevcut: https://modrinth.com/plugin/economygui/versions"
@@ -148,6 +157,9 @@ warning:
   config-file-create: "Config dosyası oluşturuldu: config.yml"
   plugin-enabled: "EconomyGUI %lang% diliyle etkinleştirildi"
   no-economy: "Ekonomi sağlayıcısı bulunamadı! Plugin devre dışı bırakılıyor."
+  upload-lang: "Diller yüklendi: "
+  changed-lang: "Dil şu şekilde değiştirildi:: "
+  bad-transaction: "%uuid% UUID'si için işlem başarısız: %raw%"
 
 status:
   online: "Çevrimiçi"
@@ -171,12 +183,22 @@ filter:
 history:
   operations: "İşlem Geçmişi"
   hint: "Logları görmek için tıkla"
-  sent: "Gönderildi"
-  received: "Alındı"
-  to-player: "oyuncuya"
-  from-player: "oyuncudan"
+  by: "Veren:"
+  date: "Tarih"
+  paid-by: "%amount% %player% oyuncusuna ödendi"
+  received-from: "%player% oyuncusundan %amount% alındı"
+  given-by: "%player% tarafından %amount% verildi"
+  taken-by: "%player% tarafından %amount% alındı"
+  set-by: "bakiye %amount% olarak %player% tarafından ayarlandı"
 
 context-menu:
   title: "%player% için Hızlı İşlemler"
   back: "Ana Menüye Dön"
   full-open: "Tam Yönetimi Aç"
+  apply-info: "Uygulamak için tıklayın %player%"
+  give-100: "$100 Ver"
+  give-1000: "$1000 Ver"
+  take-100: "$100 Al"
+  take-1000: "$1000 Al"
+  set-5000: "$5000 Ayarla"
+  reset-0: "$0'a Sıfırla"

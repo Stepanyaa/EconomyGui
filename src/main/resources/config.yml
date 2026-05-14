@@ -17,8 +17,12 @@
 # Any help is greatly appreciated!
 
 # Plugin info
-config-version: "2.0.0"
+config-version: "2.0.1"
 language: "en"
+
+# Update checker
+# Set to false to disable update checking
+check-for-updates: true
 
 # Feature toggles
 features:

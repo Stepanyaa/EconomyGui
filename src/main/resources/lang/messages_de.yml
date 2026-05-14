@@ -1,4 +1,7 @@
 # messages_de.yml
+# Do not edit: This field is used for automatic language file updates
+config-version: "2.0.1"
+
 gui:
   title: "Wirtschaftsverwaltung"
   search: "Suche: %search_query%"
@@ -34,7 +37,8 @@ gui:
   no-players-hint: "Versuche Suche oder Filter zu ändern"
   selected: "Ausgewählt"
   amount-input: "Betrag eingeben"
-  input-hint: "Linksklick um Betrag im Chat einzugeben"
+  custom-amount: "Benutzerdefinierter Betrag"
+  custom-amount-hint: "Linksklick um Betrag im Chat einzugeben"
   history: "Operationsverlauf"
   click-to-view: "Klicken um Verlauf anzusehen"
   back: "Zurück"
@@ -82,6 +86,7 @@ gui:
 
 error:
   invalid-amount: "Betrag muss positiv sein."
+  exceeds-max-amount: "Betrag übersteigt das Serverlimit von $%max_amount%."
   invalid-amount-format: "Ungültiges Betragsformat."
   no-permission: "Du hast keine Berechtigung!"
   no-players-selected: "Keine Spieler für Massenoperation ausgewählt!"
@@ -112,9 +117,10 @@ action:
   filter-applied: "Filter angewendet: %filter_name%"
   cancelled: "Aktion abgebrochen."
   executed: "%action% von $%amount% für %player% ausgeführt"
-  give: "Betrag geben"
-  take: "Betrag abziehen"
-  set: "Betrag setzen"
+  give: "Geben"
+  take: "Nehmen"
+  set: "Einstellen"
+  click-to-apply-to: "Klicken zum Anwenden auf"
 
 messages:
   enter-search: "Suchbegriff eingeben (oder 'cancel' zum Abbrechen):"
@@ -129,6 +135,9 @@ messages:
   set-amount: "Kontostand auf $%amount% für %player% gesetzt"
   no-permission-give: "Du hast keine Berechtigung zum Geben."
   search-reset: "Suche und Filter zurückgesetzt."
+  confirm-mass-action: "%action% von $%amount% auf %count% Spieler bestätigen?"
+  confirm: "Bestätigen"
+  cancel: "Abbrechen"
 
 update:
   available: "*** UPDATE VERFÜGBAR *** Eine neue Version von EconomyGUI (%version%) ist verfügbar unter https://modrinth.com/plugin/economygui/versions"
@@ -148,6 +157,9 @@ warning:
   config-file-create: "Config-Datei erstellt: config.yml"
   plugin-enabled: "EconomyGUI aktiviert mit Sprache: %lang%"
   no-economy: "Kein Economy-Provider gefunden! Plugin wird deaktiviert."
+  upload-lang: "Hochgeladen Sprachen: "
+  changed-lang: "Die Sprache wurde geändert in: "
+  bad-transaction: "Ungültige Transaktion für UUID %uuid%: %raw%"
 
 status:
   online: "Online"
@@ -171,12 +183,22 @@ filter:
 history:
   operations: "Operationsverlauf"
   hint: "Klicken um Logs anzusehen"
-  sent: "Gesendet"
-  received: "Erhalten"
-  to-player: "an den Spieler"
-  from-player: "vom Spieler"
+  by: "Von:"
+  date: "Datum"
+  paid-by: "zahlte %amount% an %player%"
+  received-from: "erhielt %amount% von %player%"
+  given-by: "gegeben %amount% von %player%"
+  taken-by: "genommen %amount% von %player%"
+  set-by: "Kontostand auf %amount% von %player% gesetzt"
 
 context-menu:
   title: "Schnellaktionen für %player%"
   back: "Zurück zum Hauptmenü"
   full-open: "Volle Verwaltung öffnen"
+  apply-info: "Klicken zum Anwenden auf %player%"
+  give-100: "$100 geben"
+  give-1000: "$1000 geben"
+  take-100: "$100 abziehen"
+  take-1000: "$1000 abziehen"
+  set-5000: "Auf $5000 setzen"
+  reset-0: "Auf $0 zurücksetzen"

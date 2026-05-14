@@ -33,10 +33,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
-import org.bukkit.command.TabCompleter;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -57,47 +55,49 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-public class EconomyGUI extends JavaPlugin implements CommandExecutor, TabCompleter, Listener {
+public class EconomyGUI extends JavaPlugin implements Listener {
 
     private Economy econ = null;
-    private FileConfiguration messagesConfig;
     private FileConfiguration transactionsConfig;
     private File transactionsFile;
     private String language;
 
-    private static final String CURRENT_VERSION = "2.0.0";
+    private static final String CURRENT_VERSION = "2.0.1";
 
     private EconomySearchGUI economySearchGUI;
+    private LanguageManager languageManager;
     private final Set<String> adminUUIDs = ConcurrentHashMap.newKeySet();
     private String latestVersion = null;
     private boolean playerSelectionEnabled;
     private boolean massOperationsEnabled;
     private boolean quickActionsEnabled;
     private boolean fullManagementEnabled;
+    private boolean checkForUpdatesEnabled;
     public int transactionRetentionDays;
     public double maxAmount;
 
     private boolean isFirstEnable = true;
-    private File messagesFile;
 
 
     @Override
     public void onEnable() {
+        saveDefaultConfig();
+
+        languageManager = new LanguageManager(this);
+        languageManager.loadLanguages();
+        
+        reloadConfig();
+        applyConfig();
+        languageManager.setLanguage(language);
+        
+        updateConfigFile();
+        
         if (!setupEconomy()) {
             getLogger().severe(getMessage("warning.no-economy", "Economy provider not found! Disabling plugin."));
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
-        saveDefaultConfig();
-        updateConfigFile();
-        reloadConfig();
-        applyConfig();
-        loadMessages();
-        if (messagesConfig == null) {
-            getLogger().severe("Failed to load messages configuration. Disabling plugin.");
-            getServer().getPluginManager().disablePlugin(this);
-            return;
-        }
+
         if (!playerSelectionEnabled && !massOperationsEnabled && !quickActionsEnabled && !fullManagementEnabled) {
             getLogger().warning(getMessage("error.all-features-disabled",
                     "All features are disabled in config! Commands will be limited."));
@@ -201,12 +201,6 @@ public class EconomyGUI extends JavaPlugin implements CommandExecutor, TabComple
 
     private final Map<UUID, Double> balanceBeforePay = new ConcurrentHashMap<>();
 
-    /**
-     * Фаза 1: снимаем баланс отправителя ДО того, как Essentials выполнит /pay.
-     * Запускается на HIGH — раньше, чем Essentials (который обычно на NORMAL/HIGH).
-     * Если Essentials стоит на HIGH — используем HIGHEST здесь, важен лишь порядок:
-     * этот хэндлер должен быть ДО исполнения команды.
-     */
     @EventHandler(priority = EventPriority.LOW)
     public void onPayCommandBefore(PlayerCommandPreprocessEvent event) {
         if (!isPayCommand(event.getMessage())) return;
@@ -215,11 +209,6 @@ public class EconomyGUI extends JavaPlugin implements CommandExecutor, TabComple
         balanceBeforePay.put(sender.getUniqueId(), balanceBefore);
     }
 
-    /**
-     * Фаза 2: после выполнения /pay сравниваем балансы.
-     * Разница = реально переведённая сумма (учитывает комиссии Essentials и лимиты).
-     * Работает для ЛЮБОГО получателя — онлайн или офлайн.
-     */
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPayCommandAfter(PlayerCommandPreprocessEvent event) {
         String raw = event.getMessage();
@@ -264,7 +253,6 @@ public class EconomyGUI extends JavaPlugin implements CommandExecutor, TabComple
         }, 1L);
     }
 
-    /** Проверяет, является ли сообщение командой pay-типа. */
     private boolean isPayCommand(String message) {
         String[] args = message.split("\\s+");
         if (args.length < 3) return false;
@@ -283,38 +271,42 @@ public class EconomyGUI extends JavaPlugin implements CommandExecutor, TabComple
     public boolean isFullManagementEnabled()  { return fullManagementEnabled; }
     public Set<String> getAdminUUIDs()        { return adminUUIDs; }
 
-    /**
-     * Проверяет, не превышает ли сумма лимит из конфига.
-     * @return true если сумма в пределах лимита (или лимит не задан)
-     */
     public boolean isWithinMaxAmount(double amount) {
         return maxAmount <= 0 || amount <= maxAmount;
     }
 
     public String getMessage(String key, String def) {
-        if (messagesConfig == null) {
+        if (languageManager == null) {
             return ChatColor.translateAlternateColorCodes('&', def);
         }
-        String msg = messagesConfig.getString(key, def);
+        String msg = languageManager.getMessage(key, def);
         return ChatColor.translateAlternateColorCodes('&', msg);
     }
 
     public String getMessage(String key, String def, Object... placeholders) {
-        String msg = getMessage(key, def);
-        if (placeholders != null && placeholders.length >= 2 && placeholders.length % 2 == 0) {
-            for (int i = 0; i < placeholders.length; i += 2) {
-                msg = msg.replace("%" + placeholders[i] + "%", placeholders[i + 1].toString());
-            }
+        if (languageManager == null) {
+            return ChatColor.translateAlternateColorCodes('&', def);
         }
+        String[] replacements = new String[placeholders.length];
+        for (int i = 0; i < placeholders.length; i++) {
+            replacements[i] = placeholders[i].toString();
+        }
+        String msg = languageManager.getMessage(key, def, replacements);
         return ChatColor.translateAlternateColorCodes('&', msg);
+    }
+
+    public LanguageManager getLanguageManager() {
+        return languageManager;
     }
 
     public void reloadPlugin(Player player) {
         reloadConfig();
         applyConfig();
         loadMessages();
+        languageManager.reload();
         loadTransactions();
         updateConfigFile();
+        economySearchGUI.recreateInventory();
         economySearchGUI.getPlayerCache().rebuild();
         economySearchGUI.refreshOpenGUIs();
         player.sendMessage(ChatColor.GREEN + getMessage("action.config-reloaded", "Configuration reloaded."));
@@ -336,43 +328,10 @@ public class EconomyGUI extends JavaPlugin implements CommandExecutor, TabComple
         fullManagementEnabled  = getConfig().getBoolean("features.full-management", true);
         transactionRetentionDays = getConfig().getInt("features.transaction-retention-days", 30);
         maxAmount = getConfig().getDouble("features.max-amount", 0);
+        checkForUpdatesEnabled = getConfig().getBoolean("check-for-updates", true);
     }
 
     private void loadMessages() {
-        String fileName = "messages_" + language + ".yml";
-        messagesFile = new File(getDataFolder(), fileName);
-        try {
-            if (!messagesFile.exists()) {
-                if (getResource(fileName) != null) {
-                    saveResource(fileName, false);
-                    getLogger().info(getMessage("warning.messages-file-create", "Created messages file: %file%",
-                            "file", fileName));
-                } else {
-                    getLogger().warning(getMessage("warning.messages-file-not-found",
-                            "Messages file %file% not found in plugin!", "file", fileName));
-                    messagesConfig = new YamlConfiguration();
-                    return;
-                }
-            }
-            messagesConfig = YamlConfiguration.loadConfiguration(messagesFile);
-            String fileVersion = messagesConfig.getString("version", "0.0.0");
-            if (!fileVersion.equals(CURRENT_VERSION) && getResource(fileName) != null) {
-                saveResource(fileName, true);
-                messagesConfig = YamlConfiguration.loadConfiguration(messagesFile);
-                messagesConfig.set("version", CURRENT_VERSION);
-                messagesConfig.save(messagesFile);
-                getLogger().info(getMessage("warning.messages-file-updated",
-                        "Updated messages file %file% to version %version%",
-                        "file", fileName, "version", CURRENT_VERSION));
-            } else if (isFirstEnable) {
-                getLogger().info(getMessage("warning.messages-file-up-to-date",
-                        "Messages file %file% is up-to-date (version %version%).",
-                        "file", fileName, "version", CURRENT_VERSION));
-            }
-        } catch (Exception e) {
-            getLogger().severe("Failed to load messages file: " + e.getMessage());
-            messagesConfig = new YamlConfiguration();
-        }
     }
 
     private void loadTransactions() {
@@ -409,9 +368,7 @@ public class EconomyGUI extends JavaPlugin implements CommandExecutor, TabComple
         String fileVersion = existing.getString("config-version", "0.0.0");
         if (fileVersion.equals(CURRENT_VERSION)) {
             if (isFirstEnable) {
-                getLogger().info(getMessage("warning.config-file-up-to-date",
-                        "Config file config.yml is up-to-date (version %version%).",
-                        "version", CURRENT_VERSION));
+                getLogger().info("Config file config.yml is up-to-date (version " + CURRENT_VERSION + ").");
             }
             return;
         }
@@ -431,15 +388,18 @@ public class EconomyGUI extends JavaPlugin implements CommandExecutor, TabComple
         existing.set("config-version", CURRENT_VERSION);
         try {
             existing.save(configFile);
-            getLogger().info(getMessage(updated ? "warning.config-file-updated" : "warning.config-file-up-to-date",
-                    updated ? "Updated config.yml to version %version%." : "Config file config.yml is up-to-date (version %version%).",
-                    "version", CURRENT_VERSION));
+            if (updated) {
+                getLogger().info("Updated config.yml to version " + CURRENT_VERSION + ".");
+            } else {
+                getLogger().info("Config file config.yml is up-to-date (version " + CURRENT_VERSION + ").");
+            }
         } catch (IOException e) {
             getLogger().warning("Failed to save updated config.yml: " + e.getMessage());
         }
     }
 
     private void checkForUpdates() {
+        if (!checkForUpdatesEnabled) return;
         Bukkit.getScheduler().runTaskAsynchronously(this, () -> {
             try {
                 URL url = new URL("https://api.modrinth.com/v2/project/economygui/version");

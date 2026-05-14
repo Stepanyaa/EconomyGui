@@ -1,6 +1,26 @@
 /**
  * MIT License
- * EconomyGui — Copyright (c) 2026 Stepanyaa
+ *
+ * EconomyGui
+ * Copyright (c) 2026 Stepanyaa
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  */
 package ru.stepanyaa.economyGUI;
 
@@ -71,7 +91,10 @@ public class TransactionHandler {
                         String exec = parts[3];
                         list.add(new Transaction(ts, desc, amt, exec));
                     } catch (NumberFormatException e) {
-                        plugin.getLogger().warning("Bad transaction for UUID " + uuid + ": " + raw);
+                        plugin.getLogger().warning(plugin.getMessage("warning.bad-transaction",
+                                "Bad transaction for UUID %uuid%: %raw%",
+                                "uuid", uuid,
+                                "raw", raw));
                     }
                 }
             }
@@ -94,13 +117,36 @@ public class TransactionHandler {
     }
 
     private String buildDescription(String action, String executorName) {
+        String key;
+        String defaultMsg;
+
         switch (action.toLowerCase()) {
-            case "pay":     return "paid to " + executorName;
-            case "receive": return "received from " + executorName;
-            case "give":    return "given by " + executorName;
-            case "take":    return "taken by " + executorName;
-            case "set":     return "set by " + executorName;
-            default:        return action + " (" + executorName + ")";
+            case "pay":
+                key = "history.paid-by";
+                defaultMsg = "paid %amount% to %player%";
+                break;
+            case "receive":
+                key = "history.received-from";
+                defaultMsg = "received %amount% from %player%";
+                break;
+            case "give":
+                key = "history.given-by";
+                defaultMsg = "given %amount% by %player%";
+                break;
+            case "take":
+                key = "history.taken-by";
+                defaultMsg = "taken %amount% by %player%";
+                break;
+            case "set":
+                key = "history.set-by";
+                defaultMsg = "set balance to %amount% by %player%";
+                break;
+            default:
+                key = "history.unknown";
+                defaultMsg = action + " by %player%";
+                break;
         }
+
+        return plugin.getMessage(key, defaultMsg, "player", executorName);
     }
 }

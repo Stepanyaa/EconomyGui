@@ -1,4 +1,7 @@
 # messages_ru.yml
+# Do not edit: This field is used for automatic language file updates
+config-version: "2.0.1"
+
 gui:
   title: "Управление Экономикой"
   search: "Поиск: %search_query%"
@@ -34,7 +37,8 @@ gui:
   no-players-hint: "Попробуйте изменить поиск или фильтр"
   selected: "Выбрано"
   amount-input: "Введите Сумму"
-  input-hint: "ЛКМ для ввода суммы в чат"
+  custom-amount: "Пользовательская сумма"
+  custom-amount-hint: "ЛКМ для ввода суммы в чат"
   history: "История Операций"
   click-to-view: "Нажмите, чтобы просмотреть историю"
   back: "Назад"
@@ -82,6 +86,7 @@ gui:
 
 error:
   invalid-amount: "Сумма должна быть положительной."
+  exceeds-max-amount: "Сумма превышает лимит сервера в $%max_amount%."
   invalid-amount-format: "Неверный формат суммы."
   no-permission: "У вас нет разрешения!"
   no-players-selected: "Нет выбранных игроков для массовой операции!"
@@ -112,9 +117,10 @@ action:
   filter-applied: "Фильтр применён: %filter_name%"
   cancelled: "Действие отменено."
   executed: "Выполнено %action% на $%amount% для %player%"
-  give: "Выдать сумму"
-  take: "Взять сумму"
-  set: "Установить сумму"
+  give: "Выдать"
+  take: "Взять"
+  set: "Установить"
+  click-to-apply-to: "Нажмите для применения к"
 
 messages:
   enter-search: "Введите запрос для поиска (или 'отмена' для отмены):"
@@ -129,6 +135,9 @@ messages:
   set-amount: "Установлен баланс $%amount% для игрока %player%"
   no-permission-give: "У вас нет разрешения на выдачу."
   search-reset: "Поиск и фильтры сброшены."
+  confirm-mass-action: "Подтвердить %action% на $%amount% для %count% игроков?"
+  confirm: "Подтвердить"
+  cancel: "Отмена"
 
 update:
   available: "*** ОБНОВЛЕНИЕ ДОСТУПНО *** Доступна новая версия EconomyGUI (%version%) на https://modrinth.com/plugin/economygui/versions"
@@ -148,6 +157,9 @@ warning:
   config-file-create: "Создан файл конфигурации: config.yml"
   plugin-enabled: "EconomyGUI включён с языком: %lang%"
   no-economy: "Провайдер экономики не найден! Отключение плагина."
+  upload-lang: "Загружены языки: "
+  changed-lang: "Язык изменён на: "
+  bad-transaction: "Неудачная транзакция для UUID %uuid%: %raw%"
 
 status:
   online: "Онлайн"
@@ -171,12 +183,22 @@ filter:
 history:
   operations: "История Операций"
   hint: "Нажмите, чтобы просмотреть логи"
-  sent: "Отправлено"
-  received: "Получено"
-  to-player: "игроку"
-  from-player: "от игрока"
+  by: "От:"
+  date: "Дата"
+  paid-by: "Перевёл игроку %player%"
+  received-from: "Получил от игрока %player%"
+  given-by: "Выдано администратором %player%"
+  taken-by: "Забрано администратором %player%"
+  set-by: "Баланс установлен администратором %player%"
 
 context-menu:
-  title: "Быстрые Действия для %player%"
-  back: "Назад в Главное Меню"
-  full-open: "Открыть Полное Управление"
+  title: "Быстрые действия для %player%"
+  back: "Назад в главное меню"
+  full-open: "Открыть полное управление"
+  apply-info: "Нажмите, чтобы применить к %player%"
+  give-100: "Выдать $100"
+  give-1000: "Выдать $1000"
+  take-100: "Забрать $100"
+  take-1000: "Забрать $1000"
+  set-5000: "Установить $5000"
+  reset-0: "Сбросить до $0"
