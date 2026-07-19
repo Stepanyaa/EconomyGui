@@ -1,27 +1,3 @@
-/**
- * MIT License
- *
- * EconomyGui
- * Copyright (c) 2025 Stepanyaa
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
 package ru.stepanyaa.economyGUI;
 
 import com.mojang.authlib.GameProfile;
@@ -40,25 +16,17 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.*;
 
-
 public class ItemFactory {
 
     private static final Random RANDOM = new Random();
 
     private static final String[] DEFAULT_SKIN_VALUES = {
-            // Steve (Classic)
             "ewogICJ0ZXh0dXJlcyI6IHsKICAgICJTS0lOIjogewogICAgICAidXJsIjogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzEzMTVjYzVjNDQ1NDNlZjZmNTI5MjQzNzUwODM5NjU2ODI4Yjg4ZjMzNTQzYjU5M2VmOTA4ODY2NTc5IgogICAgfQogIH0KfQ==",
-            // Alex (Slim)
             "ewogICJ0ZXh0dXJlcyI6IHsKICAgICJTS0lOIjogewogICAgICAidXJsIjogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjMzMTAwNWI4Mjg3ODE0OGU2Yzc1N2M2Njc0ODY4ZjZkNjM5Yjk3MmUyNzYwYTAxNDkwOThkNjY2ZDczNjM0IgogICAgfQogIH0KfQ==",
-            // Noor
             "ewogICJ0ZXh0dXJlcyI6IHsKICAgICJTS0lOIjogewogICAgICAidXJsIjogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzg5MjU5NzdhNDU2M2E2MmQzZTExMmQ3Yzg2NTE4N2UxZjQ0MGQ5OWVkNTBhMDQ5ZDVjODI5Nzc1MDgyNCIKICAgIH0KICB9Cn0=",
-            // Sunny
             "ewogICJ0ZXh0dXJlcyI6IHsKICAgICJTS0lOIjogewogICAgICAidXJsIjogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjc4ODViNzM2YjZmMDAxNDc5OGU0ZDM1ZTE2M2I4NjhlNjQ3NTY1OGU2NTMwNmQ3MWIzMDY0NDkxNzY0IgogICAgfQogIH0KfQ==",
-            // Ari
             "ewogICJ0ZXh0dXJlcyI6IHsKICAgICJTS0lOIjogewogICAgICAidXJsIjogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTZlNWYxZjk5YzE1ODVmNTQ4ZDhjOTFhMGY4NjU4OGE5MTM0NTljMzYzOTk0MzViNTQ2MzZkMTIwZjI2MiIKICAgIH0KICB9Cn0=",
-            // Zuri
             "ewogICJ0ZXh0dXJlcyI6IHsKICAgICJTS0lOIjogewogICAgICAidXJsIjogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGEzMDU5NDM3OTc2ZTMzODFlNGI5ODY4YzY3YzVlNTMzYzY5MGYzMzk0NjI1ZjZlODY0ODE3YTEyODhjIgogICAgfQogIH0KfQ==",
-            // Kai
             "ewogICJ0ZXh0dXJlcyI6IHsKICAgICJTS0lOIjogewogICAgICAidXJsIjogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmE5YTNmYjY4MDdmN2M0NjI3MTk2MDI1MDZlN2EyYjkwNGQ5ZTAzNWU0ZDJhMTM4Mzc5MjYxNzY1YzkyIgogICAgfQogIH0KfQ=="
     };
 
@@ -82,10 +50,8 @@ public class ItemFactory {
 
         List<String> lore = new ArrayList<>();
         String formattedBalance = String.format(moneyFormat, balance);
-        lore.add(ChatColor.GOLD + plugin.getMessage("gui.balance", "Balance: $%balance%",
-                "balance", formattedBalance));
-        lore.add(ChatColor.GRAY + plugin.getMessage("gui.actions",
-                "LMB: Manage | RMB: Quick Actions | Shift+Left: Select"));
+        lore.add(ChatColor.GOLD + plugin.getMessage("gui.balance", "Balance: $%balance%", "balance", formattedBalance));
+        lore.add(ChatColor.GRAY + plugin.getMessage("gui.actions", "LMB: Manage | RMB: Quick Actions | Shift+Left: Select"));
         if (selected) {
             lore.add(ChatColor.GREEN + plugin.getMessage("gui.selected", "Selected"));
             meta.addEnchant(getGlowEnchantment(), 1, true);
@@ -95,35 +61,29 @@ public class ItemFactory {
         head.setItemMeta(meta);
         return head;
     }
+
     public ItemStack backButton(String hintKey, String hintDef) {
-        return simple(Material.ARROW,
-                ChatColor.RED + plugin.getMessage("gui.back", "Back"),
-                Collections.singletonList(ChatColor.GRAY + plugin.getMessage(hintKey, hintDef)));
+        return simple(Material.ARROW, ChatColor.RED + plugin.getMessage("gui.back", "Back"), Collections.singletonList(ChatColor.GRAY + plugin.getMessage(hintKey, hintDef)));
     }
+
     public ItemStack pageButton(boolean hasPage, boolean isNext, int currentPage, int totalPages) {
         Material mat = hasPage ? Material.ARROW : Material.RED_STAINED_GLASS_PANE;
         String name;
         if (hasPage) {
-            name = ChatColor.YELLOW + plugin.getMessage(isNext ? "gui.next-page" : "gui.previous-page",
-                    isNext ? "Next Page" : "Previous Page");
+            name = ChatColor.YELLOW + plugin.getMessage(isNext ? "gui.next-page" : "gui.previous-page", isNext ? "Next Page" : "Previous Page");
         } else {
             name = ChatColor.RED + plugin.getMessage("gui.no-page", "No Page");
         }
         List<String> lore = new ArrayList<>();
-        lore.add(ChatColor.GRAY + plugin.getMessage("gui.page-info", "Page %current_page% of %total_pages%",
-                "current_page", String.valueOf(currentPage + 1),
-                "total_pages", String.valueOf(totalPages)));
+        lore.add(ChatColor.GRAY + plugin.getMessage("gui.page-info", "Page %current_page% of %total_pages%", "current_page", String.valueOf(currentPage + 1), "total_pages", String.valueOf(totalPages)));
         if (hasPage) {
             lore.add(ChatColor.GRAY + plugin.getMessage("gui.shift-rmb-page", "Shift+RMB: Skip 5 pages"));
         }
         return simple(mat, name, lore);
     }
 
-    public ItemStack button(Material mat, ChatColor nameColor, String nameKey, String nameDef,
-                            String hintKey, String hintDef) {
-        return simple(mat,
-                nameColor + plugin.getMessage(nameKey, nameDef),
-                Collections.singletonList(ChatColor.GRAY + plugin.getMessage(hintKey, hintDef)));
+    public ItemStack button(Material mat, ChatColor nameColor, String nameKey, String nameDef, String hintKey, String hintDef) {
+        return simple(mat, nameColor + plugin.getMessage(nameKey, nameDef), Collections.singletonList(ChatColor.GRAY + plugin.getMessage(hintKey, hintDef)));
     }
 
     public ItemStack simple(Material mat, String displayName, List<String> lore) {
@@ -147,8 +107,7 @@ public class ItemFactory {
             Field profileField = meta.getClass().getDeclaredField("profile");
             profileField.setAccessible(true);
             profileField.set(meta, profile);
-        } catch (Exception ignored) {
-        }
+        } catch (Exception ignored) {}
     }
 
     private Enchantment getGlowEnchantment() {

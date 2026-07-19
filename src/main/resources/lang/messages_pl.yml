@@ -1,6 +1,6 @@
 # messages_pl.yml
 # Do not edit: This field is used for automatic language file updates
-config-version: "2.0.1"
+config-version: "2.1.0"
 
 gui:
   title: "Zarządzanie Gospodarką"
@@ -137,6 +137,8 @@ messages:
   confirm-mass-action: "Potwierdzić %action% $%amount% dla %count% graczy?"
   confirm: "Potwierdź"
   cancel: "Anuluj"
+  history_error: "&cWystąpił błąd podczas ładowania historii transakcji."
+  history_empty: "&cTen gracz nie ma historii transakcji."
 
 update:
   available: "*** DOSTĘPNA AKTUALIZACJA *** Nowa wersja EconomyGUI (%version%) jest dostępna na https://modrinth.com/plugin/economygui/versions"

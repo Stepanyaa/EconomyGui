@@ -1,6 +1,6 @@
 # messages_ru.yml
 # Do not edit: This field is used for automatic language file updates
-config-version: "2.0.1"
+config-version: "2.1.0"
 
 gui:
   title: "Управление Экономикой"
@@ -138,6 +138,8 @@ messages:
   confirm-mass-action: "Подтвердить %action% на $%amount% для %count% игроков?"
   confirm: "Подтвердить"
   cancel: "Отмена"
+  history_error: "&cПроизошла ошибка при загрузке истории транзакций."
+  history_empty: "&cУ этого игрока нет истории транзакций."
 
 update:
   available: "*** ОБНОВЛЕНИЕ ДОСТУПНО *** Доступна новая версия EconomyGUI (%version%) на https://modrinth.com/plugin/economygui/versions"

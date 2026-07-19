@@ -1,6 +1,6 @@
 # messages_fr.yml
 # Do not edit: This field is used for automatic language file updates
-config-version: "2.0.1"
+config-version: "2.1.0"
 
 gui:
   title: "Gestion de l'économie"
@@ -83,6 +83,8 @@ gui:
   global-stats-lore: "(Solde total, moyenne, meilleurs joueurs...)"
   click-cycle: "Clic gauche → Suivant"
   right-click-cycle: "Clic droit → Précédent"
+  history_error: "&cUne erreur s'est produite lors du chargement de l'historique des transactions."
+  history_empty: "&cCe lecteur n'a pas d'historique des transactions."
 
 error:
   invalid-amount: "Le montant doit être positif."

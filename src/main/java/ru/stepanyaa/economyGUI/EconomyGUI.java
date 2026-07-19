@@ -1,32 +1,10 @@
-/**
- * MIT License
- *
- * EconomyGui
- * Copyright (c) 2025 Stepanyaa
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
 package ru.stepanyaa.economyGUI;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import dev.faststats.ErrorTracker;
+import dev.faststats.data.Metric;
 import net.milkbowl.vault.economy.Economy;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
@@ -35,7 +13,6 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -44,6 +21,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
+import ru.stepanyaa.economyGUI.database.DatabaseManager;
+import dev.faststats.bukkit.BukkitContext;
 
 import java.io.File;
 import java.io.IOException;
@@ -53,17 +32,27 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public class EconomyGUI extends JavaPlugin implements Listener {
+    public static final ErrorTracker ERROR_TRACKER = ErrorTracker.contextAware();
+    private final AtomicInteger gameCount = new AtomicInteger();
+
+    private final BukkitContext context = new BukkitContext.Factory(this, "8a0c8b55ce2b568bd56821f8b4db9418")
+            .errorTrackerService(ERROR_TRACKER)
+            .metrics(factory -> factory
+                    .addMetric(Metric.number("game_count", gameCount::get))
+                    .addMetric(Metric.string("server_version", () -> "1.0.0"))
+
+                    .onFlush(() -> gameCount.set(0))
+
+                    .create())
+            .create();
 
     private Economy econ = null;
-    private FileConfiguration transactionsConfig;
-    private File transactionsFile;
     private String language;
-
-    private static final String CURRENT_VERSION = "2.0.1";
-
+    private static final String CURRENT_VERSION = "2.1.0";
     private EconomySearchGUI economySearchGUI;
     private LanguageManager languageManager;
     private final Set<String> adminUUIDs = ConcurrentHashMap.newKeySet();
@@ -75,66 +64,71 @@ public class EconomyGUI extends JavaPlugin implements Listener {
     private boolean checkForUpdatesEnabled;
     public int transactionRetentionDays;
     public double maxAmount;
-
+    private DatabaseManager databaseManager;
+    private TransactionHandler transactionHandler;
     private boolean isFirstEnable = true;
+    private final Map<UUID, Double> balanceBeforePay = new ConcurrentHashMap<>();
 
 
     @Override
     public void onEnable() {
         saveDefaultConfig();
-
         languageManager = new LanguageManager(this);
         languageManager.loadLanguages();
-        
-        reloadConfig();
         applyConfig();
-        languageManager.setLanguage(language);
-        
-        updateConfigFile();
-        
+        languageManager.setLanguage(getConfig().getString("language", "en"));
+
         if (!setupEconomy()) {
             getLogger().severe(getMessage("warning.no-economy", "Economy provider not found! Disabling plugin."));
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
 
-        if (!playerSelectionEnabled && !massOperationsEnabled && !quickActionsEnabled && !fullManagementEnabled) {
-            getLogger().warning(getMessage("error.all-features-disabled",
-                    "All features are disabled in config! Commands will be limited."));
+        databaseManager = new DatabaseManager(this);
+        File sqliteFile = new File(getDataFolder(), "database.db");
+
+        if (getConfig().getBoolean("mysql.enabled")) {
+            databaseManager.connectMySQL(
+                    getConfig().getString("mysql.host"),
+                    getConfig().getInt("mysql.port"),
+                    getConfig().getString("mysql.database"),
+                    getConfig().getString("mysql.username"),
+                    getConfig().getString("mysql.password")
+            );
+            if (sqliteFile.exists()) {
+                databaseManager.migrateLocalToRemote(sqliteFile);
+            }
+        } else {
+            databaseManager.connectSQLite(sqliteFile);
         }
 
+        File oldTransactions = new File(getDataFolder(), "transactions.yml");
+        if (oldTransactions.exists()) {
+            YamlConfiguration oldConfig = YamlConfiguration.loadConfiguration(oldTransactions);
+            databaseManager.migrateFromYaml(oldConfig);
+            oldTransactions.renameTo(new File(getDataFolder(), "transactions_old_backup.yml"));
+        }
+
+        transactionHandler = new TransactionHandler(this, databaseManager);
         economySearchGUI = new EconomySearchGUI(this);
         getServer().getPluginManager().registerEvents(economySearchGUI, this);
-        getServer().getPluginManager().registerEvents(economySearchGUI.getPlayerCache(), this);
         getServer().getPluginManager().registerEvents(this, this);
-
-        loadTransactions();
 
         PluginCommand command = getCommand("economygui");
         if (command != null) {
             command.setExecutor(this);
             command.setTabCompleter(this);
-            command.setPermissionMessage(ChatColor.RED + getMessage("error.no-permission", "You don't have permission!"));
-        } else {
-            getLogger().warning("Failed to register command 'economygui'!");
         }
-
-        adminUUIDs.addAll(getConfig().getStringList("admin-uuids"));
-        getLogger().info(getMessage("warning.plugin-enabled",
-                "EconomyGUI enabled with language: %lang%", "lang", language));
-
-        checkForUpdates();
-        isFirstEnable = false;
+        context.ready();
         new Metrics(this, 27776);
-        economySearchGUI.startBalancePolling();
-
-        Bukkit.getScheduler().runTaskTimerAsynchronously(this, this::saveTransactions, 6000L, 6000L);
     }
 
     @Override
     public void onDisable() {
-        saveTransactions();
-        getLogger().info("EconomyGUI disabled.");
+        if (databaseManager != null) {
+            databaseManager.close();
+        }
+        context.shutdown();
     }
 
     @Override
@@ -158,7 +152,6 @@ public class EconomyGUI extends JavaPlugin implements Listener {
                 }
                 economySearchGUI.openLastGUIMenu(player);
                 return true;
-
             case "reload":
                 if (!player.hasPermission("economygui.reload")) {
                     player.sendMessage(ChatColor.RED + getMessage("error.no-permission", "You don't have permission!"));
@@ -170,7 +163,6 @@ public class EconomyGUI extends JavaPlugin implements Listener {
                 }
                 reloadPlugin(player);
                 return true;
-
             case "reset":
                 if (!player.hasPermission("economygui.reset")) {
                     player.sendMessage(ChatColor.RED + getMessage("error.no-permission", "You don't have permission!"));
@@ -182,7 +174,6 @@ public class EconomyGUI extends JavaPlugin implements Listener {
                 }
                 economySearchGUI.resetSearch(player);
                 return true;
-
             default:
                 player.sendMessage(ChatColor.RED + getMessage("command.usage", "Usage: /economygui <gui | reload | reset>"));
                 return true;
@@ -199,8 +190,6 @@ public class EconomyGUI extends JavaPlugin implements Listener {
         return Collections.emptyList();
     }
 
-    private final Map<UUID, Double> balanceBeforePay = new ConcurrentHashMap<>();
-
     @EventHandler(priority = EventPriority.LOW)
     public void onPayCommandBefore(PlayerCommandPreprocessEvent event) {
         if (!isPayCommand(event.getMessage())) return;
@@ -213,7 +202,6 @@ public class EconomyGUI extends JavaPlugin implements Listener {
     public void onPayCommandAfter(PlayerCommandPreprocessEvent event) {
         String raw = event.getMessage();
         if (!isPayCommand(raw)) return;
-
         String[] args = raw.split("\\s+");
         String cmd = args[0].toLowerCase();
         int playerArgIndex = cmd.equals("/money") ? 2 : 1;
@@ -224,31 +212,18 @@ public class EconomyGUI extends JavaPlugin implements Listener {
         if (balanceBefore == null) return;
 
         String targetName = args[playerArgIndex];
-
         OfflinePlayer target = Bukkit.getPlayerExact(targetName);
-        if (target == null) target = Bukkit.getPlayer(targetName);
-        if (target == null) {
-            @SuppressWarnings("deprecation")
-            OfflinePlayer offlineExact = Bukkit.getOfflinePlayer(targetName);
+        if (target == null) target = Bukkit.getOfflinePlayer(targetName);
 
-            if (offlineExact.hasPlayedBefore() || offlineExact.isOnline()) {
-                target = offlineExact;
-            }
-        }
-        if (target == null || target.getUniqueId().equals(sender.getUniqueId())) {
-            return;
-        }
+        if (target == null || target.getUniqueId().equals(sender.getUniqueId())) return;
 
         final OfflinePlayer finalTarget = target;
         Bukkit.getScheduler().runTaskLater(this, () -> {
             double balanceAfter = getEconomy().getBalance(sender);
             double diff = balanceBefore - balanceAfter;
-
             if (diff > 0.001) {
-                economySearchGUI.getTransactionHandler()
-                        .log(sender.getUniqueId().toString(), "pay", diff, sender);
-                economySearchGUI.getTransactionHandler()
-                        .log(finalTarget.getUniqueId().toString(), "receive", diff, sender);
+                transactionHandler.log(sender.getUniqueId().toString(), "pay", diff, sender);
+                transactionHandler.log(finalTarget.getUniqueId().toString(), "receive", diff, sender);
             }
         }, 1L);
     }
@@ -279,8 +254,7 @@ public class EconomyGUI extends JavaPlugin implements Listener {
         if (languageManager == null) {
             return ChatColor.translateAlternateColorCodes('&', def);
         }
-        String msg = languageManager.getMessage(key, def);
-        return ChatColor.translateAlternateColorCodes('&', msg);
+        return ChatColor.translateAlternateColorCodes('&', languageManager.getMessage(key, def));
     }
 
     public String getMessage(String key, String def, Object... placeholders) {
@@ -291,8 +265,7 @@ public class EconomyGUI extends JavaPlugin implements Listener {
         for (int i = 0; i < placeholders.length; i++) {
             replacements[i] = placeholders[i].toString();
         }
-        String msg = languageManager.getMessage(key, def, replacements);
-        return ChatColor.translateAlternateColorCodes('&', msg);
+        return ChatColor.translateAlternateColorCodes('&', languageManager.getMessage(key, def, replacements));
     }
 
     public LanguageManager getLanguageManager() {
@@ -302,9 +275,7 @@ public class EconomyGUI extends JavaPlugin implements Listener {
     public void reloadPlugin(Player player) {
         reloadConfig();
         applyConfig();
-        loadMessages();
         languageManager.reload();
-        loadTransactions();
         updateConfigFile();
         economySearchGUI.recreateInventory();
         economySearchGUI.getPlayerCache().rebuild();
@@ -331,71 +302,27 @@ public class EconomyGUI extends JavaPlugin implements Listener {
         checkForUpdatesEnabled = getConfig().getBoolean("check-for-updates", true);
     }
 
-    private void loadMessages() {
-    }
-
-    private void loadTransactions() {
-        transactionsFile = new File(getDataFolder(), "transactions.yml");
-        if (!transactionsFile.exists()) {
-            try {
-                transactionsFile.createNewFile();
-                getLogger().info("Created transactions file: transactions.yml");
-            } catch (IOException e) {
-                getLogger().severe("Failed to create transactions.yml: " + e.getMessage());
-            }
-        }
-        transactionsConfig = YamlConfiguration.loadConfiguration(transactionsFile);
-        economySearchGUI.getTransactionHandler().load(transactionsConfig);
-    }
-
-    public void saveTransactions() {
-        economySearchGUI.getTransactionHandler().save(transactionsConfig);
-        try {
-            transactionsConfig.save(transactionsFile);
-        } catch (IOException e) {
-            getLogger().severe("Failed to save transactions.yml: " + e.getMessage());
-        }
-    }
-
     private void updateConfigFile() {
         File configFile = new File(getDataFolder(), "config.yml");
         if (!configFile.exists()) {
             saveResource("config.yml", false);
-            getLogger().info(getMessage("warning.config-file-create", "Created config file: config.yml"));
             return;
         }
         YamlConfiguration existing = YamlConfiguration.loadConfiguration(configFile);
         String fileVersion = existing.getString("config-version", "0.0.0");
-        if (fileVersion.equals(CURRENT_VERSION)) {
-            if (isFirstEnable) {
-                getLogger().info("Config file config.yml is up-to-date (version " + CURRENT_VERSION + ").");
-            }
-            return;
-        }
-        if (getResource("config.yml") == null) {
-            getLogger().warning(getMessage("warning.config-file-not-found", "Resource config.yml not found in plugin!"));
-            return;
-        }
-        YamlConfiguration defaults = YamlConfiguration.loadConfiguration(
-                new InputStreamReader(getResource("config.yml"), StandardCharsets.UTF_8));
-        boolean updated = false;
+        if (fileVersion.equals(CURRENT_VERSION)) return;
+
+        if (getResource("config.yml") == null) return;
+        YamlConfiguration defaults = YamlConfiguration.loadConfiguration(new InputStreamReader(getResource("config.yml"), StandardCharsets.UTF_8));
         for (String key : defaults.getKeys(true)) {
             if (!existing.contains(key)) {
                 existing.set(key, defaults.get(key));
-                updated = true;
             }
         }
         existing.set("config-version", CURRENT_VERSION);
         try {
             existing.save(configFile);
-            if (updated) {
-                getLogger().info("Updated config.yml to version " + CURRENT_VERSION + ".");
-            } else {
-                getLogger().info("Config file config.yml is up-to-date (version " + CURRENT_VERSION + ").");
-            }
-        } catch (IOException e) {
-            getLogger().warning("Failed to save updated config.yml: " + e.getMessage());
-        }
+        } catch (IOException ignored) {}
     }
 
     private void checkForUpdates() {
@@ -408,8 +335,7 @@ public class EconomyGUI extends JavaPlugin implements Listener {
                 conn.setRequestProperty("User-Agent", "EconomyGUI/" + CURRENT_VERSION);
                 conn.connect();
                 if (conn.getResponseCode() == 200) {
-                    JsonArray versions = JsonParser.parseReader(
-                            new InputStreamReader(conn.getInputStream())).getAsJsonArray();
+                    JsonArray versions = JsonParser.parseReader(new InputStreamReader(conn.getInputStream())).getAsJsonArray();
                     String highest = null;
                     for (JsonElement el : versions) {
                         String vNum  = el.getAsJsonObject().get("version_number").getAsString();
@@ -419,14 +345,11 @@ public class EconomyGUI extends JavaPlugin implements Listener {
                     }
                     if (highest != null && isNewerVersion(highest, CURRENT_VERSION)) {
                         latestVersion = highest;
-                        getLogger().warning("*** UPDATE AVAILABLE *** A new version of EconomyGUI ("
-                                + latestVersion + ") is available at:\nhttps://modrinth.com/plugin/economygui/versions");
+                        getLogger().warning("*** UPDATE AVAILABLE *** A new version of EconomyGUI (" + latestVersion + ") is available at:\nhttps://modrinth.com/plugin/economygui/versions");
                     }
                 }
                 conn.disconnect();
-            } catch (Exception e) {
-                getLogger().warning("Failed to check for updates: " + e.getMessage());
-            }
+            } catch (Exception ignored) {}
         });
     }
 
@@ -444,5 +367,9 @@ public class EconomyGUI extends JavaPlugin implements Listener {
             }
         }
         return p1.length > p2.length;
+    }
+
+    public TransactionHandler getTransactionHandler() {
+        return transactionHandler;
     }
 }

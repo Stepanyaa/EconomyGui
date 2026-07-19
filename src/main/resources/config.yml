@@ -17,7 +17,7 @@
 # Any help is greatly appreciated!
 
 # Plugin info
-config-version: "2.0.1"
+config-version: "2.1.0"
 language: "en"
 
 # Update checker
@@ -33,3 +33,11 @@ features:
   transaction-retention-days: 30
   # Maximum allowed amount per single operation. Set to 0 to disable the limit.
   max-amount: 0
+
+mysql:
+  enabled: false
+  host: "localhost"
+  port: 3306
+  database: "economygui"
+  username: "root"
+  password: ""

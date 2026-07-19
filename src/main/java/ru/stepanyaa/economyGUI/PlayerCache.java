@@ -1,27 +1,3 @@
-/**
- * MIT License
- *
- * EconomyGui
- * Copyright (c) 2025 Stepanyaa
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
 package ru.stepanyaa.economyGUI;
 
 import org.bukkit.Bukkit;
@@ -37,7 +13,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class PlayerCache implements Listener {
-
 
     static class CachedPlayer {
         final UUID uuid;
@@ -59,15 +34,12 @@ public class PlayerCache implements Listener {
         rebuild();
     }
 
-    public List<EconomySearchGUI.PlayerResult> getFiltered(String search,
-                                                           EconomySearchGUI.Filter filter,
-                                                           Set<UUID> selected) {
+    public List<EconomySearchGUI.PlayerResult> getFiltered(String search, EconomySearchGUI.Filter filter, Set<UUID> selected) {
         String q = search.toLowerCase(Locale.ROOT);
         return cache.values().stream()
                 .filter(cp -> {
                     if (cp.name == null) return false;
-                    if (!q.isEmpty() && !cp.name.toLowerCase(Locale.ROOT).contains(q)
-                            && !cp.uuid.toString().contains(q)) return false;
+                    if (!q.isEmpty() && !cp.name.toLowerCase(Locale.ROOT).contains(q) && !cp.uuid.toString().contains(q)) return false;
                     return matchesFilter(cp, filter, selected);
                 })
                 .map(cp -> {

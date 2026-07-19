@@ -1,6 +1,6 @@
 # messages_tr.yml
 # Do not edit: This field is used for automatic language file updates
-config-version: "2.0.1"
+config-version: "2.1.0"
 
 gui:
   title: "Ekonomi Yönetimi"
@@ -138,6 +138,8 @@ messages:
   confirm-mass-action: "%action% $%amount% %count% oyuncu için onayla?"
   confirm: "Onayla"
   cancel: "İptal"
+  history_error: "&cİşlem geçmişi yüklenirken bir hata oluştu."
+  history_empty: "&cBu oyuncunun işlem geçmişi yok."
 
 update:
   available: "*** GÜNCELLEME MEVCUT *** EconomyGUI'nin yeni sürümü (%version%) şu adreste mevcut: https://modrinth.com/plugin/economygui/versions"
