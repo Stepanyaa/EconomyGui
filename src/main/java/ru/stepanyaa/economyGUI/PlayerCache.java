@@ -44,7 +44,7 @@ public class PlayerCache implements Listener {
                 })
                 .map(cp -> {
                     OfflinePlayer op = Bukkit.getOfflinePlayer(cp.uuid);
-                    double balance = plugin.getEconomy().getBalance(op);
+                    double balance = plugin.safeGetBalance(op);
                     return new EconomySearchGUI.PlayerResult(cp.uuid.toString(), cp.name, cp.online, balance);
                 })
                 .sorted(Comparator.comparingDouble((EconomySearchGUI.PlayerResult r) -> r.balance).reversed())
@@ -56,7 +56,7 @@ public class PlayerCache implements Listener {
                 .filter(cp -> cp.name != null)
                 .map(cp -> {
                     OfflinePlayer op = Bukkit.getOfflinePlayer(cp.uuid);
-                    double balance = plugin.getEconomy().getBalance(op);
+                    double balance = plugin.safeGetBalance(op);
                     return new EconomySearchGUI.PlayerResult(cp.uuid.toString(), cp.name, cp.online, balance);
                 })
                 .collect(Collectors.toList());

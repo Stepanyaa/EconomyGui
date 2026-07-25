@@ -52,7 +52,7 @@ public class EconomyGUI extends JavaPlugin implements Listener {
 
     private Economy econ = null;
     private String language;
-    private static final String CURRENT_VERSION = "2.1.0";
+    private static final String CURRENT_VERSION = "2.1.1";
     private EconomySearchGUI economySearchGUI;
     private LanguageManager languageManager;
     private final Set<String> adminUUIDs = ConcurrentHashMap.newKeySet();
@@ -112,6 +112,7 @@ public class EconomyGUI extends JavaPlugin implements Listener {
         transactionHandler = new TransactionHandler(this, databaseManager);
         economySearchGUI = new EconomySearchGUI(this);
         getServer().getPluginManager().registerEvents(economySearchGUI, this);
+        getServer().getPluginManager().registerEvents(economySearchGUI.getPlayerCache(), this);
         getServer().getPluginManager().registerEvents(this, this);
 
         PluginCommand command = getCommand("economygui");
@@ -238,6 +239,21 @@ public class EconomyGUI extends JavaPlugin implements Listener {
 
     public Economy getEconomy() {
         return econ;
+    }
+    public double safeGetBalance(OfflinePlayer player) {
+        if (econ == null) {
+            return 0.0;
+        }
+        try {
+            return econ.getBalance(player);
+        } catch (RuntimeException e) {
+            // Essentials: "Essentials API is called before Essentials is loaded."
+            if (e.getMessage() != null && e.getMessage().contains("Essentials API is called before Essentials is loaded")) {
+                getLogger().warning("Economy provider not ready yet (Essentials still loading). Skipping balance for " + player.getName());
+                return 0.0;
+            }
+            throw e;
+        }
     }
 
     public boolean isPlayerSelectionEnabled() { return playerSelectionEnabled; }

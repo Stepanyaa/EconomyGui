@@ -6,7 +6,7 @@
 
     <groupId>ru.stepanyaa</groupId>
     <artifactId>EconomyGUI</artifactId>
-    <version>v2.1.0</version>
+    <version>v2.1.1</version>
     <packaging>jar</packaging>
 
     <name>EconomyGUI</name>
@@ -147,7 +147,9 @@
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>3.6.2</version>
                 <configuration>
+                    <minimizeJar>true</minimizeJar>
                     <relocations>
+                        <!-- твои существующие relocation остаются -->
                         <relocation>
                             <pattern>org.bstats</pattern>
                             <shadedPattern>ru.stepanyaa.economyGUI.bstats</shadedPattern>
@@ -165,6 +167,17 @@
                             <shadedPattern>ru.stepanyaa.economyGUI.libs.faststats</shadedPattern>
                         </relocation>
                     </relocations>
+                    <filters>
+                        <filter>
+                            <artifact>*:*</artifact>
+                            <excludes>
+                                <exclude>META-INF/*.SF</exclude>
+                                <exclude>META-INF/*.DSA</exclude>
+                                <exclude>META-INF/*.RSA</exclude>
+                                <exclude>META-INF/MANIFEST.MF</exclude>
+                            </excludes>
+                        </filter>
+                    </filters>
                 </configuration>
                 <executions>
                     <execution>

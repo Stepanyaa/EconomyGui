@@ -401,7 +401,10 @@ public class EconomySearchGUI implements Listener, InventoryHolder {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player p = event.getPlayer();
-        Bukkit.getScheduler().runTaskLater(plugin, () -> lastKnownBalances.put(p.getUniqueId(), plugin.getEconomy().getBalance(p)), 20L);
+        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            double balance = plugin.safeGetBalance(p);
+            lastKnownBalances.put(p.getUniqueId(), balance);
+        }, 20L);
     }
 
     @EventHandler
@@ -974,7 +977,7 @@ public class EconomySearchGUI implements Listener, InventoryHolder {
     public void startBalancePolling() {
         Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
             for (Player p : Bukkit.getOnlinePlayers()) {
-                double cur = plugin.getEconomy().getBalance(p);
+                double cur = plugin.safeGetBalance(p);
                 lastKnownBalances.put(p.getUniqueId(), cur);
             }
         }, 100L, 100L);
