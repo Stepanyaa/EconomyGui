@@ -52,7 +52,7 @@ public class EconomyGUI extends JavaPlugin implements Listener {
 
     private Economy econ = null;
     private String language;
-    private static final String CURRENT_VERSION = "2.1.1";
+    private static final String CURRENT_VERSION = "2.1.2";
     private EconomySearchGUI economySearchGUI;
     private LanguageManager languageManager;
     private final Set<String> adminUUIDs = ConcurrentHashMap.newKeySet();
@@ -240,6 +240,7 @@ public class EconomyGUI extends JavaPlugin implements Listener {
     public Economy getEconomy() {
         return econ;
     }
+
     public double safeGetBalance(OfflinePlayer player) {
         if (econ == null) {
             return 0.0;
@@ -247,12 +248,14 @@ public class EconomyGUI extends JavaPlugin implements Listener {
         try {
             return econ.getBalance(player);
         } catch (RuntimeException e) {
-            // Essentials: "Essentials API is called before Essentials is loaded."
-            if (e.getMessage() != null && e.getMessage().contains("Essentials API is called before Essentials is loaded")) {
-                getLogger().warning("Economy provider not ready yet (Essentials still loading). Skipping balance for " + player.getName());
+            String msg = e.getMessage() != null ? e.getMessage() : "";
+            if (msg.contains("Essentials API is called before Essentials is loaded")
+                    || msg.contains("zip file closed")
+                    || e instanceof IllegalStateException) {
                 return 0.0;
             }
-            throw e;
+            getLogger().warning("Unexpected error while getting balance for " + player.getName() + ": " + e.getClass().getSimpleName() + " - " + msg);
+            return 0.0;
         }
     }
 

@@ -213,7 +213,7 @@ public class EconomySearchGUI implements Listener, InventoryHolder {
         }
 
         OfflinePlayer target = Bukkit.getOfflinePlayer(UUID.fromString(result.uuid));
-        double freshBalance = plugin.getEconomy().getBalance(target);
+        double freshBalance = plugin.safeGetBalance(target);
         Inventory inv = Bukkit.createInventory(this, 54, ChatColor.DARK_PURPLE + plugin.getMessage("gui.title", "Economy Management") + ": " + result.name);
 
         inv.setItem(4, itemFactory.playerHead(target, freshBalance, false, moneyFormat));
@@ -668,7 +668,7 @@ public class EconomySearchGUI implements Listener, InventoryHolder {
                         double amount = Double.parseDouble(msg.trim());
                         if (!validateAmount(p, amount, true)) { openFinanceMenu(p, result); return; }
                         OfflinePlayer target = Bukkit.getOfflinePlayer(UUID.fromString(result.uuid));
-                        double current = plugin.getEconomy().getBalance(target);
+                        double current = plugin.safeGetBalance(target);
                         if (plugin.getEconomy().withdrawPlayer(target, current).transactionSuccess() && plugin.getEconomy().depositPlayer(target, amount).transactionSuccess()) {
                             p.sendMessage(ChatColor.GREEN + plugin.getMessage("messages.set-amount", "Set balance to $%amount% for %player%", "amount", String.format(moneyFormat, amount), "player", result.name));
                             plugin.getTransactionHandler().log(result.uuid, "set", amount, p);

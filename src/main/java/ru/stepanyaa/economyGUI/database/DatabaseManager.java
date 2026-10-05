@@ -13,6 +13,7 @@ public class DatabaseManager {
 
     private final EconomyGUI plugin;
     private HikariDataSource dataSource;
+    private boolean isMySQL = false;
 
     public DatabaseManager(EconomyGUI plugin) {
         this.plugin = plugin;
@@ -20,15 +21,18 @@ public class DatabaseManager {
 
     public void connectMySQL(String host, int port, String database, String user, String password) {
         HikariConfig config = new HikariConfig();
-        config.setJdbcUrl("jdbc:mysql://" + host + ":" + port + "/" + database + "?useSSL=false&characterEncoding=utf8");
+        config.setJdbcUrl("jdbc:mysql://" + host + ":" + port + "/" + database +
+                "?useSSL=false&characterEncoding=utf8&allowPublicKeyRetrieval=true");
         config.setUsername(user);
         config.setPassword(password);
+        this.isMySQL = true;
         setupPool(config);
     }
 
     public void connectSQLite(File file) {
         HikariConfig config = new HikariConfig();
         config.setJdbcUrl("jdbc:sqlite:" + file.getAbsolutePath());
+        this.isMySQL = false;
         setupPool(config);
     }
 
@@ -40,19 +44,34 @@ public class DatabaseManager {
     }
 
     private void createTables() {
-        String sql = "CREATE TABLE IF NOT EXISTS economy_transactions (" +
-                "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "uuid VARCHAR(36) NOT NULL, " +
-                "timestamp BIGINT NOT NULL, " +
-                "description VARCHAR(255), " +
-                "amount DOUBLE NOT NULL, " +
-                "executor VARCHAR(36)" +
-                ");";
+        String sql;
+        if (isMySQL) {
+            sql = "CREATE TABLE IF NOT EXISTS economy_transactions (" +
+                    "id INT AUTO_INCREMENT PRIMARY KEY, " +
+                    "uuid VARCHAR(36) NOT NULL, " +
+                    "timestamp BIGINT NOT NULL, " +
+                    "description VARCHAR(255), " +
+                    "amount DOUBLE NOT NULL, " +
+                    "executor VARCHAR(36)" +
+                    ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
+        } else {
+            sql = "CREATE TABLE IF NOT EXISTS economy_transactions (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    "uuid VARCHAR(36) NOT NULL, " +
+                    "timestamp BIGINT NOT NULL, " +
+                    "description VARCHAR(255), " +
+                    "amount DOUBLE NOT NULL, " +
+                    "executor VARCHAR(36)" +
+                    ");";
+        }
+
         try (Connection conn = dataSource.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.executeUpdate();
+            plugin.getLogger().info("Table 'economy_transactions' created/verified successfully.");
         } catch (SQLException e) {
-            plugin.getLogger().severe(e.getMessage());
+            plugin.getLogger().severe("Failed to create table: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
