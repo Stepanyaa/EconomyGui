@@ -1,24 +1,33 @@
 package ru.stepanyaa.economyGUI;
 
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 public class LanguageManager {
 
+    private static final String[] SUPPORTED = {"en", "ru", "de", "fr", "pl", "pt", "tr"};
+    private static final Set<String> SUPPORTED_SET = new HashSet<>(Arrays.asList(SUPPORTED));
+
     private final EconomyGUI plugin;
     private final Map<String, FileConfiguration> languages = new HashMap<>();
-    private String currentLanguage;
+    private String defaultLanguage;
 
     public LanguageManager(EconomyGUI plugin) {
         this.plugin = plugin;
-        this.currentLanguage = plugin.getConfig().getString("language", "en");
+        this.defaultLanguage = normalizeLanguage(plugin.getConfig().getString("language", "en"), "en");
     }
 
     public void loadLanguages() {
@@ -27,9 +36,8 @@ public class LanguageManager {
         if (!langDir.exists()) {
             langDir.mkdirs();
         }
-        String[] supportedLanguages = {"en", "ru", "de", "fr", "pl", "pt", "tr"};
 
-        for (String lang : supportedLanguages) {
+        for (String lang : SUPPORTED) {
             String filename = "messages_" + lang + ".yml";
             File langFile = new File(langDir, filename);
             if (!langFile.exists()) {
@@ -37,28 +45,22 @@ public class LanguageManager {
             } else {
                 updateLanguageFile(langFile, filename);
             }
-            FileConfiguration config = YamlConfiguration.loadConfiguration(langFile);
-            languages.put(lang, config);
+            languages.put(lang, YamlConfiguration.loadConfiguration(langFile));
         }
         plugin.getLogger().info("Languages loaded: " + languages.keySet());
     }
 
     private void updateLanguageFile(File langFile, String filename) {
-        YamlConfiguration existing = YamlConfiguration.loadConfiguration(langFile);
-        String fileVersion = existing.getString("config-version", "0.0.0");
-        String pluginVersion = plugin.getDescription().getVersion();
-
-        if (fileVersion.equals(pluginVersion)) {
-            return;
-        }
-
         if (plugin.getResource("lang/" + filename) == null) {
             plugin.getLogger().warning("Resource lang/" + filename + " not found in plugin!");
             return;
         }
 
         try {
-            YamlConfiguration defaults = YamlConfiguration.loadConfiguration(new InputStreamReader(plugin.getResource("lang/" + filename), StandardCharsets.UTF_8));
+            YamlConfiguration existing = YamlConfiguration.loadConfiguration(langFile);
+            YamlConfiguration defaults = YamlConfiguration.loadConfiguration(
+                    new InputStreamReader(plugin.getResource("lang/" + filename), StandardCharsets.UTF_8));
+            String pluginVersion = plugin.getDescription().getVersion();
             boolean updated = false;
 
             for (String key : defaults.getKeys(true)) {
@@ -71,7 +73,6 @@ public class LanguageManager {
             if (!existing.contains("config-version")) {
                 updated = true;
             }
-
             existing.set("config-version", pluginVersion);
             existing.save(langFile);
 
@@ -83,38 +84,77 @@ public class LanguageManager {
         }
     }
 
+    public String resolveLanguage(CommandSender sender) {
+        if (!(sender instanceof Player)) {
+            return defaultLanguage;
+        }
+        return resolveLanguage((Player) sender);
+    }
+
+    public String resolveLanguage(Player player) {
+        if (player == null) {
+            return defaultLanguage;
+        }
+        String language = normalizeLanguage(player.getLocale(), null);
+        return language != null && languages.containsKey(language) ? language : defaultLanguage;
+    }
+
     public String getMessage(String key, String defaultValue, String... replacements) {
-        FileConfiguration config = languages.getOrDefault(currentLanguage, languages.get("en"));
+        return getMessageForLang(defaultLanguage, key, defaultValue, replacements);
+    }
+
+    public String getMessage(CommandSender sender, String key, String defaultValue, String... replacements) {
+        return getMessageForLang(resolveLanguage(sender), key, defaultValue, replacements);
+    }
+
+    public String getMessage(Player player, String key, String defaultValue, String... replacements) {
+        return getMessageForLang(resolveLanguage(player), key, defaultValue, replacements);
+    }
+
+    public String getMessageForLang(String lang, String key, String defaultValue, String... replacements) {
+        String normalized = normalizeLanguage(lang, defaultLanguage);
+        FileConfiguration config = languages.getOrDefault(normalized, languages.get("en"));
         if (config == null) {
             return defaultValue;
         }
         String message = config.getString(key, defaultValue);
-        for (int i = 0; i < replacements.length; i += 2) {
-            if (i + 1 < replacements.length) {
-                String param = replacements[i];
-                String value = replacements[i + 1];
-                message = message.replace("%" + param + "%", value);
-            }
+        if (message == null) {
+            message = defaultValue;
+        }
+        for (int i = 0; i + 1 < replacements.length; i += 2) {
+            message = message.replace("%" + replacements[i] + "%", replacements[i + 1]);
         }
         return message;
     }
 
     public void setLanguage(String language) {
-        if (languages.containsKey(language)) {
-            this.currentLanguage = language;
-            plugin.getLogger().info("Language changed to: " + language);
+        String normalized = normalizeLanguage(language, null);
+        if (normalized != null && languages.containsKey(normalized)) {
+            this.defaultLanguage = normalized;
+            plugin.getLogger().info("Default language set to: " + normalized);
         } else {
-            plugin.getLogger().warning("The language " + language + " is not supported. Using: " + currentLanguage);
+            plugin.getLogger().warning("Language " + language + " is not supported. Using: " + defaultLanguage);
         }
     }
 
+    private String normalizeLanguage(String language, String fallback) {
+        if (language == null || language.trim().isEmpty()) {
+            return fallback;
+        }
+        String normalized = language.trim().toLowerCase(Locale.ROOT).replace('-', '_');
+        int separator = normalized.indexOf('_');
+        if (separator >= 0) {
+            normalized = normalized.substring(0, separator);
+        }
+        return SUPPORTED_SET.contains(normalized) ? normalized : fallback;
+    }
+
     public String getCurrentLanguage() {
-        return currentLanguage;
+        return defaultLanguage;
     }
 
     public void reload() {
         loadLanguages();
-        String newLanguage = plugin.getConfig().getString("language", "en");
-        setLanguage(newLanguage);
+        setLanguage(plugin.getConfig().getString("language", "en"));
     }
 }

@@ -1,206 +1,243 @@
-# messages_pt.yml
-# Do not edit: This field is used for automatic language file updates
-config-version: "2.1.2"
-
+config-version: 2.2.0
 gui:
-  title: "Gerenciamento de Economia"
-  search: "Pesquisa: %search_query%"
-  search-all: "todos"
-  search-hint: "Clique Esquerdo: Digitar consulta | Clique Direito: Redefinir pesquisa | Shift+Esquerdo: Selecionar/Desselecionar"
-  close: "Fechar"
-  previous-page: "Página Anterior"
-  next-page: "Próxima Página"
-  no-page: "Sem Página"
-  page-info: "Página %current_page% de %total_pages%"
-  shift-rmb-page: "Shift+Clique Direito: Pular 5 páginas"
-  player-menu-prefix: "Menu do Jogador: %player%"
-  info: "Informações de Saldo"
-  quick-actions: "Ações Rápidas"
-  full-management: "Gerenciamento Completo"
-  balance: "Saldo: $%balance%"
-  actions: "Clique Esq: Gerenciar | Clique Dir: Ações Rápidas | Shift+Esq: Selecionar"
-  actions-lmb: "Clique esquerdo: Abrir menu de gerenciamento"
-  selection-mode: "Modo de Seleção: %count% selecionados"
-  mass-menu-title: "Operações em Massa"
-  mass-give: "Dar Quantia a Todos Selecionados"
-  mass-take: "Tirar Quantia de Todos Selecionados"
-  mass-set: "Definir Saldo para Todos Selecionados"
-  cancel-selection: "Cancelar Seleção"
-  confirm-selection: "Confirmar & Prosseguir"
-  enter-amount: "Digite a quantia no chat:"
-  cancel: "[Cancelar]"
-  select-all: "Selecionar Todos"
-  click-to-select: "Clique para selecionar todos na página"
-  click-to-cancel: "Clique para cancelar todas as seleções"
-  mass-hint: "Clique para dar/tirar/definir em massa (selecione jogadores primeiro)"
-  no-players: "Nenhum jogador encontrado"
-  no-players-hint: "Tente alterar a pesquisa ou filtro"
-  selected: "Selecionado"
-  amount-input: "Digite Quantia"
-  custom-amount: "Valor Personalizado"
-  custom-amount-hint: "Clique esquerdo para digitar quantia no chat"
-  history: "Histórico de Operações"
-  click-to-view: "Clique para ver histórico"
-  back: "Voltar"
-  click-to-return: "Voltar ao Menu Principal"
-  digital-menu: "Menu %action%: %player%"
-  custom-value: "Valor Personalizado"
-  click-to-confirm: "Clique para confirmar %amount%"
-  confirm: "Confirmar"
-  click-to-execute: "Clique para executar ação"
-  enter-custom: "Digite quantia personalizada:"
-  amount-selected: "Quantia selecionada: %amount%"
-  amount-set: "Quantia definida para %amount%"
-  reset-amount: "Redefinir Quantia"
-  reset-amount-hint: "Redefinir a quantia selecionada"
-  give-hint: "Clique para abrir menu digital"
-  take-hint: "Clique para abrir menu digital"
-  set-hint: "Clique para digitar quantia no chat"
-  back-hint: "Voltar ao menu principal"
-  mass-give-hint: "Clique para digitar quantia para todos"
-  mass-take-hint: "Clique para digitar quantia para todos"
-  mass-set-hint: "Clique para digitar quantia para todos"
-  enter-amount-hint: "Clique esquerdo para digitar quantia no chat"
-  current-amount: "Quantia atual: $%amount%"
-  add-amount-hint: "Clique para adicionar %amount% ao total"
-  confirm-hint: "Executar: %action% $%amount%"
-  back-hint-finance: "Voltar ao menu financeiro"
-  enter-search: "Digite nome para pesquisar: "
-  stats-loading: "Carregando estatísticas da economia..."
-  stats-title: "Estatísticas da Economia"
-  stats-overview: "Visão Geral da Economia do Servidor"
-  stats-total-players: "Total de jogadores: "
-  stats-online-players: "Jogadores online: "
-  stats-total-balance: "Saldo total: "
-  stats-online-balance: "Saldo online: "
-  stats-average-balance: "Saldo médio: "
-  stats-average-online: "Média online: "
-  stats-richest: "Mais rico: "
-  stats-poorest: "Mais pobre: "
-  stats-top-rich: "Top 5 Mais Ricos"
-  stats-top-poor: "Top 5 Mais Pobres"
-  global-stats: "Estatísticas Globais da Economia"
-  global-stats-lore: "(Saldo total, média, melhores jogadores...)"
-  click-cycle: "Clique Esq → Próximo"
-  right-click-cycle: "Clique direito → Anterior"
-
+  title: Gerenciamento de Economia
+  search: 'Pesquisa: %search_query%'
+  search-all: todos
+  search-hint: 'Clique Esquerdo: Digitar consulta | Clique Direito: Redefinir pesquisa
+    | Shift+Esquerdo: Selecionar/Desselecionar'
+  close: Fechar
+  previous-page: Página Anterior
+  next-page: Próxima Página
+  no-page: Sem Página
+  page-info: Página %current_page% de %total_pages%
+  shift-rmb-page: 'Shift+Clique Direito: Pular 5 páginas'
+  player-menu-prefix: 'Menu do Jogador: %player%'
+  info: Informações de Saldo
+  quick-actions: Ações Rápidas
+  full-management: Gerenciamento Completo
+  balance: 'Saldo: $%balance%'
+  actions: 'Clique Esq: Gerenciar | Clique Dir: Ações Rápidas | Shift+Esq: Selecionar'
+  actions-lmb: 'Clique esquerdo: Abrir menu de gerenciamento'
+  selection-mode: 'Modo de Seleção: %count% selecionados'
+  mass-menu-title: Operações em Massa
+  mass-give: Dar Quantia a Todos Selecionados
+  mass-take: Tirar Quantia de Todos Selecionados
+  mass-set: Definir Saldo para Todos Selecionados
+  cancel-selection: Cancelar Seleção
+  confirm-selection: Confirmar & Prosseguir
+  enter-amount: 'Digite a quantia no chat:'
+  cancel: '[Cancelar]'
+  select-all: Selecionar Todos
+  click-to-select: Clique para selecionar todos na página
+  click-to-cancel: Clique para cancelar todas as seleções
+  mass-hint: Clique para dar/tirar/definir em massa (selecione jogadores primeiro)
+  no-players: Nenhum jogador encontrado
+  no-players-hint: Tente alterar a pesquisa ou filtro
+  selected: Selecionado
+  amount-input: Digite Quantia
+  custom-amount: Valor Personalizado
+  custom-amount-hint: Clique esquerdo para digitar quantia no chat
+  history: Histórico de Operações
+  click-to-view: Clique para ver histórico
+  back: Voltar
+  click-to-return: Voltar ao Menu Principal
+  digital-menu: 'Menu %action%: %player%'
+  custom-value: Valor Personalizado
+  click-to-confirm: Clique para confirmar %amount%
+  confirm: Confirmar
+  click-to-execute: Clique para executar ação
+  enter-custom: 'Digite quantia personalizada:'
+  amount-selected: 'Quantia selecionada: %amount%'
+  amount-set: Quantia definida para %amount%
+  reset-amount: Redefinir Quantia
+  reset-amount-hint: Redefinir a quantia selecionada
+  give-hint: Clique para abrir menu digital
+  take-hint: Clique para abrir menu digital
+  set-hint: Clique para digitar quantia no chat
+  back-hint: Voltar ao menu principal
+  mass-give-hint: Clique para digitar quantia para todos
+  mass-take-hint: Clique para digitar quantia para todos
+  mass-set-hint: Clique para digitar quantia para todos
+  enter-amount-hint: Clique esquerdo para digitar quantia no chat
+  current-amount: 'Quantia atual: $%amount%'
+  add-amount-hint: Clique para adicionar %amount% ao total
+  confirm-hint: 'Executar: %action% $%amount%'
+  back-hint-finance: Voltar ao menu financeiro
+  enter-search: 'Digite nome para pesquisar: '
+  stats-loading: Carregando estatísticas da economia...
+  stats-title: Estatísticas da Economia
+  stats-overview: Visão Geral da Economia do Servidor
+  stats-total-players: 'Total de jogadores: '
+  stats-online-players: 'Jogadores online: '
+  stats-total-balance: 'Saldo total: '
+  stats-online-balance: 'Saldo online: '
+  stats-average-balance: 'Saldo médio: '
+  stats-average-online: 'Média online: '
+  stats-richest: 'Mais rico: '
+  stats-poorest: 'Mais pobre: '
+  stats-top-rich: Top 5 Mais Ricos
+  stats-top-poor: Top 5 Mais Pobres
+  global-stats: Estatísticas Globais da Economia
+  global-stats-lore: (Saldo total, média, melhores jogadores...)
+  click-cycle: Clique Esq → Próximo
+  right-click-cycle: Clique direito → Anterior
 error:
-  invalid-amount: "A quantia deve ser positiva."
-  exceeds-max-amount: "A quantia excede o limite do servidor de $%max_amount%."
-  invalid-amount-format: "Formato de quantia inválido."
-  no-permission: "Você não tem permissão!"
-  no-players-selected: "Nenhum jogador selecionado para operação em massa!"
-  all-features-disabled: "Todos os recursos estão desativados no config! Comandos serão limitados."
-  full-management-disabled: "Gerenciamento completo está desativado no config!"
-  mass-operations-disabled: "Operações em massa estão desativadas no config!"
-  insufficient-funds: "Fundos insuficientes para %player%."
-  action-failed: "Ação falhou."
-  player-only: "Este comando é apenas para jogadores!"
-  player-not-found: "Jogador não encontrado."
-  negative-amount: "A quantia não pode ser negativa."
-
+  invalid-amount: A quantia deve ser positiva.
+  exceeds-max-amount: A quantia excede o limite do servidor de $%max_amount%.
+  invalid-amount-format: Formato de quantia inválido.
+  no-permission: Você não tem permissão!
+  no-players-selected: Nenhum jogador selecionado para operação em massa!
+  all-features-disabled: Todos os recursos estão desativados no config! Comandos serão
+    limitados.
+  full-management-disabled: Gerenciamento completo está desativado no config!
+  mass-operations-disabled: Operações em massa estão desativadas no config!
+  insufficient-funds: Fundos insuficientes para %player%.
+  action-failed: Ação falhou.
+  player-only: Este comando é apenas para jogadores!
+  player-not-found: Jogador não encontrado.
+  negative-amount: A quantia não pode ser negativa.
 command:
-  usage: "Uso: /economygui <gui | reload | reset>"
-  usage-gui: "Uso: /economygui gui"
-  usage-reload: "Uso: /economygui reload"
-
+  usage-reverse: "Usage: /economygui refund <id> [reverse]"
+  invalid-amount: "Invalid amount or configured limit exceeded."
+  unknown-player: "Player not found."
+  operation-failed: "Operation failed (check balance and economy provider)."
+  operation-success: "%action%: %player%, amount %amount%, balance %balance%"
+  usage: 'Uso: /economygui <gui | reload | reset | refund>'
+  usage-gui: 'Uso: /economygui gui'
+  usage-reload: 'Uso: /economygui reload'
+  usage-refund: 'Uso: /economygui refund <id> <sender|receiver|both>'
 action:
-  config-reloaded: "Configuração recarregada."
-  search-reset: "Pesquisa e filtros redefinidos."
-  search-cancelled: "Pesquisa cancelada."
-  balance-updated: "Saldo de %player% atualizado para $%amount%."
-  mass-give-executed: "Deu $%amount% para %count% jogadores selecionados."
-  mass-take-executed: "Tirou $%amount% de %count% jogadores selecionados."
-  selection-cleared: "Seleção limpa."
-  enter-amount-prompt: "Digite quantia:"
-  click-to-copy: "Clique para copiar"
-  filter-applied: "Filtro aplicado: %filter_name%"
-  cancelled: "Ação cancelada."
-  executed: "Executado %action% de $%amount% para %player%"
-  give: "Dar"
-  take: "Tirar"
-  set: "Definir"
-  click-to-apply-to: "Clique para aplicar em"
-
+  config-reloaded: Configuração recarregada.
+  search-reset: Pesquisa e filtros redefinidos.
+  search-cancelled: Pesquisa cancelada.
+  balance-updated: Saldo de %player% atualizado para $%amount%.
+  mass-give-executed: Deu $%amount% para %count% jogadores selecionados.
+  mass-take-executed: Tirou $%amount% de %count% jogadores selecionados.
+  selection-cleared: Seleção limpa.
+  enter-amount-prompt: 'Digite quantia:'
+  click-to-copy: Clique para copiar
+  filter-applied: 'Filtro aplicado: %filter_name%'
+  cancelled: Ação cancelada.
+  executed: Executado %action% de $%amount% para %player%
+  give: Dar
+  take: Tirar
+  set: Definir
+  click-to-apply-to: Clique para aplicar em
 messages:
-  enter-search: "Digite consulta de pesquisa (ou 'cancel' para abortar):"
-  input-cancelled: "Entrada cancelada."
-  player-deselected: "Jogador %player% desselecionado."
-  player-selected: "Jogador %player% selecionado."
-  all-selected: "Todos os jogadores desta página selecionados."
-  mass-action-applied: "Aplicado %action% de $%amount% em %count% jogadores"
-  enter-amount: "Digite quantia para %action% (ou 'cancel' para abortar):"
-  action-cancelled: "Ação cancelada."
-  gave-amount: "Deu $%amount% para %player%"
-  set-amount: "Definido saldo para $%amount% para %player%"
-  no-permission-give: "Você não tem permissão para dar."
-  search-reset: "Pesquisa e filtros redefinidos."
-  confirm-mass-action: "Confirmar %action% de $%amount% em %count% jogadores?"
-  confirm: "Confirmar"
-  cancel: "Cancelar"
-  history_error: "&cOcorreu um erro ao carregar o histórico de transações."
-  history_empty: "&cEste player não tem histórico de transações."
-
+  enter-search: 'Digite consulta de pesquisa (ou ''cancel'' para abortar):'
+  input-cancelled: Entrada cancelada.
+  player-deselected: Jogador %player% desselecionado.
+  player-selected: Jogador %player% selecionado.
+  all-selected: Todos os jogadores desta página selecionados.
+  mass-action-applied: Aplicado %action% de $%amount% em %count% jogadores
+  enter-amount: 'Digite quantia para %action% (ou ''cancel'' para abortar):'
+  action-cancelled: Ação cancelada.
+  gave-amount: Deu $%amount% para %player%
+  set-amount: Definido saldo para $%amount% para %player%
+  no-permission-give: Você não tem permissão para dar.
+  search-reset: Pesquisa e filtros redefinidos.
+  confirm-mass-action: Confirmar %action% de $%amount% em %count% jogadores?
+  confirm: Confirmar
+  cancel: Cancelar
+  history_error: '&cOcorreu um erro ao carregar o histórico de transações.'
+  history_empty: '&cEste player não tem histórico de transações.'
 update:
-  available: "*** ATUALIZAÇÃO DISPONÍVEL *** Uma nova versão do EconomyGUI (%version%) está disponível em https://modrinth.com/plugin/economygui/versions"
-  welcome-admin: "EconomyGUI atualizado para %version%!"
-  welcome-features: "Novo: estatísticas globais, troca de filtro com clique direito"
-  welcome-details: "[Detalhes]"
-
+  available: '*** ATUALIZAÇÃO DISPONÍVEL *** Uma nova versão do EconomyGUI (%version%)
+    está disponível em https://modrinth.com/plugin/economygui/versions'
+  welcome-admin: EconomyGUI atualizado para %version%!
+  welcome-features: 'Novo: estatísticas globais, troca de filtro com clique direito'
+  welcome-details: '[Detalhes]'
 warning:
-  max-inactivity-too-high: "Aviso: max-inactivity-days (%days%) está muito alto! Máximo recomendado é 365 dias."
-  messages-file-up-to-date: "Arquivo de mensagens %file% está atualizado (versão %version%)."
-  messages-file-updated: "Arquivo de mensagens %file% atualizado para versão %version%."
-  messages-file-not-found: "Arquivo de mensagens %file% não encontrado no plugin!"
-  messages-file-create: "Arquivo de mensagens criado: %file%"
-  config-file-up-to-date: "Arquivo config.yml está atualizado (versão %version%)."
-  config-file-updated: "config.yml atualizado para versão %version%."
-  config-file-not-found: "Recurso config.yml não encontrado no plugin!"
-  config-file-create: "Arquivo config criado: config.yml"
-  plugin-enabled: "EconomyGUI ativado com idioma: %lang%"
-  no-economy: "Provedor de economia não encontrado! Desativando plugin."
-  upload-lang: "Línguas carregadas: "
-  changed-lang: "Idioma alterado para: "
-  bad-transaction: "Transacção incorrecta para UUID % uuid%: % raw%"
-
+  max-inactivity-too-high: 'Aviso: max-inactivity-days (%days%) está muito alto! Máximo
+    recomendado é 365 dias.'
+  messages-file-up-to-date: Arquivo de mensagens %file% está atualizado (versão %version%).
+  messages-file-updated: Arquivo de mensagens %file% atualizado para versão %version%.
+  messages-file-not-found: Arquivo de mensagens %file% não encontrado no plugin!
+  messages-file-create: 'Arquivo de mensagens criado: %file%'
+  config-file-up-to-date: Arquivo config.yml está atualizado (versão %version%).
+  config-file-updated: config.yml atualizado para versão %version%.
+  config-file-not-found: Recurso config.yml não encontrado no plugin!
+  config-file-create: 'Arquivo config criado: config.yml'
+  plugin-enabled: 'EconomyGUI ativado com idioma: %lang%'
+  no-economy: Provedor de economia não encontrado! Desativando plugin.
+  upload-lang: 'Línguas carregadas: '
+  changed-lang: 'Idioma alterado para: '
+  bad-transaction: 'Transacção incorrecta para UUID % uuid%: % raw%'
 status:
-  online: "Online"
-  offline: "Offline"
-  balance: "$%amount%"
-
+  online: Online
+  offline: Offline
+  balance: $%amount%
 time:
-  seconds-ago: "segundos atrás"
-  minutes-ago: "minutos atrás"
-  hours-ago: "horas atrás"
-  days-ago: "dias atrás"
-
+  seconds-ago: segundos atrás
+  minutes-ago: minutos atrás
+  hours-ago: horas atrás
+  days-ago: dias atrás
 filter:
-  all: "Todos os Jogadores"
-  online: "Jogadores Online"
-  offline: "Jogadores Offline"
-  selected: "Selecionados"
-  filter-current: "Filtro atual:"
-  applied: "Filtro aplicado: "
-
+  all: Todos os Jogadores
+  online: Jogadores Online
+  offline: Jogadores Offline
+  selected: Selecionados
+  filter-current: 'Filtro atual:'
+  applied: 'Filtro aplicado: '
 history:
-  operations: "Histórico de Operações"
-  hint: "Clique para ver logs"
-  by: "Por:"
-  date: "Data"
-  paid-by: "pagou %amount% para %player%"
-  received-from: "recebeu %amount% de %player%"
-  given-by: "dado %amount% por %player%"
-  taken-by: "tirado %amount% por %player%"
-  set-by: "saldo definido para %amount% por %player%"
-
+  operations: Histórico de Operações
+  hint: Clique para ver logs
+  by: 'Por:'
+  date: Data
+  paid-by: pagou %amount% para %player%
+  received-from: recebeu %amount% de %player%
+  given-by: dado %amount% por %player%
+  taken-by: tirado %amount% por %player%
+  set-by: saldo definido para %amount% por %player%
 context-menu:
-  title: "Ações Rápidas para %player%"
-  back: "Voltar ao Menu Principal"
-  full-open: "Abrir Gerenciamento Completo"
-  apply-info: "Clique para aplicar a %player%"
-  give-100: "Dar $100"
-  give-1000: "Dar $1000"
-  take-100: "Tirar $100"
-  take-1000: "Tirar $1000"
-  set-5000: "Definir $5000"
-  reset-0: "Redefinir para $0"
+  title: Ações Rápidas para %player%
+  back: Voltar ao Menu Principal
+  full-open: Abrir Gerenciamento Completo
+  apply-info: Clique para aplicar a %player%
+  give-100: Dar $100
+  give-1000: Dar $1000
+  take-100: Tirar $100
+  take-1000: Tirar $1000
+  set-5000: Definir $5000
+  reset-0: Redefinir para $0
+refund:
+  reverse-button: "Reverse transaction"
+  reverse-hint: "Cancel the original operation once. No money is created."
+  reverse-unavailable: "Reversal unavailable"
+  reverse-reason: "Already processed, unsupported operation, or manual review required."
+  reverse-success: "Transaction #%id% reversed."
+  reverse-failed: "Cannot reverse #%id%: insufficient funds, unsupported operation, already processed or manual review required."
+  title: 'Reembolso #%id%'
+  sender-btn: Reembolsar remetente (%player%)
+  sender-hint: Reembolsar $%amount% de volta ao remetente
+  receiver-btn: Reembolsar destinatário (%player%)
+  receiver-hint: Reembolsar $%amount% ao destinatário
+  both-btn: Reembolsar ambas as partes
+  both-hint: Reembolsar $%amount% para ambos os lados
+  disabled-sender: Não é possível reembolsar o remetente
+  disabled-receiver: Não é possível reembolsar o destinatário
+  disabled-both: Não é possível reembolsar ambos
+  already-sender: Já reembolsado ao remetente
+  already-receiver: Já reembolsado ao destinatário
+  already-both: Já totalmente reembolsado
+  no-sender: Nenhum remetente disponível
+  no-receiver: Nenhum destinatário disponível
+  back-to-history: Voltar ao histórico
+  processing: 'Processando reembolso #%id% (%target%)...'
+  success: 'Reembolso #%id% aplicado com sucesso para: %target%'
+  failed: 'Falha no reembolso #%id% ou já processado.'
+  history-lore-status: 'Status do reembolso: %status%'
+  history-lore-click: ▶ Clique para abrir o menu de reembolso
+  history-lore-action: 'Ação: %action%'
+  history-lore-amount: 'Quantia: $%amount%'
+  history-lore-sender: 'Remetente: %sender%'
+  history-lore-receiver: 'Destinatário: %receiver%'
+  history-lore-by: 'Por: %executor%'
+  history-lore-date: 'Data: %date%'
+  already-refunded-both: Transação já reembolsada para ambas as partes!
+  already-refunded-receiver: Transação já reembolsada ao destinatário!
+  already-refunded-sender: Transação já reembolsada ao remetente!
+  success-both: '%amount% reembolsado com sucesso ao remetente %sender% e destinatário
+    %receiver%!'
+  success-receiver: '%amount% reembolsado com sucesso ao destinatário %player%!'
+  success-sender: '%amount% reembolsado com sucesso ao remetente %player%!'

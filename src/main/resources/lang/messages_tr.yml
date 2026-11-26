@@ -1,206 +1,242 @@
-# messages_tr.yml
-# Do not edit: This field is used for automatic language file updates
-config-version: "2.1.2"
-
+config-version: 2.2.0
 gui:
-  title: "Ekonomi Yönetimi"
-  search: "Arama: %search_query%"
-  search-all: "hepsi"
-  search-hint: "Sol Tık: Sorgu gir | Sağ Tık: Aramayı sıfırla | Shift+Sol: Seç/Seçimi Kaldır"
-  close: "Kapat"
-  previous-page: "Önceki Sayfa"
-  next-page: "Sonraki Sayfa"
-  no-page: "Sayfa Yok"
-  page-info: "Sayfa %current_page% / %total_pages%"
-  shift-rmb-page: "Shift+Sağ Tık: 5 sayfa atla"
-  player-menu-prefix: "Oyuncu Menüsü: %player%"
-  info: "Bakiye Bilgisi"
-  quick-actions: "Hızlı İşlemler"
-  full-management: "Tam Yönetim"
-  balance: "Bakiye: $%balance%"
-  actions: "Sol Tık: Yönet | Sağ Tık: Hızlı İşlemler | Shift+Sol: Seç"
-  actions-lmb: "Sol tıklama: Yönetim menüsünü aç"
-  selection-mode: "Seçim Modu: %count% seçili"
-  mass-menu-title: "Toplu İşlemler"
-  mass-give: "Seçili Tüm Oyunculara Miktar Ver"
-  mass-take: "Seçili Tüm Oyuncularından Miktar Al"
-  mass-set: "Seçili Tüm Oyuncular İçin Bakiyeyi Ayarla"
-  cancel-selection: "Seçimi İptal Et"
-  confirm-selection: "Onayla & Devam Et"
-  enter-amount: "Sohbete miktar gir:"
-  cancel: "[İptal]"
-  select-all: "Tümünü Seç"
-  click-to-select: "Bu sayfadaki tümünü seçmek için tıkla"
-  click-to-cancel: "Tüm seçimleri iptal etmek için tıkla"
-  mass-hint: "Toplu ver/al/ayar için tıkla (önce oyuncu seç)"
-  no-players: "Oyuncu bulunamadı"
-  no-players-hint: "Arama veya filtreyi değiştirmeyi dene"
-  selected: "Seçili"
-  amount-input: "Miktar Gir"
-  custom-amount: "Özel Miktar"
-  custom-amount-hint: "Sohbete miktar girmek için sol tık"
-  history: "İşlem Geçmişi"
-  click-to-view: "Geçmişi görmek için tıkla"
-  back: "Geri"
-  click-to-return: "Ana menüye dön"
-  digital-menu: "%action% Menüsü: %player%"
-  custom-value: "Özel Değer"
-  click-to-confirm: "%amount% onaylamak için tıkla"
-  confirm: "Onayla"
-  click-to-execute: "İşlemi yürütmek için tıkla"
-  enter-custom: "Özel miktar gir:"
-  amount-selected: "Seçilen miktar: %amount%"
-  amount-set: "Miktar %amount% olarak ayarlandı"
-  reset-amount: "Miktarı Sıfırla"
-  reset-amount-hint: "Seçilen miktarı sıfırla"
-  give-hint: "Dijital menüyü açmak için tıkla"
-  take-hint: "Dijital menüyü açmak için tıkla"
-  set-hint: "Sohbete miktar girmek için tıkla"
-  back-hint: "Ana menüye dön"
-  mass-give-hint: "Herkes için miktar girmek için tıkla"
-  mass-take-hint: "Herkes için miktar girmek için tıkla"
-  mass-set-hint: "Herkes için miktar girmek için tıkla"
-  enter-amount-hint: "Sohbete miktar girmek için sol tık"
-  current-amount: "Mevcut miktar: $%amount%"
-  add-amount-hint: "Toplama %amount% eklemek için tıkla"
-  confirm-hint: "Yürüt: %action% $%amount%"
-  back-hint-finance: "Finans menüsüne dön"
-  enter-search: "Aranacak isim gir: "
-  stats-loading: "Ekonomi istatistikleri yükleniyor..."
-  stats-title: "Ekonomi İstatistikleri"
-  stats-overview: "Sunucu Ekonomi Genel Bakış"
-  stats-total-players: "Toplam oyuncu: "
-  stats-online-players: "Çevrimiçi oyuncu: "
-  stats-total-balance: "Toplam bakiye: "
-  stats-online-balance: "Çevrimiçi bakiye: "
-  stats-average-balance: "Ortalama bakiye: "
-  stats-average-online: "Çevrimiçi ortalama: "
-  stats-richest: "En zengin: "
-  stats-poorest: "En fakir: "
-  stats-top-rich: "En Zengin 5"
-  stats-top-poor: "En Fakir 5"
-  global-stats: "Küresel Ekonomi İstatistikleri"
-  global-stats-lore: "(Toplam bakiye, ortalama, en iyi oyuncular...)"
-  click-cycle: "Sol Tık → Sonraki"
-  right-click-cycle: "Sağ tık → Önceki"
-
+  title: Ekonomi Yönetimi
+  search: 'Arama: %search_query%'
+  search-all: hepsi
+  search-hint: 'Sol Tık: Sorgu gir | Sağ Tık: Aramayı sıfırla | Shift+Sol: Seç/Seçimi
+    Kaldır'
+  close: Kapat
+  previous-page: Önceki Sayfa
+  next-page: Sonraki Sayfa
+  no-page: Sayfa Yok
+  page-info: Sayfa %current_page% / %total_pages%
+  shift-rmb-page: 'Shift+Sağ Tık: 5 sayfa atla'
+  player-menu-prefix: 'Oyuncu Menüsü: %player%'
+  info: Bakiye Bilgisi
+  quick-actions: Hızlı İşlemler
+  full-management: Tam Yönetim
+  balance: 'Bakiye: $%balance%'
+  actions: 'Sol Tık: Yönet | Sağ Tık: Hızlı İşlemler | Shift+Sol: Seç'
+  actions-lmb: 'Sol tıklama: Yönetim menüsünü aç'
+  selection-mode: 'Seçim Modu: %count% seçili'
+  mass-menu-title: Toplu İşlemler
+  mass-give: Seçili Tüm Oyunculara Miktar Ver
+  mass-take: Seçili Tüm Oyuncularından Miktar Al
+  mass-set: Seçili Tüm Oyuncular İçin Bakiyeyi Ayarla
+  cancel-selection: Seçimi İptal Et
+  confirm-selection: Onayla & Devam Et
+  enter-amount: 'Sohbete miktar gir:'
+  cancel: '[İptal]'
+  select-all: Tümünü Seç
+  click-to-select: Bu sayfadaki tümünü seçmek için tıkla
+  click-to-cancel: Tüm seçimleri iptal etmek için tıkla
+  mass-hint: Toplu ver/al/ayar için tıkla (önce oyuncu seç)
+  no-players: Oyuncu bulunamadı
+  no-players-hint: Arama veya filtreyi değiştirmeyi dene
+  selected: Seçili
+  amount-input: Miktar Gir
+  custom-amount: Özel Miktar
+  custom-amount-hint: Sohbete miktar girmek için sol tık
+  history: İşlem Geçmişi
+  click-to-view: Geçmişi görmek için tıkla
+  back: Geri
+  click-to-return: Ana menüye dön
+  digital-menu: '%action% Menüsü: %player%'
+  custom-value: Özel Değer
+  click-to-confirm: '%amount% onaylamak için tıkla'
+  confirm: Onayla
+  click-to-execute: İşlemi yürütmek için tıkla
+  enter-custom: 'Özel miktar gir:'
+  amount-selected: 'Seçilen miktar: %amount%'
+  amount-set: Miktar %amount% olarak ayarlandı
+  reset-amount: Miktarı Sıfırla
+  reset-amount-hint: Seçilen miktarı sıfırla
+  give-hint: Dijital menüyü açmak için tıkla
+  take-hint: Dijital menüyü açmak için tıkla
+  set-hint: Sohbete miktar girmek için tıkla
+  back-hint: Ana menüye dön
+  mass-give-hint: Herkes için miktar girmek için tıkla
+  mass-take-hint: Herkes için miktar girmek için tıkla
+  mass-set-hint: Herkes için miktar girmek için tıkla
+  enter-amount-hint: Sohbete miktar girmek için sol tık
+  current-amount: 'Mevcut miktar: $%amount%'
+  add-amount-hint: Toplama %amount% eklemek için tıkla
+  confirm-hint: 'Yürüt: %action% $%amount%'
+  back-hint-finance: Finans menüsüne dön
+  enter-search: 'Aranacak isim gir: '
+  stats-loading: Ekonomi istatistikleri yükleniyor...
+  stats-title: Ekonomi İstatistikleri
+  stats-overview: Sunucu Ekonomi Genel Bakış
+  stats-total-players: 'Toplam oyuncu: '
+  stats-online-players: 'Çevrimiçi oyuncu: '
+  stats-total-balance: 'Toplam bakiye: '
+  stats-online-balance: 'Çevrimiçi bakiye: '
+  stats-average-balance: 'Ortalama bakiye: '
+  stats-average-online: 'Çevrimiçi ortalama: '
+  stats-richest: 'En zengin: '
+  stats-poorest: 'En fakir: '
+  stats-top-rich: En Zengin 5
+  stats-top-poor: En Fakir 5
+  global-stats: Küresel Ekonomi İstatistikleri
+  global-stats-lore: (Toplam bakiye, ortalama, en iyi oyuncular...)
+  click-cycle: Sol Tık → Sonraki
+  right-click-cycle: Sağ tık → Önceki
 error:
-  invalid-amount: "Miktar pozitif olmalı."
-  exceeds-max-amount: "Miktar $%max_amount% sunucu limitini aşıyor."
-  invalid-amount-format: "Geçersiz miktar formatı."
-  no-permission: "İznin yok!"
-  no-players-selected: "Toplu işlem için oyuncu seçilmedi!"
-  all-features-disabled: "Tüm özellikler config'de devre dışı! Komutlar sınırlı olacak."
-  full-management-disabled: "Tam yönetim config'de devre dışı!"
-  mass-operations-disabled: "Toplu işlemler config'de devre dışı!"
-  insufficient-funds: "%player% için yetersiz bakiye."
-  action-failed: "İşlem başarısız."
-  player-only: "Bu komut sadece oyuncular için!"
-  player-not-found: "Oyuncu bulunamadı."
-  negative-amount: "Miktar negatif olamaz."
-
+  invalid-amount: Miktar pozitif olmalı.
+  exceeds-max-amount: Miktar $%max_amount% sunucu limitini aşıyor.
+  invalid-amount-format: Geçersiz miktar formatı.
+  no-permission: İznin yok!
+  no-players-selected: Toplu işlem için oyuncu seçilmedi!
+  all-features-disabled: Tüm özellikler config'de devre dışı! Komutlar sınırlı olacak.
+  full-management-disabled: Tam yönetim config'de devre dışı!
+  mass-operations-disabled: Toplu işlemler config'de devre dışı!
+  insufficient-funds: '%player% için yetersiz bakiye.'
+  action-failed: İşlem başarısız.
+  player-only: Bu komut sadece oyuncular için!
+  player-not-found: Oyuncu bulunamadı.
+  negative-amount: Miktar negatif olamaz.
 command:
-  usage: "Kullanım: /economygui <gui | reload | reset>"
-  usage-gui: "Kullanım: /economygui gui"
-  usage-reload: "Kullanım: /economygui reload"
-
+  usage-reverse: "Usage: /economygui refund <id> [reverse]"
+  invalid-amount: "Invalid amount or configured limit exceeded."
+  unknown-player: "Player not found."
+  operation-failed: "Operation failed (check balance and economy provider)."
+  operation-success: "%action%: %player%, amount %amount%, balance %balance%"
+  usage: 'Kullanım: /economygui <gui | reload | reset | refund>'
+  usage-gui: 'Kullanım: /economygui gui'
+  usage-reload: 'Kullanım: /economygui reload'
+  usage-refund: 'Kullanım: /economygui refund <id> <sender|receiver|both>'
 action:
-  config-reloaded: "Yapılandırma yeniden yüklendi."
-  search-reset: "Arama ve filtreler sıfırlandı."
-  search-cancelled: "Arama iptal edildi."
-  balance-updated: "%player% için bakiye $%amount% olarak güncellendi."
-  mass-give-executed: "$%amount% miktarı %count% seçili oyuncuya verildi."
-  mass-take-executed: "$%amount% miktarı %count% seçili oyuncudan alındı."
-  selection-cleared: "Seçim temizlendi."
-  enter-amount-prompt: "Miktar gir:"
-  click-to-copy: "Kopyalamak için tıkla"
-  filter-applied: "Filtre uygulandı: %filter_name%"
-  cancelled: "İşlem iptal edildi."
-  executed: "%player% için $%amount% miktarında %action% yürütüldü"
-  give: "Ver"
-  take: "Al"
-  set: "Ayarla"
-  click-to-apply-to: "Uygulamak için tıkla"
-
+  config-reloaded: Yapılandırma yeniden yüklendi.
+  search-reset: Arama ve filtreler sıfırlandı.
+  search-cancelled: Arama iptal edildi.
+  balance-updated: '%player% için bakiye $%amount% olarak güncellendi.'
+  mass-give-executed: $%amount% miktarı %count% seçili oyuncuya verildi.
+  mass-take-executed: $%amount% miktarı %count% seçili oyuncudan alındı.
+  selection-cleared: Seçim temizlendi.
+  enter-amount-prompt: 'Miktar gir:'
+  click-to-copy: Kopyalamak için tıkla
+  filter-applied: 'Filtre uygulandı: %filter_name%'
+  cancelled: İşlem iptal edildi.
+  executed: '%player% için $%amount% miktarında %action% yürütüldü'
+  give: Ver
+  take: Al
+  set: Ayarla
+  click-to-apply-to: Uygulamak için tıkla
 messages:
-  enter-search: "Arama sorgusu gir (veya 'cancel' ile iptal et):"
-  input-cancelled: "Giriş iptal edildi."
-  player-deselected: "%player% oyuncusunun seçimi kaldırıldı."
-  player-selected: "%player% oyuncusu seçildi."
-  all-selected: "Bu sayfadaki tüm oyuncular seçildi."
-  mass-action-applied: "$%amount% miktarında %action% %count% oyuncuya uygulandı"
-  enter-amount: "%action% için miktar gir (veya 'cancel' ile iptal et):"
-  action-cancelled: "İşlem iptal edildi."
-  gave-amount: "%player% oyuncusuna $%amount% verildi"
-  set-amount: "%player% için bakiye $%amount% olarak ayarlandı"
-  no-permission-give: "Verme iznin yok."
-  search-reset: "Arama ve filtreler sıfırlandı."
-  confirm-mass-action: "%action% $%amount% %count% oyuncu için onayla?"
-  confirm: "Onayla"
-  cancel: "İptal"
-  history_error: "&cİşlem geçmişi yüklenirken bir hata oluştu."
-  history_empty: "&cBu oyuncunun işlem geçmişi yok."
-
+  enter-search: 'Arama sorgusu gir (veya ''cancel'' ile iptal et):'
+  input-cancelled: Giriş iptal edildi.
+  player-deselected: '%player% oyuncusunun seçimi kaldırıldı.'
+  player-selected: '%player% oyuncusu seçildi.'
+  all-selected: Bu sayfadaki tüm oyuncular seçildi.
+  mass-action-applied: $%amount% miktarında %action% %count% oyuncuya uygulandı
+  enter-amount: '%action% için miktar gir (veya ''cancel'' ile iptal et):'
+  action-cancelled: İşlem iptal edildi.
+  gave-amount: '%player% oyuncusuna $%amount% verildi'
+  set-amount: '%player% için bakiye $%amount% olarak ayarlandı'
+  no-permission-give: Verme iznin yok.
+  search-reset: Arama ve filtreler sıfırlandı.
+  confirm-mass-action: '%action% $%amount% %count% oyuncu için onayla?'
+  confirm: Onayla
+  cancel: İptal
+  history_error: '&cİşlem geçmişi yüklenirken bir hata oluştu.'
+  history_empty: '&cBu oyuncunun işlem geçmişi yok.'
 update:
-  available: "*** GÜNCELLEME MEVCUT *** EconomyGUI'nin yeni sürümü (%version%) şu adreste mevcut: https://modrinth.com/plugin/economygui/versions"
-  welcome-admin: "EconomyGUI %version% sürümüne güncellendi!"
-  welcome-features: "Yeni: küresel istatistikler, sağ tık filtre değiştirme"
-  welcome-details: "[Detaylar]"
-
+  available: '*** GÜNCELLEME MEVCUT *** EconomyGUI''nin yeni sürümü (%version%) şu
+    adreste mevcut: https://modrinth.com/plugin/economygui/versions'
+  welcome-admin: EconomyGUI %version% sürümüne güncellendi!
+  welcome-features: 'Yeni: küresel istatistikler, sağ tık filtre değiştirme'
+  welcome-details: '[Detaylar]'
 warning:
-  max-inactivity-too-high: "Uyarı: max-inactivity-days (%days%) çok yüksek! Önerilen maksimum 365 gün."
-  messages-file-up-to-date: "Messages dosyası %file% güncel (sürüm %version%)."
-  messages-file-updated: "Messages dosyası %file% sürüm %version% olarak güncellendi."
-  messages-file-not-found: "Messages dosyası %file% plugin içinde bulunamadı!"
-  messages-file-create: "Messages dosyası oluşturuldu: %file%"
-  config-file-up-to-date: "config.yml dosyası güncel (sürüm %version%)."
-  config-file-updated: "config.yml sürüm %version% olarak güncellendi."
-  config-file-not-found: "config.yml kaynağı plugin içinde bulunamadı!"
-  config-file-create: "Config dosyası oluşturuldu: config.yml"
-  plugin-enabled: "EconomyGUI %lang% diliyle etkinleştirildi"
-  no-economy: "Ekonomi sağlayıcısı bulunamadı! Plugin devre dışı bırakılıyor."
-  upload-lang: "Diller yüklendi: "
-  changed-lang: "Dil şu şekilde değiştirildi:: "
-  bad-transaction: "%uuid% UUID'si için işlem başarısız: %raw%"
-
+  max-inactivity-too-high: 'Uyarı: max-inactivity-days (%days%) çok yüksek! Önerilen
+    maksimum 365 gün.'
+  messages-file-up-to-date: Messages dosyası %file% güncel (sürüm %version%).
+  messages-file-updated: Messages dosyası %file% sürüm %version% olarak güncellendi.
+  messages-file-not-found: Messages dosyası %file% plugin içinde bulunamadı!
+  messages-file-create: 'Messages dosyası oluşturuldu: %file%'
+  config-file-up-to-date: config.yml dosyası güncel (sürüm %version%).
+  config-file-updated: config.yml sürüm %version% olarak güncellendi.
+  config-file-not-found: config.yml kaynağı plugin içinde bulunamadı!
+  config-file-create: 'Config dosyası oluşturuldu: config.yml'
+  plugin-enabled: EconomyGUI %lang% diliyle etkinleştirildi
+  no-economy: Ekonomi sağlayıcısı bulunamadı! Plugin devre dışı bırakılıyor.
+  upload-lang: 'Diller yüklendi: '
+  changed-lang: 'Dil şu şekilde değiştirildi:: '
+  bad-transaction: '%uuid% UUID''si için işlem başarısız: %raw%'
 status:
-  online: "Çevrimiçi"
-  offline: "Çevrimdışı"
-  balance: "$%amount%"
-
+  online: Çevrimiçi
+  offline: Çevrimdışı
+  balance: $%amount%
 time:
-  seconds-ago: "saniye önce"
-  minutes-ago: "dakika önce"
-  hours-ago: "saat önce"
-  days-ago: "gün önce"
-
+  seconds-ago: saniye önce
+  minutes-ago: dakika önce
+  hours-ago: saat önce
+  days-ago: gün önce
 filter:
-  all: "Tüm Oyuncular"
-  online: "Çevrimiçi Oyuncular"
-  offline: "Çevrimdışı Oyuncular"
-  selected: "Seçili"
-  filter-current: "Mevcut filtre:"
-  applied: "Uygulanan filtre: "
-
+  all: Tüm Oyuncular
+  online: Çevrimiçi Oyuncular
+  offline: Çevrimdışı Oyuncular
+  selected: Seçili
+  filter-current: 'Mevcut filtre:'
+  applied: 'Uygulanan filtre: '
 history:
-  operations: "İşlem Geçmişi"
-  hint: "Logları görmek için tıkla"
-  by: "Veren:"
-  date: "Tarih"
-  paid-by: "%amount% %player% oyuncusuna ödendi"
-  received-from: "%player% oyuncusundan %amount% alındı"
-  given-by: "%player% tarafından %amount% verildi"
-  taken-by: "%player% tarafından %amount% alındı"
-  set-by: "bakiye %amount% olarak %player% tarafından ayarlandı"
-
+  operations: İşlem Geçmişi
+  hint: Logları görmek için tıkla
+  by: 'Veren:'
+  date: Tarih
+  paid-by: '%amount% %player% oyuncusuna ödendi'
+  received-from: '%player% oyuncusundan %amount% alındı'
+  given-by: '%player% tarafından %amount% verildi'
+  taken-by: '%player% tarafından %amount% alındı'
+  set-by: bakiye %amount% olarak %player% tarafından ayarlandı
 context-menu:
-  title: "%player% için Hızlı İşlemler"
-  back: "Ana Menüye Dön"
-  full-open: "Tam Yönetimi Aç"
-  apply-info: "Uygulamak için tıklayın %player%"
-  give-100: "$100 Ver"
-  give-1000: "$1000 Ver"
-  take-100: "$100 Al"
-  take-1000: "$1000 Al"
-  set-5000: "$5000 Ayarla"
-  reset-0: "$0'a Sıfırla"
+  title: '%player% için Hızlı İşlemler'
+  back: Ana Menüye Dön
+  full-open: Tam Yönetimi Aç
+  apply-info: Uygulamak için tıklayın %player%
+  give-100: $100 Ver
+  give-1000: $1000 Ver
+  take-100: $100 Al
+  take-1000: $1000 Al
+  set-5000: $5000 Ayarla
+  reset-0: $0'a Sıfırla
+refund:
+  reverse-button: "Reverse transaction"
+  reverse-hint: "Cancel the original operation once. No money is created."
+  reverse-unavailable: "Reversal unavailable"
+  reverse-reason: "Already processed, unsupported operation, or manual review required."
+  reverse-success: "Transaction #%id% reversed."
+  reverse-failed: "Cannot reverse #%id%: insufficient funds, unsupported operation, already processed or manual review required."
+  title: 'İade #%id%'
+  sender-btn: Gönderene İade Et (%player%)
+  sender-hint: Gönderene $%amount% iade et
+  receiver-btn: Alıcıya İade Et (%player%)
+  receiver-hint: Alıcıya $%amount% iade et
+  both-btn: Her İki Tarafa İade Et
+  both-hint: Hem gönderene hem alıcıya $%amount% iade et
+  disabled-sender: Gönderene iade yapılamaz
+  disabled-receiver: Alıcıya iade yapılamaz
+  disabled-both: Her iki tarafa iade yapılamaz
+  already-sender: Gönderene zaten iade edildi
+  already-receiver: Alıcıya zaten iade edildi
+  already-both: İşlem zaten tamamen iade edildi
+  no-sender: Kullanılabilir gönderen yok
+  no-receiver: Kullanılabilir alıcı yok
+  back-to-history: Geçmişe Dön
+  processing: 'İade #%id% (%target%) işleniyor...'
+  success: 'İade #%id% başarıyla uygulandı: %target%'
+  failed: 'İade #%id% başarısız oldu veya zaten işlenmiş.'
+  history-lore-status: 'İade Durumu: %status%'
+  history-lore-click: ▶ İade Menüsünü açmak için tıklayın
+  history-lore-action: 'İşlem: %action%'
+  history-lore-amount: 'Miktar: $%amount%'
+  history-lore-sender: 'Gönderen: %sender%'
+  history-lore-receiver: 'Alıcı: %receiver%'
+  history-lore-by: 'Yetkili: %executor%'
+  history-lore-date: 'Tarih: %date%'
+  already-refunded-both: İşlem zaten her iki tarafa da iade edildi!
+  already-refunded-receiver: İşlem zaten alıcıya iade edildi!
+  already-refunded-sender: İşlem zaten gönderene iade edildi!
+  success-both: '%amount% hem gönderen %sender% hem alıcı %receiver% için başarıyla
+    iade edildi!'
+  success-receiver: '%amount% alıcı %player% için başarıyla iade edildi!'
+  success-sender: '%amount% gönderen %player% için başarıyla iade edildi!'

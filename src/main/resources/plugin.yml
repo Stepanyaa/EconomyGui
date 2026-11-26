@@ -1,16 +1,23 @@
 name: EconomyGUI
-version: 2.1.2
+version: 2.2.0
 main: ru.stepanyaa.economyGUI.EconomyGUI
 license: MIT
-folia-supported: false
-api-version: 1.16
-depend: [Vault]
-softdepend: [Essentials, PlaceholderAPI]
+folia-supported: true
+api-version: 1.13
+softdepend: [Vault, PlayerPoints, Essentials, PlaceholderAPI]
 commands:
   economygui:
-    description: A powerful and intuitive Minecraft plugin for efficient economy management using Vault.
-    usage: /<command> <gui | reload | reset>
+    description: A powerful and intuitive Minecraft plugin for efficient economy management.
+    usage: /<command> <gui | reload | reset | give | take | set | refund>
     aliases: [egui, economy, ecogui]
+  pay:
+    description: Pay money to another player
+    usage: /<command> <player> <amount>
+    aliases: [epay]
+  balance:
+    description: Check player balance
+    usage: /<command> [player]
+    aliases: [money, bal, ebal]
 permissions:
   economygui.admin:
     description: Grants full access to all EconomyGUI commands and update notifications
@@ -22,6 +29,9 @@ permissions:
       economygui.mass-give: true
       economygui.mass-take: true
       economygui.give: true
+      economygui.refund: true
+      economygui.pay: true
+      economygui.balance: true
   economygui.gui:
     description: Allows access to the EconomyGUI GUI
     default: op
@@ -42,3 +52,12 @@ permissions:
   economygui.give:
     description: Allows giving money to selected players
     default: op
+  economygui.refund:
+    description: Allows refunding transactions
+    default: op
+  economygui.pay:
+    description: Allows paying money to players
+    default: true
+  economygui.balance:
+    description: Allows checking balance
+    default: true

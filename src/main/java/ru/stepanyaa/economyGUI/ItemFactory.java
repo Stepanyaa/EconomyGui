@@ -1,18 +1,16 @@
 package ru.stepanyaa.economyGUI;
 
-import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.*;
 
@@ -36,7 +34,7 @@ public class ItemFactory {
         this.plugin = plugin;
     }
 
-    public ItemStack playerHead(OfflinePlayer player, double balance, boolean selected, String moneyFormat) {
+    public ItemStack playerHead(Player viewer, OfflinePlayer player, double balance, boolean selected, String moneyFormat) {
         ItemStack head = new ItemStack(Material.PLAYER_HEAD);
         SkullMeta meta = (SkullMeta) head.getItemMeta();
 
@@ -50,11 +48,12 @@ public class ItemFactory {
 
         List<String> lore = new ArrayList<>();
         String formattedBalance = String.format(moneyFormat, balance);
-        lore.add(ChatColor.GOLD + plugin.getMessage("gui.balance", "Balance: $%balance%", "balance", formattedBalance));
-        lore.add(ChatColor.GRAY + plugin.getMessage("gui.actions", "LMB: Manage | RMB: Quick Actions | Shift+Left: Select"));
+        lore.add(ChatColor.GOLD + plugin.getMessage(viewer, "gui.balance", "Balance: $%balance%", "balance", formattedBalance));
+        lore.add(ChatColor.GRAY + plugin.getMessage(viewer, "gui.actions", "LMB: Manage | RMB: Quick Actions | Shift+Left: Select"));
         if (selected) {
-            lore.add(ChatColor.GREEN + plugin.getMessage("gui.selected", "Selected"));
-            meta.addEnchant(getGlowEnchantment(), 1, true);
+            lore.add(ChatColor.GREEN + plugin.getMessage(viewer, "gui.selected", "Selected"));
+            Enchantment glow = getGlowEnchantment();
+            if (glow != null) meta.addEnchant(glow, 1, true);
             meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         }
         meta.setLore(lore);
@@ -62,28 +61,28 @@ public class ItemFactory {
         return head;
     }
 
-    public ItemStack backButton(String hintKey, String hintDef) {
-        return simple(Material.ARROW, ChatColor.RED + plugin.getMessage("gui.back", "Back"), Collections.singletonList(ChatColor.GRAY + plugin.getMessage(hintKey, hintDef)));
+    public ItemStack backButton(Player viewer, String hintKey, String hintDef) {
+        return simple(Material.ARROW, ChatColor.RED + plugin.getMessage(viewer, "gui.back", "Back"), Collections.singletonList(ChatColor.GRAY + plugin.getMessage(viewer, hintKey, hintDef)));
     }
 
-    public ItemStack pageButton(boolean hasPage, boolean isNext, int currentPage, int totalPages) {
+    public ItemStack pageButton(Player viewer, boolean hasPage, boolean isNext, int currentPage, int totalPages) {
         Material mat = hasPage ? Material.ARROW : Material.RED_STAINED_GLASS_PANE;
         String name;
         if (hasPage) {
-            name = ChatColor.YELLOW + plugin.getMessage(isNext ? "gui.next-page" : "gui.previous-page", isNext ? "Next Page" : "Previous Page");
+            name = ChatColor.YELLOW + plugin.getMessage(viewer, isNext ? "gui.next-page" : "gui.previous-page", isNext ? "Next Page" : "Previous Page");
         } else {
-            name = ChatColor.RED + plugin.getMessage("gui.no-page", "No Page");
+            name = ChatColor.RED + plugin.getMessage(viewer, "gui.no-page", "No Page");
         }
         List<String> lore = new ArrayList<>();
-        lore.add(ChatColor.GRAY + plugin.getMessage("gui.page-info", "Page %current_page% of %total_pages%", "current_page", String.valueOf(currentPage + 1), "total_pages", String.valueOf(totalPages)));
+        lore.add(ChatColor.GRAY + plugin.getMessage(viewer, "gui.page-info", "Page %current_page% of %total_pages%", "current_page", String.valueOf(currentPage + 1), "total_pages", String.valueOf(totalPages)));
         if (hasPage) {
-            lore.add(ChatColor.GRAY + plugin.getMessage("gui.shift-rmb-page", "Shift+RMB: Skip 5 pages"));
+            lore.add(ChatColor.GRAY + plugin.getMessage(viewer, "gui.shift-rmb-page", "Shift+RMB: Skip 5 pages"));
         }
         return simple(mat, name, lore);
     }
 
-    public ItemStack button(Material mat, ChatColor nameColor, String nameKey, String nameDef, String hintKey, String hintDef) {
-        return simple(mat, nameColor + plugin.getMessage(nameKey, nameDef), Collections.singletonList(ChatColor.GRAY + plugin.getMessage(hintKey, hintDef)));
+    public ItemStack button(Player viewer, Material mat, ChatColor nameColor, String nameKey, String nameDef, String hintKey, String hintDef) {
+        return simple(mat, nameColor + plugin.getMessage(viewer, nameKey, nameDef), Collections.singletonList(ChatColor.GRAY + plugin.getMessage(viewer, hintKey, hintDef)));
     }
 
     public ItemStack simple(Material mat, String displayName, List<String> lore) {
@@ -96,22 +95,25 @@ public class ItemFactory {
     }
 
     private void applyDefaultSkin(SkullMeta meta, OfflinePlayer player) {
-        String skinValue = DEFAULT_SKIN_VALUES[RANDOM.nextInt(DEFAULT_SKIN_VALUES.length)];
-        GameProfile profile = new GameProfile(player.getUniqueId(), player.getName());
+        meta.setOwningPlayer(player);
         try {
-            Method getProperties = GameProfile.class.getDeclaredMethod("getProperties");
-            getProperties.setAccessible(true);
-            Object properties = getProperties.invoke(profile);
-            Method put = properties.getClass().getMethod("put", Object.class, Object.class);
-            put.invoke(properties, "textures", new Property("textures", skinValue));
-            Field profileField = meta.getClass().getDeclaredField("profile");
-            profileField.setAccessible(true);
-            profileField.set(meta, profile);
-        } catch (Exception ignored) {}
+            String value = DEFAULT_SKIN_VALUES[RANDOM.nextInt(DEFAULT_SKIN_VALUES.length)];
+            String json = new String(Base64.getDecoder().decode(value), java.nio.charset.StandardCharsets.UTF_8);
+            java.util.regex.Matcher url = java.util.regex.Pattern.compile("https?://textures\\.minecraft\\.net/texture/[a-zA-Z0-9]+").matcher(json);
+            if (!url.find()) return;
+            Class<?> profileType = Class.forName("org.bukkit.profile.PlayerProfile");
+            Class<?> texturesType = Class.forName("org.bukkit.profile.PlayerTextures");
+            Object profile = Bukkit.class.getMethod("createPlayerProfile", UUID.class, String.class)
+                    .invoke(null, player.getUniqueId(), player.getName());
+            Object textures = profileType.getMethod("getTextures").invoke(profile);
+            texturesType.getMethod("setSkin", java.net.URL.class).invoke(textures, new java.net.URL(url.group()));
+            profileType.getMethod("setTextures", texturesType).invoke(profile, textures);
+            SkullMeta.class.getMethod("setOwnerProfile", profileType).invoke(meta, profile);
+        } catch (ReflectiveOperationException | LinkageError | SecurityException | java.net.MalformedURLException unsupported) {
+        }
     }
 
     private Enchantment getGlowEnchantment() {
-        String version = Bukkit.getBukkitVersion();
-        return version.contains("1.16") ? Enchantment.DURABILITY : Enchantment.VANISHING_CURSE;
+        return Enchantment.getByKey(org.bukkit.NamespacedKey.minecraft("unbreaking"));
     }
 }
